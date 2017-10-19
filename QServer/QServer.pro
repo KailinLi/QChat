@@ -18,12 +18,14 @@ SOURCES += main.cpp\
     message.cpp \
     tcpsocketmsg.cpp \
     parallelserver.cpp \
-    connectthread.cpp
+    connectthread.cpp \
+    connectthreadpool.cpp
 
 HEADERS  += qserver.h \
     message.h \
     tcpsocketmsg.h \
     parallelserver.h \
-    connectthread.h
+    connectthread.h \
+    connectthreadpool.h
 
 FORMS    += qserver.ui
