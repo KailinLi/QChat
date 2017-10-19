@@ -11,20 +11,21 @@ void TcpSocketMsg::setBlockSize(qint64 i)
     blockSize = i;
 }
 
-void TcpSocketMsg::send(Message &msg)
+void TcpSocketMsg::send(Message *msg)
 {
     QByteArray message;
     QDataStream out(&message, QIODevice::WriteOnly);
     out.setVersion (QDataStream::Qt_5_6);
     out << (quint64)0;
-    out << msg.getType ();
-    out << msg.argc ();
-    for (int i = 0; i < msg.argc (); ++i) {
-        out << msg.getArgv (i);
+    out << msg->getType ();
+    out << msg->argc ();
+    for (int i = 0; i < msg->argc (); ++i) {
+        out << msg->getArgv (i);
     }
     out.device ()->seek (0);
     out << (quint64)(message.size () - sizeof(quint64));
     write (message);
+    delete msg;
 }
 
 Message *TcpSocketMsg::read()

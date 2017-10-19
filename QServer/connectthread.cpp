@@ -8,7 +8,7 @@ ConnectThread::ConnectThread(int socketDescriptor, QObject *parent):
     tcpMsg(new TcpSocketMsg(this))
 {
     connect (tcpMsg, &TcpSocketMsg::disconnected, this, &ConnectThread::disconnect);
-    connect (tcpMsg, &TcpSocketMsg::readyRead, this, &ConnectThread::newMsg);
+    connect (tcpMsg, &TcpSocketMsg::readyRead, this, &ConnectThread::threadReadyRead);
     if (!tcpMsg->setSocketDescriptor (socketDescriptor)) {
         emit error (tcpMsg->error ());
         return;
@@ -43,10 +43,13 @@ quint32 ConnectThread::getUserID()
     return userID;
 }
 
-void ConnectThread::newMsg()
+void ConnectThread::threadReadyRead()
 {
-    emit threadReadyRead (this);
+    Message *msg = tcpMsg->read ();
+    if (msg == nullptr) return;
+    emit newMsg (msg);
 }
+
 
 void ConnectThread::disconnect()
 {

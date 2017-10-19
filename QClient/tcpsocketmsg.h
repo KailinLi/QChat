@@ -15,7 +15,7 @@ private:
 public:
     TcpSocketMsg(QObject* parent);
     void setBlockSize(qint64 i);
-    void send(Message& msg);
+    void send(Message* msg);
     Message *read();
     //return nullptr if not ready
     //Don't forget delete the Message!!!

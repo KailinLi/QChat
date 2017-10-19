@@ -26,8 +26,8 @@ void SignIn::tryConnect()
 
 void SignIn::trySignIn()
 {
-    Message msg(Message::SignIn);
-    msg.addArgv(ui->nameLineEdit->text ());
-    msg.addArgv(ui->passwdLineEdit->text ());
+    Message *msg = new Message(Message::SignIn);
+    msg->addArgv(ui->nameLineEdit->text ());
+    msg->addArgv(ui->passwdLineEdit->text ());
     tcpMsg->send (msg);
 }
