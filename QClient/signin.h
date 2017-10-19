@@ -2,6 +2,7 @@
 #define SIGNIN_H
 
 #include <QDialog>
+#include "tcpsocketmsg.h"
 
 namespace Ui {
 class SignIn;
@@ -17,6 +18,11 @@ public:
 
 private:
     Ui::SignIn *ui;
+    TcpSocketMsg* tcpMsg;
+
+public:
+    void tryConnect();
+    void trySignIn();
 };
 
 #endif // SIGNIN_H

@@ -1,10 +1,14 @@
 #include "tcpsocketmsg.h"
-#include "message.h"
 
 TcpSocketMsg::TcpSocketMsg(QObject *parent):
     QTcpSocket(parent), blockSize(0)
 {
 
+}
+
+void TcpSocketMsg::setBlockSize(qint64 i)
+{
+    blockSize = i;
 }
 
 void TcpSocketMsg::send(Message &msg)
@@ -42,6 +46,7 @@ Message *TcpSocketMsg::read()
         in >> s;
         msg->addArgv (s);
     }
+    blockSize = 0;
     return msg;
 }
 

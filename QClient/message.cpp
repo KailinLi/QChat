@@ -12,7 +12,7 @@ Message::Type Message::getType()
     return type;
 }
 
-void Message::addArgv(QString &s)
+void Message::addArgv(const QString &s)
 {
     argv.push_back (s);
 }

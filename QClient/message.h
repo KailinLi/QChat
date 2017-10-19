@@ -20,7 +20,7 @@ private:
 public:
     Message(Message::Type t);
     Message::Type getType();
-    void addArgv(QString &s);
+    void addArgv(const QString &s);
     QString getArgv(int i);
     int argc();
 };
