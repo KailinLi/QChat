@@ -28,13 +28,13 @@ Message *TcpSocketMsg::read()
     QDataStream in(this);
     in.setVersion (QDataStream::Qt_5_6);
     if (blockSize == 0) {
-        if (bytesAvailable () < (qint64)sizeof(quint16)) return;
+        if (bytesAvailable () < (qint64)sizeof(quint16)) return nullptr;
         in >> blockSize;
     }
-    if (bytesAvailable () < blockSize) return;
-    Message::Type t;
+    if (bytesAvailable () < blockSize) return nullptr;
+    int t;
     in >> t;
-    Message* msg = new Message(t);
+    Message* msg = new Message(static_cast<Message::Type>(t));
     int argc;
     in >> argc;
     QString s;

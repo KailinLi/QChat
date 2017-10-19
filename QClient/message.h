@@ -6,7 +6,7 @@
 class Message
 {
 public:
-    enum Type {
+    enum Type : int {
         SignIn,
         AnswerSignIn,
         SignUp,
@@ -15,10 +15,10 @@ public:
         UpdateMsg
     };
 private:
-    Type type;
+    Message::Type type;
     QStringList argv;
 public:
-    Message(Type t);
+    Message(Message::Type t);
     Message::Type getType();
     void addArgv(QString &s);
     QString getArgv(int i);

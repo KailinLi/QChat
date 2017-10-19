@@ -14,6 +14,8 @@ public:
     qint64 blockSize;
     void send(Message& msg);
     Message *read();
+    //return nullptr if not ready
+    //Don't forget delete the Message!!!
 };
 
 #endif // TCPSOCKETMSG_H
