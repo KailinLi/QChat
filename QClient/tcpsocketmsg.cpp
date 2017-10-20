@@ -51,3 +51,12 @@ Message *TcpSocketMsg::read()
     return msg;
 }
 
+void TcpSocketMsg::safeDelete()
+{
+    if (state () != TcpSocketMsg::ConnectedState) {
+        disconnectFromHost ();
+        waitForDisconnected ();
+    }
+    deleteLater ();
+}
+

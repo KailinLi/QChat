@@ -7,7 +7,8 @@
 class UserInfo
 {
 public:
-    UserInfo();
+    UserInfo(quint32 id, const QString &name, const QString &password,
+             const QString &pwQuestion, const QString &pwAnswer);
 private:
     quint32 userID;
     QString name;
@@ -23,11 +24,11 @@ public:
     void setUserID(quint32 id);
     QString &getName();
     void setName(const QString& name);
-    QString& getPassword();
+    QString &getPassword();
     void setPassword(const QString& password);
-    QString& getPwQuestion();
+    QString &getPwQuestion();
     void setPwQuestion(const QString& pwQuestion);
-    QString& getPwAnswer();
+    QString &getPwAnswer();
     void setPwAnswer(const QString& pwAnswer);
     quint16 getPort();
     void setPort(quint16 port);

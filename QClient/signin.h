@@ -23,8 +23,9 @@ private:
 public:
     void tryConnect();
     void trySignIn();
+    void haveNewMsgFromServer();
 signals:
-    void sendMsg(Message*);
+    void sendMsg(Message* msg);
 };
 
 #endif // SIGNIN_H

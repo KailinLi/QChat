@@ -19,7 +19,7 @@ void ConnectThread::run()
 {
     while (runThread) {
     }
-    if (!tcpMsg) {
+    if (tcpMsg) {
         if (tcpMsg->state () != TcpSocketMsg::ConnectedState) {
             tcpMsg->disconnectFromHost ();
             tcpMsg->waitForDisconnected();

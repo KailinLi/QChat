@@ -28,6 +28,7 @@ signals:
 private slots:
     void threadReadyRead();
     void disconnect();
+public slots:
     void sendMsg(ConnectThread*thread, Message*);
 };
 

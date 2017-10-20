@@ -8,6 +8,7 @@ ConnectThreadPool::ConnectThreadPool()
 void ConnectThreadPool::addThread(ConnectThread *thread)
 {
     threadPool.push_back (thread);
+    thread->start ();
 }
 
 void ConnectThreadPool::removeThread(ConnectThread *thread)

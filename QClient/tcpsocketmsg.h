@@ -17,6 +17,8 @@ public:
     void setBlockSize(qint64 i);
     void send(Message* msg);
     Message *read();
+
+    void safeDelete();
     //return nullptr if not ready
     //Don't forget delete the Message!!!
 };

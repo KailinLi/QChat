@@ -1,6 +1,14 @@
 #include "userinfo.h"
 
-UserInfo::UserInfo()
+
+UserInfo::UserInfo(quint32 id, const QString &name, const QString &password, const QString &pwQuestion, const QString &pwAnswer):
+    userID(id),
+    name(name),
+    password(password),
+    pwQuestion(pwQuestion),
+    pwAnswer(pwAnswer),
+    port(0),
+    ifOnline(false)
 {
 
 }

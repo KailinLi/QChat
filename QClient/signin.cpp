@@ -10,6 +10,7 @@ SignIn::SignIn(QWidget *parent) :
     ui->passwdLineEdit->setEchoMode (QLineEdit::Password);
     connect (ui->signinBtn, &QPushButton::clicked, this, &SignIn::tryConnect);
     connect (tcpMsg, &TcpSocketMsg::connected, this, &SignIn::trySignIn);
+    connect (tcpMsg, &TcpSocketMsg::readyRead, this, &SignIn::haveNewMsgFromServer);
     connect (this, &SignIn::sendMsg, tcpMsg, &TcpSocketMsg::send);
     ui->nameLineEdit->setFocus ();
     ui->signinBtn->setAutoDefault (true);
@@ -35,4 +36,18 @@ void SignIn::trySignIn()
     msg->addArgv(ui->nameLineEdit->text ());
     msg->addArgv(ui->passwdLineEdit->text ());
     emit sendMsg (msg);
+}
+
+void SignIn::haveNewMsgFromServer()
+{
+    Message *msg = tcpMsg->read ();
+    if (msg == nullptr) return;
+    switch (msg->getType ()) {
+    case Message::AnswerSignIn:
+        qDebug() << msg->getArgv (0);
+        tcpMsg->safeDelete ();
+        break;
+    default:
+        break;
+    }
 }

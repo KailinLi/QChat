@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     parallelserver.cpp \
     connectthread.cpp \
     connectthreadpool.cpp \
-    userinfo.cpp
+    userinfo.cpp \
+    userinfolist.cpp
 
 HEADERS  += qserver.h \
     message.h \
@@ -28,6 +29,7 @@ HEADERS  += qserver.h \
     parallelserver.h \
     connectthread.h \
     connectthreadpool.h \
-    userinfo.h
+    userinfo.h \
+    userinfolist.h
 
 FORMS    += qserver.ui
