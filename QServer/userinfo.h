@@ -21,7 +21,7 @@ private:
 public:
     quint32 getUserID();
     void setUserID(quint32 id);
-    QString& getName();
+    QString &getName();
     void setName(const QString& name);
     QString& getPassword();
     void setPassword(const QString& password);
