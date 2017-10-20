@@ -56,3 +56,9 @@ void ConnectThread::disconnect()
     emit loseConnect (this);
 }
 
+void ConnectThread::sendMsg(ConnectThread *threaad, Message *msg)
+{
+    if (thread != this) return ;
+    tcpMsg->send (msg);
+}
+

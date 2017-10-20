@@ -23,6 +23,8 @@ private:
 public:
     void tryConnect();
     void trySignIn();
+signals:
+    void sendMsg(Message*);
 };
 
 #endif // SIGNIN_H

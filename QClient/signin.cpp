@@ -9,6 +9,7 @@ SignIn::SignIn(QWidget *parent) :
     ui->setupUi(this);
     connect (ui->signinBtn, &QPushButton::clicked, this, &SignIn::tryConnect);
     connect (tcpMsg, &TcpSocketMsg::connected, this, &SignIn::trySignIn);
+    connect (this, &SignIn::sendMsg, tcpMsg, &TcpSocketMsg::send);
 //    connect (tcpMsg, &TcpSocketMsg::readyRead, this, )
 }
 
@@ -29,5 +30,5 @@ void SignIn::trySignIn()
     Message *msg = new Message(Message::SignIn);
     msg->addArgv(ui->nameLineEdit->text ());
     msg->addArgv(ui->passwdLineEdit->text ());
-    tcpMsg->send (msg);
+    emit sendMsg (msg);
 }
