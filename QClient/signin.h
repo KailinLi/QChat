@@ -15,6 +15,12 @@ class SignIn : public QDialog
 public:
     explicit SignIn(QWidget *parent = 0);
     ~SignIn();
+    enum DoneType : int {
+        SignInSuccess = 1,
+        Exit = 2,
+        SignUp = 3,
+        GetPassword = 4
+    };
 
 private:
     Ui::SignIn *ui;
@@ -26,6 +32,8 @@ public:
     void haveNewMsgFromServer();
 signals:
     void sendMsg(Message* msg);
+private slots:
+    void closeWindow();
 };
 
 #endif // SIGNIN_H
