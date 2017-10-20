@@ -22,12 +22,13 @@ public:
     TcpSocketMsg *tcpMsg;
 
 signals:
-    void newMsg(Message*);
+    void newMsg(ConnectThread*, Message*);
     void error(TcpSocketMsg::SocketError socketError);
     void loseConnect(ConnectThread*);
 private slots:
     void threadReadyRead();
     void disconnect();
+    void sendMsg(ConnectThread*thread, Message*);
 };
 
 #endif // CONNECTTHREAD_H

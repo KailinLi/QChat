@@ -7,9 +7,13 @@ SignIn::SignIn(QWidget *parent) :
     tcpMsg(new TcpSocketMsg(this))
 {
     ui->setupUi(this);
+    ui->passwdLineEdit->setEchoMode (QLineEdit::Password);
     connect (ui->signinBtn, &QPushButton::clicked, this, &SignIn::tryConnect);
     connect (tcpMsg, &TcpSocketMsg::connected, this, &SignIn::trySignIn);
     connect (this, &SignIn::sendMsg, tcpMsg, &TcpSocketMsg::send);
+    ui->nameLineEdit->setFocus ();
+    ui->signinBtn->setAutoDefault (true);
+    ui->signinBtn->setDefault (true);
 //    connect (tcpMsg, &TcpSocketMsg::readyRead, this, )
 }
 
@@ -22,7 +26,7 @@ void SignIn::tryConnect()
 {
     tcpMsg->setBlockSize (0);
     if (tcpMsg) tcpMsg->abort ();
-    tcpMsg->connectToHost (QHostAddress(tr("10.11.57.240")), 6666);
+    tcpMsg->connectToHost (QHostAddress(tr("127.0.0.1")), 6666);
 }
 
 void SignIn::trySignIn()

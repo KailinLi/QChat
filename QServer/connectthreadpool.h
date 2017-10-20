@@ -4,6 +4,7 @@
 #include <QObject>
 #include "connectthread.h"
 
+
 class ConnectThreadPool
 {
 public:
@@ -11,10 +12,10 @@ public:
 private:
     QList<ConnectThread*> threadPool;
 public:
-    void addThread(ConnectThread*);
-    void removeThread(ConnectThread*);
-    ConnectThread* findThread(quint32 ID);
-    quint32 findID(ConnectThread*);
+    void addThread(ConnectThread* thread);
+    void removeThread(ConnectThread* thread);
+    ConnectThread *getThread(quint32 ID);
+    quint32 getID(ConnectThread* thread);
 };
 
 #endif // CONNECTTHREADPOOL_H

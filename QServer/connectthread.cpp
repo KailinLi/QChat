@@ -47,7 +47,7 @@ void ConnectThread::threadReadyRead()
 {
     Message *msg = tcpMsg->read ();
     if (msg == nullptr) return;
-    emit newMsg (msg);
+    emit newMsg (this, msg);
 }
 
 
@@ -56,9 +56,9 @@ void ConnectThread::disconnect()
     emit loseConnect (this);
 }
 
-void ConnectThread::sendMsg(ConnectThread *threaad, Message *msg)
+void ConnectThread::sendMsg(ConnectThread *thread, Message *msg)
 {
-    if (thread != this) return ;
+    if (thread != this) return;
     tcpMsg->send (msg);
 }
 
