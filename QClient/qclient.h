@@ -2,6 +2,8 @@
 #define QCLIENT_H
 
 #include <QWidget>
+#include "connectthreadpool.h"
+#include "parallelserver.h"
 
 namespace Ui {
 class QClient;
@@ -17,6 +19,9 @@ public:
 
 private:
     Ui::QClient *ui;
+    quint32 userID;
+    ParallelServer *server;
+    ConnectThreadPool threadPool;
 };
 
 #endif // QCLIENT_H

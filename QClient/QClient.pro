@@ -18,13 +18,23 @@ SOURCES += main.cpp\
     signin.cpp \
     message.cpp \
     tcpsocketmsg.cpp \
-    signup.cpp
+    signup.cpp \
+    connectthread.cpp \
+    connectthreadpool.cpp \
+    parallelserver.cpp \
+    userinfo.cpp \
+    userinfolist.cpp
 
 HEADERS  += qclient.h \
     signin.h \
     message.h \
     tcpsocketmsg.h \
-    signup.h
+    signup.h \
+    connectthread.h \
+    connectthreadpool.h \
+    parallelserver.h \
+    userinfo.h \
+    userinfolist.h
 
 FORMS    += qclient.ui \
     signin.ui \
