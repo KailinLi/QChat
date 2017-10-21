@@ -55,7 +55,7 @@ void QServer::haveNewMsg(ConnectThread *thread, Message *msg)
             quint32 id = userList.newSignUp (msg->getArgv (0), msg->getArgv (1), msg->getArgv (2), msg->getArgv (3));
             Message *newMsg = new Message(Message::AnswerSignUp);
             newMsg->addArgv (QString::number (id));
-            emit msgToSend (thread, msg);
+            emit msgToSend (thread, newMsg);
         }
         else {
             Message *newMsg = new Message(Message::AnswerSignUp);

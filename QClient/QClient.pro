@@ -29,3 +29,6 @@ HEADERS  += qclient.h \
 FORMS    += qclient.ui \
     signin.ui \
     signup.ui
+
+RESOURCES += \
+    images.qrc

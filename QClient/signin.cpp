@@ -99,8 +99,11 @@ bool SignIn::showFindPasswordDialog(const QString &pwQuestion, const QString &pw
 {
     bool hadInput;
     QString str = QInputDialog::getText (this, tr("找回密码"), pwQuestion, QLineEdit::Normal, tr("请输入密保答案"), &hadInput);
-    if (QString::compare (str, pwAnswer)) return false;
-    else return true;
+    if (hadInput) {
+        if (QString::compare (str, pwAnswer)) return false;
+        else return true;
+    }
+    else return false;
 }
 
 

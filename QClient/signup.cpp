@@ -70,7 +70,6 @@ void SignUp::haveNewMsgFromServer()
             ui->passwordLineEdit->clear ();
             ui->checkPasswordLineEdit->clear ();
             ui->pwAnswerLineEdit->clear ();
-            ui->pwQuestionComboBox->clear ();
             ui->nameLineEdit->setFocus ();
         }
         break;

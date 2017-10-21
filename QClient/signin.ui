@@ -11,9 +11,9 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>登录</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -33,7 +33,11 @@
     <item row="0" column="2">
      <widget class="QPushButton" name="setBtn">
       <property name="text">
-       <string>设置</string>
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="images.qrc">
+        <normaloff>:/images/set.png</normaloff>:/images/set.png</iconset>
       </property>
      </widget>
     </item>
@@ -93,17 +97,9 @@
     </item>
    </layout>
   </widget>
-  <zorder>signinBtn</zorder>
-  <zorder>passwdLineEdit</zorder>
-  <zorder>exitBtn</zorder>
-  <zorder>showLabel</zorder>
-  <zorder>passwdLabel</zorder>
-  <zorder>nameLabel</zorder>
-  <zorder>nameLineEdit</zorder>
-  <zorder>setBtn</zorder>
-  <zorder>signUpBtn</zorder>
-  <zorder>forgetPasswordBtn</zorder>
  </widget>
- <resources/>
+ <resources>
+  <include location="images.qrc"/>
+ </resources>
  <connections/>
 </ui>

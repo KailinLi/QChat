@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>注册</string>
   </property>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
@@ -94,7 +94,12 @@
      <widget class="QComboBox" name="pwQuestionComboBox">
       <item>
        <property name="text">
-        <string>你机网实验的成绩是多少?</string>
+        <string>您机网实验的成绩是多少?</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>您的GPA有多高?</string>
        </property>
       </item>
      </widget>
