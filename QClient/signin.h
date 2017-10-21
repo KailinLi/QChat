@@ -25,16 +25,20 @@ public:
 private:
     Ui::SignIn *ui;
     TcpSocketMsg* tcpMsg;
+    bool needPassword;
 
 public:
     void tryConnect();
     void trySignIn();
     void haveNewMsgFromServer();
+    void tryFindPassword();
+    bool showFindPasswordDialog(const QString& pwQuestion, const QString& pwAnswer);
 signals:
     void sendMsg(Message* msg);
 private slots:
     void callSignUp();
     void closeWindow();
+    void forgetPassword();
 };
 
 #endif // SIGNIN_H

@@ -82,6 +82,6 @@ void SignUp::haveNewMsgFromServer()
 
 void SignUp::closeWindow()
 {
-
+    reject ();
 }
 

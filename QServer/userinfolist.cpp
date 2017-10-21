@@ -58,3 +58,13 @@ bool UserInfoList::checkUserName(const QString &name)
     }
     return true;
 }
+
+UserInfo *UserInfoList::findPassword(const QString &name)
+{
+    for (int i = 0; i < list.size (); ++i) {
+        if (!QString::compare (list[i].getName (), name)) {
+            return &(list[i]);
+        }
+    }
+    return nullptr;
+}

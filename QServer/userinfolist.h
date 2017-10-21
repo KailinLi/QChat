@@ -19,6 +19,7 @@ public:
     void signOut(quint32 id);
     bool ifPasswordRight(const QString &name, const QString &password);
     bool checkUserName(const QString &name);
+    UserInfo *findPassword(const QString &name);
 };
 
 #endif // USERINFOLIST_H

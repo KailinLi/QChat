@@ -11,6 +11,8 @@ public:
         AnswerSignIn,
         SignUp,
         AnswerSignUp,
+        ForgetPassword,
+        AnswerForgetPassword,
         InitMsg,
         FinishInit,
         UpdateMsg

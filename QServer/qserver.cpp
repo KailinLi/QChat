@@ -8,7 +8,7 @@ QServer::QServer(QWidget *parent) :
     server(new ParallelServer(this))
 {
     ui->setupUi(this);
-    userList.newSignUp (tr("likailin"), tr("1234"), tr(""), tr(""));
+    userList.newSignUp (tr("likailin"), tr("1234"), tr("你计网实验的成绩是多少?"), tr("100"));
     if (! server->listen (QHostAddress("127.0.0.1"), 6666)) {
         QMessageBox::critical(this, tr("Threaded Fortune Server"),
                               tr("Unable to start the server: %1.")
@@ -63,6 +63,22 @@ void QServer::haveNewMsg(ConnectThread *thread, Message *msg)
             emit msgToSend (thread, newMsg);
         }
         break;
+    case Message::ForgetPassword: {
+        UserInfo* findP = userList.findPassword (msg->getArgv (0));
+        if (!findP) {
+            Message *newMsg = new Message(Message::AnswerForgetPassword);
+            newMsg->addArgv (tr("n"));
+            emit msgToSend (thread, newMsg);
+        }
+        else {
+            Message *newMsg = new Message(Message::AnswerForgetPassword);
+            newMsg->addArgv (findP->getPwQuestion ());
+            newMsg->addArgv (findP->getPwAnswer ());
+            newMsg->addArgv (findP->getPassword ());
+            emit msgToSend (thread, newMsg);
+        }
+        break;
+    }
     default:
         break;
     }
