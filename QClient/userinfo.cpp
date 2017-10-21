@@ -1,12 +1,12 @@
 #include "userinfo.h"
 
 
-UserInfo::UserInfo(quint32 id, const QString &name, const QString &password, const QString &pwQuestion, const QString &pwAnswer):
+UserInfo::UserInfo(quint32 id, const QString &name):
     userID(id),
     name(name),
-    password(password),
-    pwQuestion(pwQuestion),
-    pwAnswer(pwAnswer),
+//    password(password),
+//    pwQuestion(pwQuestion),
+//    pwAnswer(pwAnswer),
     port(0),
     ifOnline(false)
 {
@@ -33,35 +33,45 @@ void UserInfo::setName(const QString &name)
     this->name = name;
 }
 
-QString &UserInfo::getPassword()
+QString &UserInfo::getAddress()
 {
-    return password;
+    return address;
 }
 
-void UserInfo::setPassword(const QString &password)
+void UserInfo::setAddress(const QString &address)
 {
-    this->password = password;
+    this->address = address;
 }
 
-QString &UserInfo::getPwQuestion()
-{
-    return pwQuestion;
-}
+//QString &UserInfo::getPassword()
+//{
+//    return password;
+//}
 
-void UserInfo::setPwQuestion(const QString &pwQuestion)
-{
-    this->pwQuestion = pwQuestion;
-}
+//void UserInfo::setPassword(const QString &password)
+//{
+//    this->password = password;
+//}
 
-QString &UserInfo::getPwAnswer()
-{
-    return pwAnswer;
-}
+//QString &UserInfo::getPwQuestion()
+//{
+//    return pwQuestion;
+//}
 
-void UserInfo::setPwAnswer(const QString &pwAnswer)
-{
-    this->pwAnswer = pwAnswer;
-}
+//void UserInfo::setPwQuestion(const QString &pwQuestion)
+//{
+//    this->pwQuestion = pwQuestion;
+//}
+
+//QString &UserInfo::getPwAnswer()
+//{
+//    return pwAnswer;
+//}
+
+//void UserInfo::setPwAnswer(const QString &pwAnswer)
+//{
+//    this->pwAnswer = pwAnswer;
+//}
 
 quint16 UserInfo::getPort()
 {

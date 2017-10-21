@@ -21,6 +21,7 @@ public:
         SignUp = 3
 //        GetPassword = 4
     };
+    quint32 *id;
 
 private:
     Ui::SignIn *ui;

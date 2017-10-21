@@ -63,6 +63,16 @@ void UserInfo::setPwAnswer(const QString &pwAnswer)
     this->pwAnswer = pwAnswer;
 }
 
+QString &UserInfo::getAddress()
+{
+    return address;
+}
+
+void UserInfo::setAddress(const QString &address)
+{
+    this->address = address;
+}
+
 quint16 UserInfo::getPort()
 {
     return port;

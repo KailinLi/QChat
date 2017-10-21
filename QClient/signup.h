@@ -16,6 +16,8 @@ public:
     explicit SignUp(QWidget *parent = 0);
     ~SignUp();
 
+    quint32 *id;
+
 private:
     Ui::SignUp *ui;
     TcpSocketMsg *tcpMsg;

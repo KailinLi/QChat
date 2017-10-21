@@ -23,6 +23,11 @@ private:
     ConnectThreadPool threadPool;
     ParallelServer *server;
     UserInfoList userList;
+
+    void msgSignIn(ConnectThread *thread, Message *msg);
+    void msgSignUp(ConnectThread *thread, Message *msg);
+    void msgForgetPassword(ConnectThread *thread, Message *msg);
+    void msgLogIn(ConnectThread *thread, Message *msg);
 private slots:
     void haveNewConnect(qintptr socketDescriptor);
     void haveNewMsg(ConnectThread* thread, Message* msg);

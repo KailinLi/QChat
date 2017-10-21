@@ -15,7 +15,7 @@ private:
     QString password;
     QString pwQuestion;
     QString pwAnswer;
-
+    QString address;
     quint16 port;
     bool ifOnline;
 //    QList<Message> offlineMsg;
@@ -30,6 +30,8 @@ public:
     void setPwQuestion(const QString& pwQuestion);
     QString &getPwAnswer();
     void setPwAnswer(const QString& pwAnswer);
+    QString &getAddress();
+    void setAddress(const QString& address);
     quint16 getPort();
     void setPort(quint16 port);
     bool getIfOnline();

@@ -51,15 +51,16 @@ void SignIn::haveNewMsgFromServer()
     if (msg == nullptr) return;
     switch (msg->getType ()) {
     case Message::AnswerSignIn:
-        if (QString::compare (msg->getArgv (0), tr("y"))) {
+        if (QString::compare (msg->getArgv (0), tr("n"))) {
+            tcpMsg->safeDelete ();
+            *id = static_cast<quint32>(msg->getArgv (0).toInt ());
+            done (SignIn::SignInSuccess);
+        }
+        else {
             ui->showLabel->setText (tr("用户名或密码错误"));
             ui->nameLineEdit->clear ();
             ui->passwdLineEdit->clear ();
             ui->nameLineEdit->setFocus ();
-        }
-        else {
-            tcpMsg->safeDelete ();
-            done (SignIn::SignInSuccess);
         }
         break;
     case Message::AnswerForgetPassword:

@@ -34,7 +34,7 @@ void UserInfoList::signOut(quint32 id)
     }
 }
 
-bool UserInfoList::ifPasswordRight(const QString &name, const QString &password)
+quint32 UserInfoList::ifPasswordRight(const QString &name, const QString &password)
 {
     foreach (UserInfo user, list) {
         if (!QString::compare (user.getName (), name, Qt::CaseSensitive)) {
@@ -42,11 +42,11 @@ bool UserInfoList::ifPasswordRight(const QString &name, const QString &password)
 //            qDebug() << name;
 //            qDebug() << user.getPassword ();
 //            qDebug() << password;
-            if (!QString::compare (user.getPassword (), password, Qt::CaseSensitive)) return true;
-            else return false;
+            if (!QString::compare (user.getPassword (), password, Qt::CaseSensitive)) return user.getUserID ();
+            else return 0;
         }
     }
-    return false;
+    return 0;
 }
 
 bool UserInfoList::checkUserName(const QString &name)
@@ -67,4 +67,22 @@ UserInfo *UserInfoList::findPassword(const QString &name)
         }
     }
     return nullptr;
+}
+
+int UserInfoList::size()
+{
+    return list.size ();
+}
+
+void UserInfoList::makeInitMsg(Message *msg)
+{
+    msg->addArgv (QString::number (list.size ()));
+    foreach (UserInfo user, list) {
+        msg->addArgv (user.getName ());
+        msg->addArgv (QString::number (user.getUserID ()));
+        msg->addArgv (QString::number (user.getPort ()));
+        msg->addArgv (user.getAddress ());
+        if (user.getIfOnline ()) msg->addArgv (QObject::tr("y"));
+        else msg->addArgv (QObject::tr("n"));
+    }
 }

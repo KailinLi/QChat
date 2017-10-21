@@ -62,6 +62,7 @@ void SignUp::haveNewMsgFromServer()
     case Message::AnswerSignUp:
         if (QString::compare (msg->getArgv (0), tr("d"))) {
             tcpMsg->safeDelete ();
+            *id = static_cast<quint32>(msg->getArgv (0).toInt ());
             accept ();
         }
         else {

@@ -17,9 +17,11 @@ public:
                    const QString &pwQuestion, const QString &pwAnswer);
     void signIn(quint32 id, quint16 port);
     void signOut(quint32 id);
-    bool ifPasswordRight(const QString &name, const QString &password);
+    quint32 ifPasswordRight(const QString &name, const QString &password);
     bool checkUserName(const QString &name);
     UserInfo *findPassword(const QString &name);
+    int size();
+    void makeInitMsg(Message *msg);
 };
 
 #endif // USERINFOLIST_H
