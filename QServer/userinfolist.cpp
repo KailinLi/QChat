@@ -14,24 +14,54 @@ quint32 UserInfoList::newSignUp(const QString &name, const QString &password, co
 
 void UserInfoList::signIn(quint32 id, quint16 port)
 {
-    foreach (UserInfo user, list) {
-        if (user.getUserID () == id) {
-            user.setIfOnline (true);
-            user.setPort (port);
+//    QMutableListIterator<UserInfo> user(list);
+//    while (user.hasNext ()) {
+//        if (user.next ().getUserID() == id) {
+//            user.next ().setIfOnline (true);
+//            user.next ().setPort (port);
+//            break;
+//        }
+//    }
+    for (QList<UserInfo>::Iterator user = list.begin (); user != list.end (); ++user) {
+        if (user->getUserID() == id) {
+            user->setIfOnline (true);
+            user->setPort (port);
             break;
         }
     }
+//    foreach (UserInfo user, list) {
+//        if (user.getUserID () == id) {
+//            user.setIfOnline (true);
+//            user.setPort (port);
+//            break;
+//        }
+//    }
 }
 
 void UserInfoList::signOut(quint32 id)
 {
-    foreach (UserInfo user, list) {
-        if (user.getUserID () == id) {
-            user.setPort(0);
-            user.setIfOnline (false);
+//    QMutableListIterator<UserInfo> user(list);
+//    while (user.hasNext ()) {
+//        if (user.next ().getUserID () == id) {
+//            user.next ().setPort (0);
+//            user.next ().setIfOnline (false);
+//            break;
+//        }
+//    }
+    for (QList<UserInfo>::Iterator user = list.begin (); user != list.end (); ++user) {
+        if (user->getUserID() == id) {
+            user->setIfOnline (false);
+            user->setPort (0);
             break;
         }
     }
+//    foreach (UserInfo user, list) {
+//        if (user.getUserID () == id) {
+//            user.setPort(0);
+//            user.setIfOnline (false);
+//            break;
+//        }
+//    }
 }
 
 quint32 UserInfoList::ifPasswordRight(const QString &name, const QString &password)
@@ -89,12 +119,30 @@ void UserInfoList::makeInitMsg(Message *msg)
 
 QString& UserInfoList::newSignIn(quint32 id, const QString &address, quint16 port)
 {
-    foreach (UserInfo user, list) {
-        if (user.getUserID () == id) {
-            user.setAddress (address);
-            user.setPort (port);
-            user.setIfOnline (true);
-            return user.getName ();
+//    QMutableListIterator<UserInfo> user(list);
+//    while (user.hasNext ()) {
+//        if (user.next ().getUserID () == id) {
+//            user.next ().setAddress (address);
+//            user.next ().setPort (port);
+//            user.next ().setIfOnline (true);
+//            return user.next ().getName ();
+//        }
+//    }
+    for (QList<UserInfo>::Iterator user = list.begin (); user != list.end (); ++user) {
+        if (user->getUserID() == id) {
+            user->setAddress (address);
+            user->setIfOnline (true);
+            user->setPort (port);
+            return user->getName ();
         }
     }
+//    foreach (UserInfo user, list) {
+//        if (user.getUserID () == id) {
+//            user.setAddress (address);
+//            user.setPort (port);
+//            user.setIfOnline (true);
+//            return user.getName ();
+//        }
+//    }
+    return const_cast<QString&>(address);
 }

@@ -71,8 +71,9 @@ void QClient::haveNewMsgFromServer()
                                 msg->getArgv (1),
                                 msg->getArgv (2),
                                 static_cast<quint16>(msg->getArgv (3).toInt ()));
-
+            signInUpdateUI (msg->getArgv (1));
         }
+        break;
     default:
         break;
     }
@@ -82,7 +83,6 @@ void QClient::haveNewMsgFromServer()
 void QClient::initUpdateUI()
 {
     QList<UserInfo> *p = userList.getList ();
-    int onlineCount = 0;
     foreach (UserInfo user, *p) {
         if (user.getUserID () == userID) {
             userName = user.getName ();
@@ -91,7 +91,6 @@ void QClient::initUpdateUI()
         QTableWidgetItem *name = new QTableWidgetItem(user.getName ());
         QTableWidgetItem *ifOnline;
         if (user.getIfOnline ()) {
-            ++onlineCount;
             ifOnline = new QTableWidgetItem(tr("在线"));
         }
         else {
@@ -101,14 +100,23 @@ void QClient::initUpdateUI()
         ui->userTableWidget->setItem (0, 0, name);
         ui->userTableWidget->setItem (0, 1, ifOnline);
     }
-    ui->onlineLabel->setText (tr("在线: %1").arg (onlineCount));
+    ui->onlineLabel->setText (tr("在线: %1").arg (userList.getOnlineCount ()));
 }
 
 void QClient::signInUpdateUI(const QString &name)
 {
     QList<QTableWidgetItem*> find = ui->userTableWidget->findItems (name, Qt::MatchExactly);
     if (find.isEmpty ()) {
-        QTableWidgetItem *name = new QTableWidgetItem(name);
+        QTableWidgetItem *userName = new QTableWidgetItem(name);
         QTableWidgetItem *ifOnline = new QTableWidgetItem(tr("在线"));
+        ui->userTableWidget->insertRow (0);
+        ui->userTableWidget->setItem (0, 0, userName);
+        ui->userTableWidget->setItem (0, 1, ifOnline);
     }
+    else {
+        int row = find.at (0)->row ();
+        QTableWidgetItem *ifOnline = new QTableWidgetItem(tr("在线"));
+        ui->userTableWidget->setItem (row, 1, ifOnline);
+    }
+    ui->onlineLabel->setText (tr("在线: %1").arg (userList.getOnlineCount ()));
 }
