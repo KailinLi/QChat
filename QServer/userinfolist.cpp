@@ -48,3 +48,13 @@ bool UserInfoList::ifPasswordRight(const QString &name, const QString &password)
     }
     return false;
 }
+
+bool UserInfoList::checkUserName(const QString &name)
+{
+    foreach (UserInfo user, list) {
+        if (!QString::compare (user.getName (), name)) {
+            return false;
+        }
+    }
+    return true;
+}

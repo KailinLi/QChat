@@ -18,8 +18,8 @@ public:
     enum DoneType : int {
         SignInSuccess = 1,
         Exit = 2,
-        SignUp = 3,
-        GetPassword = 4
+        SignUp = 3
+//        GetPassword = 4
     };
 
 private:
@@ -33,6 +33,7 @@ public:
 signals:
     void sendMsg(Message* msg);
 private slots:
+    void callSignUp();
     void closeWindow();
 };
 

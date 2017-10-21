@@ -17,12 +17,15 @@ SOURCES += main.cpp\
         qclient.cpp \
     signin.cpp \
     message.cpp \
-    tcpsocketmsg.cpp
+    tcpsocketmsg.cpp \
+    signup.cpp
 
 HEADERS  += qclient.h \
     signin.h \
     message.h \
-    tcpsocketmsg.h
+    tcpsocketmsg.h \
+    signup.h
 
 FORMS    += qclient.ui \
-    signin.ui
+    signin.ui \
+    signup.ui

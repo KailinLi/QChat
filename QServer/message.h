@@ -10,6 +10,7 @@ public:
         SignIn,
         AnswerSignIn,
         SignUp,
+        AnswerSignUp,
         InitMsg,
         FinishInit,
         UpdateMsg

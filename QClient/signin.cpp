@@ -13,6 +13,7 @@ SignIn::SignIn(QWidget *parent) :
     connect (tcpMsg, &TcpSocketMsg::readyRead, this, &SignIn::haveNewMsgFromServer);
     connect (this, &SignIn::sendMsg, tcpMsg, &TcpSocketMsg::send);
     connect (ui->exitBtn, &QPushButton::clicked, this, &SignIn::closeWindow);
+    connect (ui->signUpBtn, &QPushButton::clicked, this, &SignIn::callSignUp);
     ui->nameLineEdit->setFocus ();
     ui->signinBtn->setAutoDefault (true);
     ui->signinBtn->setDefault (true);
@@ -47,9 +48,10 @@ void SignIn::haveNewMsgFromServer()
     case Message::AnswerSignIn:
         qDebug() << msg->getArgv (0);
         if (QString::compare (msg->getArgv (0), tr("y"))) {
-            ui->signInLabel->setText (tr("用户名或密码错误"));
+            ui->showLabel->setText (tr("用户名或密码错误"));
             ui->nameLineEdit->clear ();
             ui->passwdLineEdit->clear ();
+            ui->nameLineEdit->setFocus ();
         }
         else {
             tcpMsg->safeDelete ();
@@ -59,6 +61,13 @@ void SignIn::haveNewMsgFromServer()
     default:
         break;
     }
+    delete msg;
+}
+
+void SignIn::callSignUp()
+{
+    tcpMsg->safeDelete ();
+    done (SignIn::SignUp);
 }
 
 void SignIn::closeWindow()

@@ -28,10 +28,10 @@ QServer::~QServer()
 void QServer::haveNewConnect(qintptr socketDescriptor)
 {
     ConnectThread* thread = new ConnectThread(socketDescriptor, this);
-    connect (thread, &ConnectThread::newMsg, this, &QServer::haveNewMsg);
+    connect (thread, &ConnectThread::newMsg, this, &QServer::haveNewMsg, Qt::QueuedConnection);
     connect (thread, &ConnectThread::finished, thread, &ConnectThread::deleteLater);
-    connect (this, &QServer::msgToSend, thread, &ConnectThread::sendMsg);
-    connect (thread, &ConnectThread::loseConnect, this, &QServer::loseConnect);
+    connect (this, &QServer::msgToSend, thread, &ConnectThread::sendMsg, Qt::QueuedConnection);
+    connect (thread, &ConnectThread::loseConnect, this, &QServer::loseConnect, Qt::QueuedConnection);
     threadPool.addThread (thread);
 }
 
@@ -39,8 +39,6 @@ void QServer::haveNewMsg(ConnectThread *thread, Message *msg)
 {
     switch (msg->getType ()) {
     case Message::SignIn:
-        qDebug() << msg->getArgv (0);
-        qDebug() << msg->getArgv (1);
         if (userList.ifPasswordRight (msg->getArgv (0), msg->getArgv (1))) {
             Message* newMsg = new Message(Message::AnswerSignIn);
             newMsg->addArgv (tr("y"));
@@ -52,9 +50,23 @@ void QServer::haveNewMsg(ConnectThread *thread, Message *msg)
             emit msgToSend (thread, newMsg);
         }
         break;
+    case Message::SignUp:
+        if (userList.checkUserName (msg->getArgv (0))) {
+            quint32 id = userList.newSignUp (msg->getArgv (0), msg->getArgv (1), msg->getArgv (2), msg->getArgv (3));
+            Message *newMsg = new Message(Message::AnswerSignUp);
+            newMsg->addArgv (QString::number (id));
+            emit msgToSend (thread, msg);
+        }
+        else {
+            Message *newMsg = new Message(Message::AnswerSignUp);
+            newMsg->addArgv (tr("d"));
+            emit msgToSend (thread, newMsg);
+        }
+        break;
     default:
         break;
     }
+    delete msg;//important!!
 }
 
 void QServer::loseConnect(ConnectThread *thread)
