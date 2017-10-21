@@ -81,6 +81,22 @@ void QServer::msgLogIn(ConnectThread *thread, Message *msg)
     emit msgToSend (thread, newMsg);
 }
 
+void QServer::msgFinishInit(ConnectThread *thread, Message *msg)
+{
+    QString name = userList.newSignIn(thread->getUserID (), msg->getArgv (0), static_cast<quint16>(msg->getArgv (1).toInt ()));
+    QList<ConnectThread *> *p = threadPool.getPool ();
+    foreach (ConnectThread* t, *p) {
+        if (t->getUserID ()) {
+            Message *newMsg = new Message(Message::UpdateMsg);
+            newMsg->addArgv (QString::number (thread->getUserID ()));
+            newMsg->addArgv (name);
+            newMsg->addArgv (msg->getArgv (0));
+            newMsg->addArgv (msg->getArgv (1));
+            emit msgToSend (t, newMsg);
+        }
+    }
+}
+
 void QServer::haveNewConnect(qintptr socketDescriptor)
 {
     ConnectThread* thread = new ConnectThread(socketDescriptor, this);
@@ -105,6 +121,9 @@ void QServer::haveNewMsg(ConnectThread *thread, Message *msg)
         break;
     case Message::LogIn:
         msgLogIn (thread, msg);
+        break;
+    case Message::FinishInit:
+        msgFinishInit (thread, msg);
         break;
     default:
         break;

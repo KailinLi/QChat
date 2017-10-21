@@ -78,11 +78,23 @@ void UserInfoList::makeInitMsg(Message *msg)
 {
     msg->addArgv (QString::number (list.size ()));
     foreach (UserInfo user, list) {
-        msg->addArgv (user.getName ());
         msg->addArgv (QString::number (user.getUserID ()));
-        msg->addArgv (QString::number (user.getPort ()));
+        msg->addArgv (user.getName ());
         msg->addArgv (user.getAddress ());
+        msg->addArgv (QString::number (user.getPort ()));
         if (user.getIfOnline ()) msg->addArgv (QObject::tr("y"));
         else msg->addArgv (QObject::tr("n"));
+    }
+}
+
+QString& UserInfoList::newSignIn(quint32 id, const QString &address, quint16 port)
+{
+    foreach (UserInfo user, list) {
+        if (user.getUserID () == id) {
+            user.setAddress (address);
+            user.setPort (port);
+            user.setIfOnline (true);
+            return user.getName ();
+        }
     }
 }

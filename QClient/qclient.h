@@ -26,10 +26,13 @@ private:
     ConnectThreadPool threadPool;
     UserInfoList userList;
     TcpSocketMsg* tcpToServer;
+    QString userName;
 public:
     void start();
     void logIn();
     void haveNewMsgFromServer();
+    void initUpdateUI();
+    void signInUpdateUI(const QString &name);
 public slots:
 
 signals:

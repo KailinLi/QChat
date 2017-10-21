@@ -1,14 +1,12 @@
 #include "userinfo.h"
 
 
-UserInfo::UserInfo(quint32 id, const QString &name):
+UserInfo::UserInfo(quint32 id, const QString &name, const QString &address, quint16 port, bool ifOnline):
     userID(id),
     name(name),
-//    password(password),
-//    pwQuestion(pwQuestion),
-//    pwAnswer(pwAnswer),
-    port(0),
-    ifOnline(false)
+    address(address),
+    port(port),
+    ifOnline(ifOnline)
 {
 
 }
@@ -42,36 +40,6 @@ void UserInfo::setAddress(const QString &address)
 {
     this->address = address;
 }
-
-//QString &UserInfo::getPassword()
-//{
-//    return password;
-//}
-
-//void UserInfo::setPassword(const QString &password)
-//{
-//    this->password = password;
-//}
-
-//QString &UserInfo::getPwQuestion()
-//{
-//    return pwQuestion;
-//}
-
-//void UserInfo::setPwQuestion(const QString &pwQuestion)
-//{
-//    this->pwQuestion = pwQuestion;
-//}
-
-//QString &UserInfo::getPwAnswer()
-//{
-//    return pwAnswer;
-//}
-
-//void UserInfo::setPwAnswer(const QString &pwAnswer)
-//{
-//    this->pwAnswer = pwAnswer;
-//}
 
 quint16 UserInfo::getPort()
 {

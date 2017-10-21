@@ -13,6 +13,9 @@ private:
     QList<UserInfo> list;
 
 public:
+    void addUser(quint32 id, const QString &name, const QString &address, quint16 port, bool ifOnline);
+    QList<UserInfo> *getList();
+    void newSignIn(quint32 id, const QString &name, const QString &address, quint16 port);
 //    quint32 newSignUp(const QString &name, const QString &password,
 //                   const QString &pwQuestion, const QString &pwAnswer);
 //    void signIn(quint32 id, quint16 port);

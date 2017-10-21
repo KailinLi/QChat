@@ -7,13 +7,10 @@
 class UserInfo
 {
 public:
-    UserInfo(quint32 id, const QString &name);
+    UserInfo(quint32 id, const QString &name, const QString &address, quint16 port, bool ifOnline);
 private:
     quint32 userID;
     QString name;
-//    QString password;
-//    QString pwQuestion;
-//    QString pwAnswer;
     QString address;
     quint16 port;
     bool ifOnline;
@@ -23,12 +20,6 @@ public:
     void setUserID(quint32 id);
     QString &getName();
     void setName(const QString& name);
-//    QString &getPassword();
-//    void setPassword(const QString& password);
-//    QString &getPwQuestion();
-//    void setPwQuestion(const QString& pwQuestion);
-//    QString &getPwAnswer();
-//    void setPwAnswer(const QString& pwAnswer);
     QString &getAddress();
     void setAddress(const QString& address);
     quint16 getPort();

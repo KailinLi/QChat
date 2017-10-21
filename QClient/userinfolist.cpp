@@ -5,6 +5,29 @@ UserInfoList::UserInfoList()
 
 }
 
+void UserInfoList::addUser(quint32 id, const QString &name, const QString &address, quint16 port, bool ifOnline)
+{
+    list.push_back (UserInfo(id, name, address, port, ifOnline));
+}
+
+QList<UserInfo> *UserInfoList::getList()
+{
+    return &list;
+}
+
+void UserInfoList::newSignIn(quint32 id, const QString &name, const QString &address, quint16 port)
+{
+    foreach (UserInfo user, list) {
+        if (user.getUserID () == id) {
+            user.setAddress (address);
+            user.setPort (port);
+            user.setIfOnline (true);
+            return;
+        }
+    }
+    list.push_back (UserInfo(id, name, address, port, true));
+}
+
 //quint32 UserInfoList::newSignUp(const QString &name, const QString &password, const QString &pwQuestion, const QString &pwAnswer)
 //{
 //    quint32 newID = (quint32)list.size ();

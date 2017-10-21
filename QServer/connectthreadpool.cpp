@@ -30,3 +30,8 @@ quint32 ConnectThreadPool::getID(ConnectThread *thread)
 {
     return thread->getUserID ();
 }
+
+QList<ConnectThread *> *ConnectThreadPool::getPool()
+{
+    return &threadPool;
+}

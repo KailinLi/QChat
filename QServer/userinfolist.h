@@ -22,6 +22,7 @@ public:
     UserInfo *findPassword(const QString &name);
     int size();
     void makeInitMsg(Message *msg);
+    QString &newSignIn(quint32 id, const QString &address, quint16 port);
 };
 
 #endif // USERINFOLIST_H
