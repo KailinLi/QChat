@@ -15,6 +15,7 @@ QClient::QClient(QWidget *parent) :
     connect (ui->exitBtn, &QPushButton::clicked, this, &QClient::quit);
     ui->userTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     connect (ui->userTableWidget, &QTableWidget::cellClicked, this, &QClient::makeActive);
+    connect (ui->userTableWidget, &QTableWidget::cellDoubleClicked, this, &QClient::makeActive);
     if (! server->listen (QHostAddress("127.0.0.1"))) {
         QMessageBox::critical(this, tr("Threaded Fortune Server"),
                               tr("Unable to start the server: %1.")
@@ -146,5 +147,13 @@ void QClient::makeActive(int row)
 {
     QTableWidgetItem *item = ui->userTableWidget->item (row, 0);
     QString name = item->text ();
-
+    QPair<quint32, bool> info;
+    userList.getActiveInfo (name, info);
+    if (info.first == userID) return;
+    qDebug() << info.second;
+    if (info.second) {
+        if (!threadPool.getThread (info.first)) {
+            qDebug() << "make new thread";
+        }
+    }
 }

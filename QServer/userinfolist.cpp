@@ -119,15 +119,6 @@ void UserInfoList::makeInitMsg(Message *msg)
 
 QString& UserInfoList::newSignIn(quint32 id, const QString &address, quint16 port)
 {
-//    QMutableListIterator<UserInfo> user(list);
-//    while (user.hasNext ()) {
-//        if (user.next ().getUserID () == id) {
-//            user.next ().setAddress (address);
-//            user.next ().setPort (port);
-//            user.next ().setIfOnline (true);
-//            return user.next ().getName ();
-//        }
-//    }
     for (QList<UserInfo>::Iterator user = list.begin (); user != list.end (); ++user) {
         if (user->getUserID() == id) {
             user->setAddress (address);

@@ -1,6 +1,7 @@
 #include "userinfolist.h"
 
-UserInfoList::UserInfoList()
+UserInfoList::UserInfoList():
+    onlineCount(0)
 {
 
 }
