@@ -37,6 +37,7 @@ public:
     void signOutUpdateUI(const QString &name);
     void quit();
     void makeActive(int row);
+    void changeTableWidget(quint32 id);
 public slots:
 
 signals:

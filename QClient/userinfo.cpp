@@ -60,3 +60,14 @@ void UserInfo::setIfOnline(bool ifOnline)
 {
     this->ifOnline = ifOnline;
 }
+
+QString &UserInfo::getShowMsg()
+{
+    return showMsg;
+}
+
+void UserInfo::setShowMsg(const QString &msg)
+{
+    showMsg = msg;
+}
+

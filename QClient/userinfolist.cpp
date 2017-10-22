@@ -70,6 +70,36 @@ void UserInfoList::getActiveInfo(const QString &name, QPair<quint32, bool> &pair
     }
 }
 
+void UserInfoList::saveMsg(quint32 id, const QString &msg)
+{
+    for (QList<UserInfo>::Iterator user = list.begin (); user != list.end(); ++user) {
+        if (user->getUserID () == id) {
+            user->setShowMsg(msg);
+            break;
+        }
+    }
+}
+
+QString &UserInfoList::getMsg(quint32 id)
+{
+    for (QList<UserInfo>::Iterator user = list.begin (); user != list.end(); ++user) {
+        if (user->getUserID () == id) {
+            return user->getShowMsg();
+        }
+    }
+    return list.begin ()->getShowMsg();
+}
+
+UserInfo *UserInfoList::getUser(quint32 id)
+{
+    for (QList<UserInfo>::Iterator user = list.begin (); user != list.end(); ++user) {
+        if (user->getUserID () == id) {
+            return &(*user);
+        }
+    }
+    return &(*list.begin ());
+}
+
 //quint32 UserInfoList::newSignUp(const QString &name, const QString &password, const QString &pwQuestion, const QString &pwAnswer)
 //{
 //    quint32 newID = (quint32)list.size ();

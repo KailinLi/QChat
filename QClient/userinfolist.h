@@ -20,6 +20,9 @@ public:
     int getOnlineCount();
     QString& userSignOut(quint32 id);
     void getActiveInfo(const QString& name, QPair<quint32, bool> &pair);
+    void saveMsg(quint32 id, const QString &msg);
+    QString &getMsg(quint32 id);
+    UserInfo *getUser(quint32 id);
 //    quint32 newSignUp(const QString &name, const QString &password,
 //                   const QString &pwQuestion, const QString &pwAnswer);
 //    void signIn(quint32 id, quint16 port);

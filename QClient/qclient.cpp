@@ -6,7 +6,8 @@ QClient::QClient(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::QClient),
     server(new ParallelServer(this)),
-    tcpToServer(new TcpSocketMsg(this))
+    tcpToServer(new TcpSocketMsg(this)),
+    currentID(1)
 {
     ui->setupUi(this);
     connect (tcpToServer, &TcpSocketMsg::connected, this, &QClient::logIn);
@@ -149,11 +150,28 @@ void QClient::makeActive(int row)
     QString name = item->text ();
     QPair<quint32, bool> info;
     userList.getActiveInfo (name, info);
-    if (info.first == userID) return;
-    qDebug() << info.second;
-    if (info.second) {
-        if (!threadPool.getThread (info.first)) {
-            qDebug() << "make new thread";
-        }
+    if (info.first == userID || info.first == currentID) return;
+//    qDebug() << info.second;
+//    if (info.second) {
+//        if (!threadPool.getThread (info.first)) {
+//            qDebug() << "make new thread";
+//        }
+//    }
+    userList.saveMsg (currentID, ui->msgBrowser->toHtml ());
+    currentID = info.first;
+    ui->msgBrowser->setHtml (userList.getMsg (currentID));
+    UserInfo *user = userList.getUser (info.first);
+    while (!user->msgQueue.isEmpty ()) {
+//        format.setAlignment(Qt::AlignRight);
+        ui->msgBrowser->setTextColor (Qt::blue);
+//        setCurrentCharFormat
+        ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
+        ui->msgBrowser->append (user->getName ());
+        ui->msgBrowser->append (user->msgQueue.dequeue ());
     }
+}
+
+void QClient::changeTableWidget(quint32 id)
+{
+
 }
