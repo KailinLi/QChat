@@ -18,6 +18,8 @@ public:
     QList<UserInfo> *getList();
     void newSignIn(quint32 id, const QString &name, const QString &address, quint16 port);
     int getOnlineCount();
+    QString& userSignOut(quint32 id);
+    void getActiveInfo(const QString& name, QPair<quint32, bool> &pair);
 //    quint32 newSignUp(const QString &name, const QString &password,
 //                   const QString &pwQuestion, const QString &pwAnswer);
 //    void signIn(quint32 id, quint16 port);

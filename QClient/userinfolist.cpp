@@ -43,6 +43,32 @@ int UserInfoList::getOnlineCount()
     return onlineCount;
 }
 
+QString& UserInfoList::userSignOut(quint32 id)
+{
+    --onlineCount;
+    for (QList<UserInfo>::Iterator user = list.begin (); user != list.end(); ++user) {
+        if (user->getUserID () == id) {
+            user->setAddress (QString());
+            user->setPort (0);
+            user->setIfOnline (false);
+            return user->getName();
+        }
+    }
+    return list.begin ()->getName ();
+}
+
+
+void UserInfoList::getActiveInfo(const QString &name, QPair<quint32, bool> &pair)
+{
+    for (QList<UserInfo>::Iterator user = list.begin (); user != list.end(); ++user) {
+        if (!QString::compare (user->getName(), name)) {
+            pair.first = user->getUserID();
+            pair.second = user->getIfOnline();
+            return;
+        }
+    }
+}
+
 //quint32 UserInfoList::newSignUp(const QString &name, const QString &password, const QString &pwQuestion, const QString &pwAnswer)
 //{
 //    quint32 newID = (quint32)list.size ();

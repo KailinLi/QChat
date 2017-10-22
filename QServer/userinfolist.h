@@ -23,6 +23,7 @@ public:
     int size();
     void makeInitMsg(Message *msg);
     QString &newSignIn(quint32 id, const QString &address, quint16 port);
+    void userSignOut(quint32 id);
 };
 
 #endif // USERINFOLIST_H

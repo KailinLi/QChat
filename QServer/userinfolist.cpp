@@ -146,3 +146,15 @@ QString& UserInfoList::newSignIn(quint32 id, const QString &address, quint16 por
 //    }
     return const_cast<QString&>(address);
 }
+
+void UserInfoList::userSignOut(quint32 id)
+{
+    for (QList<UserInfo>::Iterator user = list.begin (); user != list.end (); ++user) {
+        if (user->getUserID() == id) {
+            user->setAddress(QString());
+            user->setPort(0);
+            user->setIfOnline(false);
+            break;
+        }
+    }
+}

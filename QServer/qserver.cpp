@@ -133,10 +133,19 @@ void QServer::haveNewMsg(ConnectThread *thread, Message *msg)
 
 void QServer::loseConnect(ConnectThread *thread)
 {
-    if (!thread->getUserID ()) {
-        threadPool.removeThread (thread);
-    }
-//    else {
-
+//    if (!thread->getUserID ()) {
+//        threadPool.removeThread (thread);
 //    }
+    if (thread->getUserID ()) {
+        userList.userSignOut (thread->getUserID ());
+        QList<ConnectThread *> *p = threadPool.getPool ();
+        foreach (ConnectThread* t, *p) {
+            if (t->getUserID ()) {
+                Message *newMsg = new Message(Message::UpdateMsg);
+                newMsg->addArgv (QString::number (thread->getUserID ()));
+                emit msgToSend (t, newMsg);
+            }
+        }
+    }
+    threadPool.removeThread (thread);
 }

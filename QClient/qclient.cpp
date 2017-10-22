@@ -12,6 +12,9 @@ QClient::QClient(QWidget *parent) :
     connect (tcpToServer, &TcpSocketMsg::connected, this, &QClient::logIn);
     connect (tcpToServer, &TcpSocketMsg::readyRead, this, &QClient::haveNewMsgFromServer);
     connect (this, &QClient::sendMsg, tcpToServer, &TcpSocketMsg::send);
+    connect (ui->exitBtn, &QPushButton::clicked, this, &QClient::quit);
+    ui->userTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    connect (ui->userTableWidget, &QTableWidget::cellClicked, this, &QClient::makeActive);
     if (! server->listen (QHostAddress("127.0.0.1"))) {
         QMessageBox::critical(this, tr("Threaded Fortune Server"),
                               tr("Unable to start the server: %1.")
@@ -73,6 +76,10 @@ void QClient::haveNewMsgFromServer()
                                 static_cast<quint16>(msg->getArgv (3).toInt ()));
             signInUpdateUI (msg->getArgv (1));
         }
+        else {
+            QString name = userList.userSignOut (static_cast<quint32>(msg->getArgv (0).toInt ()));
+            signOutUpdateUI (name);
+        }
         break;
     default:
         break;
@@ -119,4 +126,25 @@ void QClient::signInUpdateUI(const QString &name)
         ui->userTableWidget->setItem (row, 1, ifOnline);
     }
     ui->onlineLabel->setText (tr("在线: %1").arg (userList.getOnlineCount ()));
+}
+
+void QClient::signOutUpdateUI(const QString &name)
+{
+    QList<QTableWidgetItem*> find = ui->userTableWidget->findItems (name, Qt::MatchExactly);
+    int row = find.at (0)->row ();
+    QTableWidgetItem *ifOnline = new QTableWidgetItem(tr("离线"));
+    ui->userTableWidget->setItem (row, 1, ifOnline);
+    ui->onlineLabel->setText (tr("在线: %1").arg (userList.getOnlineCount ()));
+}
+
+void QClient::quit()
+{
+    close ();
+}
+
+void QClient::makeActive(int row)
+{
+    QTableWidgetItem *item = ui->userTableWidget->item (row, 0);
+    QString name = item->text ();
+
 }

@@ -27,12 +27,16 @@ private:
     UserInfoList userList;
     TcpSocketMsg* tcpToServer;
     QString userName;
+    quint32 currentID;
 public:
     void start();
     void logIn();
     void haveNewMsgFromServer();
     void initUpdateUI();
     void signInUpdateUI(const QString &name);
+    void signOutUpdateUI(const QString &name);
+    void quit();
+    void makeActive(int row);
 public slots:
 
 signals:
