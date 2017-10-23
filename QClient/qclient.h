@@ -28,6 +28,7 @@ private:
     TcpSocketMsg* tcpToServer;
     QString userName;
     quint32 currentID;
+    QColor color;
 public:
     void start();
     void logIn();
@@ -38,10 +39,24 @@ public:
     void quit();
     void makeActive(int row);
     void changeTableWidget(quint32 id);
-public slots:
+    void sendMsgToUI();
+    void clickSend();
+    void setUpCommunication(ConnectThread *thread);
+    bool eventFilter(QObject* obj, QEvent* event);
+    void currentFontChanged(QFont f);
+    void currentFontSizeChanged(QString &size);
+    void clickBoldBtn(bool checked);
+    void clickItalicBtn(bool checked);
+    void clickUnderlineBtn(bool checked);
+    void clickColorBtn();
 
+private slots:
+    void haveNewConnect(qintptr socketDescriptor);
+    void haveNewMsg(ConnectThread* thread, Message* msg);
+    void loseConnect(ConnectThread* thread);
 signals:
     void sendMsg(Message* msg);
+    void msgToSend(ConnectThread *thread, Message *msg);
 };
 
 #endif // QCLIENT_H

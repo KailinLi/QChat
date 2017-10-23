@@ -1,6 +1,8 @@
 #include "qclient.h"
 #include "ui_qclient.h"
 #include <QMessageBox>
+#include <QKeyEvent>
+#include <QColorDialog>
 
 QClient::QClient(QWidget *parent) :
     QWidget(parent),
@@ -17,6 +19,8 @@ QClient::QClient(QWidget *parent) :
     ui->userTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     connect (ui->userTableWidget, &QTableWidget::cellClicked, this, &QClient::makeActive);
     connect (ui->userTableWidget, &QTableWidget::cellDoubleClicked, this, &QClient::makeActive);
+    connect (ui->sendBtn, &QPushButton::clicked, this, &QClient::clickSend);
+    ui->msgTextEdit->installEventFilter (this);
     if (! server->listen (QHostAddress("127.0.0.1"))) {
         QMessageBox::critical(this, tr("Threaded Fortune Server"),
                               tr("Unable to start the server: %1.")
@@ -24,7 +28,14 @@ QClient::QClient(QWidget *parent) :
         close();
         return;
     }
-//    connect (server, &ParallelServer::newConnection, this, &QServer::haveNewConnect);
+    ui->msgTextEdit->setFocus ();
+    ui->sendBtn->setAutoDefault (true);
+    ui->sendBtn->setDefault (true);
+    connect (server, &ParallelServer::newConnection, this, &QClient::haveNewConnect);
+    connect (ui->boldToolBtn, &QToolButton::clicked, this, &QClient::clickBoldBtn);
+    connect (ui->italicToolBtn, &QToolButton::clicked, this, &QClient::clickItalicBtn);
+    connect (ui->underlineToolBtn, &QToolButton::clicked, this, &QClient::clickUnderlineBtn);
+    connect (ui->colorToolBtn, &QToolButton::clicked, this, &QClient::clickColorBtn);
 }
 
 QClient::~QClient()
@@ -157,21 +168,172 @@ void QClient::makeActive(int row)
 //            qDebug() << "make new thread";
 //        }
 //    }
+    changeTableWidget (info.first);
+}
+
+void QClient::changeTableWidget(quint32 id)
+{
     userList.saveMsg (currentID, ui->msgBrowser->toHtml ());
-    currentID = info.first;
+    currentID = id;
     ui->msgBrowser->setHtml (userList.getMsg (currentID));
-    UserInfo *user = userList.getUser (info.first);
+    UserInfo *user = userList.getUser (id);
     while (!user->msgQueue.isEmpty ()) {
-//        format.setAlignment(Qt::AlignRight);
         ui->msgBrowser->setTextColor (Qt::blue);
-//        setCurrentCharFormat
         ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
         ui->msgBrowser->append (user->getName ());
         ui->msgBrowser->append (user->msgQueue.dequeue ());
     }
 }
 
-void QClient::changeTableWidget(quint32 id)
+void QClient::sendMsgToUI()
+{
+    ui->msgBrowser->setAlignment (Qt::AlignRight);
+    ui->msgBrowser->setTextColor (Qt::red);
+    ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
+    ui->msgBrowser->append (userName);
+    ui->msgBrowser->setAlignment (Qt::AlignRight);
+    ui->msgBrowser->append (ui->msgTextEdit->toHtml ());
+    ui->msgTextEdit->clear ();
+    ui->msgTextEdit->setFocus ();
+}
+
+void QClient::clickSend()
+{
+    if (ui->msgTextEdit->toPlainText ().isEmpty ()) {
+        QMessageBox::warning (0, tr("警告"), tr("发送内容为空"), QMessageBox::Ok);
+        return;
+    }
+    UserInfo *user = userList.getUser (currentID);
+    if (user->getIfOnline ()) {
+        ConnectThread* thread = threadPool.getThread (currentID);
+        if (!thread) {
+            ConnectThread* thread = new ConnectThread(user->getAddress (), user->getPort (), user->getUserID (), this);
+            connect (thread, &ConnectThread::newMsg, this, &QClient::haveNewMsg, Qt::QueuedConnection);
+            connect (thread, &ConnectThread::finished, thread, &ConnectThread::deleteLater);
+            connect (this, &QClient::msgToSend, thread, &ConnectThread::sendMsg, Qt::QueuedConnection);
+            connect (thread, &ConnectThread::loseConnect, this, &QClient::loseConnect, Qt::QueuedConnection);
+            connect (thread, &ConnectThread::setUpCommunication, this, &QClient::setUpCommunication, Qt::QueuedConnection);
+            threadPool.addThread (thread);
+        }
+        else {
+            Message *msg = new Message(Message::ChatMsg);
+            msg->addArgv (ui->msgTextEdit->toHtml ());
+            emit msgToSend (thread, msg);
+            sendMsgToUI ();
+        }
+    }
+//    else {
+//        sendOfflineMsg();
+    //    }
+}
+
+void QClient::setUpCommunication(ConnectThread* thread)
+{
+    Message *msg = new Message(Message::HeartbeatMsg);
+    msg->addArgv (QString::number (currentID));
+    msg->addArgv (ui->msgTextEdit->toHtml ());
+    emit msgToSend (thread, msg);
+    sendMsgToUI ();
+}
+
+bool QClient::eventFilter(QObject *obj, QEvent *event)
+{
+    if (event->type()==QEvent::KeyPress) {
+        QKeyEvent* key = static_cast<QKeyEvent*>(event);
+        if ( (key->key()==Qt::Key_Enter) || (key->key()==Qt::Key_Return) ) {
+            clickSend ();
+        } else {
+            return QObject::eventFilter(obj, event);
+        }
+        return true;
+    } else {
+        return QObject::eventFilter(obj, event);
+    }
+    return false;
+}
+
+void QClient::currentFontChanged(QFont f)
+{
+    ui->msgTextEdit->setCurrentFont (f);
+    ui->msgTextEdit->setFocus ();
+}
+
+void QClient::currentFontSizeChanged(QString &size)
+{
+    ui->msgTextEdit->setFontPointSize (size.toDouble ());
+    ui->msgTextEdit->setFocus ();
+}
+
+void QClient::clickBoldBtn(bool checked)
+{
+    if (checked)
+        ui->msgTextEdit->setFontWeight (QFont::Bold);
+    else
+        ui->msgTextEdit->setFontWeight (QFont::Normal);
+    ui->msgTextEdit->setFocus ();
+}
+
+void QClient::clickItalicBtn(bool checked)
+{
+    ui->msgTextEdit->setFontItalic (checked);
+    ui->msgTextEdit->setFocus ();
+}
+
+void QClient::clickUnderlineBtn(bool checked)
+{
+    ui->msgTextEdit->setFontUnderline (checked);
+    ui->msgTextEdit->setFocus ();
+}
+
+void QClient::clickColorBtn()
+{
+    color = QColorDialog::getColor (color, this);
+    if (color.isValid ()) {
+        ui->msgTextEdit->setTextColor (color);
+        ui->msgTextEdit->setFocus ();
+    }
+}
+
+
+void QClient::haveNewConnect(qintptr socketDescriptor)
+{
+    ConnectThread* thread = new ConnectThread(socketDescriptor, this);
+    connect (thread, &ConnectThread::newMsg, this, &QClient::haveNewMsg, Qt::QueuedConnection);
+    connect (thread, &ConnectThread::finished, thread, &ConnectThread::deleteLater);
+    connect (this, &QClient::msgToSend, thread, &ConnectThread::sendMsg, Qt::QueuedConnection);
+    connect (thread, &ConnectThread::loseConnect, this, &QClient::loseConnect, Qt::QueuedConnection);
+    threadPool.addThread (thread);
+}
+
+void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
+{
+    switch (msg->getType ()) {
+    case Message::HeartbeatMsg:
+        thread->setUserID (static_cast<quint32>(msg->getArgv (0).toInt ()));
+        ui->msgBrowser->setTextColor (Qt::blue);
+        ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
+        ui->msgBrowser->append (userList.getName (thread->getUserID ()));
+        ui->msgBrowser->append (msg->getArgv (1));
+        break;
+    case Message::ChatMsg:
+        if (thread->getUserID () != currentID) {
+            UserInfo *user = userList.getUser (thread->getUserID ());
+            user->msgQueue.enqueue (msg->getArgv (0));
+        }
+        else {
+            ui->msgBrowser->setTextColor (Qt::blue);
+            ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
+            ui->msgBrowser->append (userList.getName (currentID));
+            ui->msgBrowser->append (msg->getArgv (0));
+        }
+        break;
+    default:
+        break;
+    }
+    delete msg;
+}
+
+void QClient::loseConnect(ConnectThread *thread)
 {
 
 }

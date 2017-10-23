@@ -16,7 +16,9 @@ public:
         LogIn,
         InitMsg,
         FinishInit,
-        UpdateMsg
+        UpdateMsg,
+        ChatMsg,
+        HeartbeatMsg
     };
 private:
     Message::Type type;

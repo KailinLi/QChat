@@ -9,6 +9,7 @@ class ConnectThread : public QThread
     Q_OBJECT
 public:
     ConnectThread(int socketDescriptor, QObject* parent);
+    ConnectThread(const QString &address, quint16 port, quint32 userID, QObject *parent);
 
 private:
     int socketDescriptor;
@@ -25,9 +26,11 @@ signals:
     void newMsg(ConnectThread*, Message*);
     void error(TcpSocketMsg::SocketError socketError);
     void loseConnect(ConnectThread*);
+    void setUpCommunication(ConnectThread*);
 private slots:
     void threadReadyRead();
     void disconnect();
+    void connectSuccess();
 public slots:
     void sendMsg(ConnectThread*thread, Message*);
 };
