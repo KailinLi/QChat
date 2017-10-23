@@ -175,23 +175,32 @@ void QClient::changeTableWidget(quint32 id)
 {
     userList.saveMsg (currentID, ui->msgBrowser->toHtml ());
     currentID = id;
+    ui->msgBrowser->clear ();
     ui->msgBrowser->setHtml (userList.getMsg (currentID));
     UserInfo *user = userList.getUser (id);
     while (!user->msgQueue.isEmpty ()) {
         ui->msgBrowser->setTextColor (Qt::blue);
         ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
         ui->msgBrowser->append (user->getName ());
+        QTextCursor cursor = ui->msgBrowser->textCursor();
+        QTextBlockFormat textBlockFormat = cursor.blockFormat();
+        textBlockFormat.setAlignment(Qt::AlignLeft);
+        cursor.mergeBlockFormat(textBlockFormat);
+        ui->msgBrowser->setTextCursor(cursor);
         ui->msgBrowser->append (user->msgQueue.dequeue ());
     }
 }
 
 void QClient::sendMsgToUI()
 {
-    ui->msgBrowser->setAlignment (Qt::AlignRight);
     ui->msgBrowser->setTextColor (Qt::red);
     ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
     ui->msgBrowser->append (userName);
-    ui->msgBrowser->setAlignment (Qt::AlignRight);
+    QTextCursor cursor = ui->msgBrowser->textCursor();
+    QTextBlockFormat textBlockFormat = cursor.blockFormat();
+    textBlockFormat.setAlignment(Qt::AlignRight);
+    cursor.mergeBlockFormat(textBlockFormat);
+    ui->msgBrowser->setTextCursor(cursor);
     ui->msgBrowser->append (ui->msgTextEdit->toHtml ());
     ui->msgTextEdit->clear ();
     ui->msgTextEdit->setFocus ();
@@ -206,7 +215,7 @@ void QClient::clickSend()
     UserInfo *user = userList.getUser (currentID);
     if (user->getIfOnline ()) {
         ConnectThread* thread = threadPool.getThread (currentID);
-        if (!thread) {
+        if (thread == nullptr) {
             ConnectThread* thread = new ConnectThread(user->getAddress (), user->getPort (), user->getUserID (), this);
             connect (thread, &ConnectThread::newMsg, this, &QClient::haveNewMsg, Qt::QueuedConnection);
             connect (thread, &ConnectThread::finished, thread, &ConnectThread::deleteLater);
@@ -230,7 +239,7 @@ void QClient::clickSend()
 void QClient::setUpCommunication(ConnectThread* thread)
 {
     Message *msg = new Message(Message::HeartbeatMsg);
-    msg->addArgv (QString::number (currentID));
+    msg->addArgv (QString::number (userID));
     msg->addArgv (ui->msgTextEdit->toHtml ());
     emit msgToSend (thread, msg);
     sendMsgToUI ();
@@ -238,18 +247,23 @@ void QClient::setUpCommunication(ConnectThread* thread)
 
 bool QClient::eventFilter(QObject *obj, QEvent *event)
 {
-    if (event->type()==QEvent::KeyPress) {
-        QKeyEvent* key = static_cast<QKeyEvent*>(event);
-        if ( (key->key()==Qt::Key_Enter) || (key->key()==Qt::Key_Return) ) {
-            clickSend ();
+    if (obj == ui->msgTextEdit) {
+        if (event->type()==QEvent::KeyPress) {
+            QKeyEvent* key = static_cast<QKeyEvent*>(event);
+            if ( (key->key()==Qt::Key_Enter) || (key->key()==Qt::Key_Return) ) {
+                clickSend ();
+            } else {
+                return QObject::eventFilter(obj, event);
+            }
+            return true;
         } else {
             return QObject::eventFilter(obj, event);
         }
-        return true;
-    } else {
+        return false;
+    }
+    else {
         return QObject::eventFilter(obj, event);
     }
-    return false;
 }
 
 void QClient::currentFontChanged(QFont f)
@@ -310,10 +324,21 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
     switch (msg->getType ()) {
     case Message::HeartbeatMsg:
         thread->setUserID (static_cast<quint32>(msg->getArgv (0).toInt ()));
-        ui->msgBrowser->setTextColor (Qt::blue);
-        ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
-        ui->msgBrowser->append (userList.getName (thread->getUserID ()));
-        ui->msgBrowser->append (msg->getArgv (1));
+        if (thread->getUserID () != currentID) {
+            UserInfo *user = userList.getUser (thread->getUserID ());
+            user->msgQueue.enqueue (msg->getArgv (1));
+        }
+        else {
+            ui->msgBrowser->setTextColor (Qt::blue);
+            ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
+            ui->msgBrowser->append (userList.getName (thread->getUserID ()));
+            QTextCursor cursor = ui->msgBrowser->textCursor();
+            QTextBlockFormat textBlockFormat = cursor.blockFormat();
+            textBlockFormat.setAlignment(Qt::AlignLeft);
+            cursor.mergeBlockFormat(textBlockFormat);
+            ui->msgBrowser->setTextCursor(cursor);
+            ui->msgBrowser->append (msg->getArgv (1));
+        }
         break;
     case Message::ChatMsg:
         if (thread->getUserID () != currentID) {
@@ -324,6 +349,11 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
             ui->msgBrowser->setTextColor (Qt::blue);
             ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
             ui->msgBrowser->append (userList.getName (currentID));
+            QTextCursor cursor = ui->msgBrowser->textCursor();
+            QTextBlockFormat textBlockFormat = cursor.blockFormat();
+            textBlockFormat.setAlignment(Qt::AlignLeft);
+            cursor.mergeBlockFormat(textBlockFormat);
+            ui->msgBrowser->setTextCursor(cursor);
             ui->msgBrowser->append (msg->getArgv (0));
         }
         break;
