@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QKeyEvent>
 #include <QColorDialog>
+#include <QSet>
 
 QClient::QClient(QWidget *parent) :
     QWidget(parent),
@@ -31,11 +32,13 @@ QClient::QClient(QWidget *parent) :
     ui->msgTextEdit->setFocus ();
     ui->sendBtn->setAutoDefault (true);
     ui->sendBtn->setDefault (true);
+    ui->userTableWidget->verticalHeader()->setVisible(false);
     connect (server, &ParallelServer::newConnection, this, &QClient::haveNewConnect);
     connect (ui->boldToolBtn, &QToolButton::clicked, this, &QClient::clickBoldBtn);
     connect (ui->italicToolBtn, &QToolButton::clicked, this, &QClient::clickItalicBtn);
     connect (ui->underlineToolBtn, &QToolButton::clicked, this, &QClient::clickUnderlineBtn);
     connect (ui->colorToolBtn, &QToolButton::clicked, this, &QClient::clickColorBtn);
+//    ui->msgBrowser->setLineWrapMode(QTextEdit::NoWrap);
 }
 
 QClient::~QClient()
@@ -67,14 +70,27 @@ void QClient::haveNewMsgFromServer()
     if (msg == nullptr) return;
     switch (msg->getType ()) {
     case Message::InitMsg: {
-        for (int i = 0; i < msg->getArgv (0).toInt (); ++i) {
+        int i = 0;
+        for (; i < msg->getArgv (0).toInt (); ++i) {
             userList.addUser (static_cast<quint32>(msg->getArgv (1 + 5 * i).toInt ()),
                               msg->getArgv (2 + 5 * i),
                               msg->getArgv (3 + 5 * i),
                               static_cast<quint16>(msg->getArgv (4 + 5 * i).toInt ()),
                               ((QString::compare (msg->getArgv (5 + 5 * i), "y")) ? false : true));
         }
+        i = 1 + 5 * i;
+        int size = msg->getArgv (i++).toInt ();
+        QSet<QString> dotList;
+        for (int j = 0; j < size; ++j) {
+            quint32 id = static_cast<quint32>(msg->getArgv (i + j * 2).toInt ());
+            UserInfo *user = userList.getUser (id);
+            user->msgQueue.enqueue (msg->getArgv (i + 1 + j * 2));
+            dotList.insert (user->getName ());
+        }
         initUpdateUI ();
+        for (auto item = dotList.begin (); item != dotList.end (); ++item) {
+            setRedDot (*item);
+        }
         Message *newMsg = new Message(Message::FinishInit);
         newMsg->addArgv (tr("127.0.0.1"));
         newMsg->addArgv (QString::number (server->serverPort ()));
@@ -188,7 +204,13 @@ void QClient::changeTableWidget(quint32 id)
         cursor.mergeBlockFormat(textBlockFormat);
         ui->msgBrowser->setTextCursor(cursor);
         ui->msgBrowser->append (user->msgQueue.dequeue ());
+        ui->msgBrowser->setTextCursor(cursor);
     }
+    QList<QTableWidgetItem*> find = ui->userTableWidget->findItems (user->getName (), Qt::MatchExactly);
+    int row = find.at (0)->row ();
+    QTableWidgetItem *item = new QTableWidgetItem(user->getName ());
+    item->setData (Qt::ForegroundRole, QColor(Qt::black));
+    ui->userTableWidget->setItem (row, 0, item);
 }
 
 void QClient::sendMsgToUI()
@@ -202,6 +224,11 @@ void QClient::sendMsgToUI()
     cursor.mergeBlockFormat(textBlockFormat);
     ui->msgBrowser->setTextCursor(cursor);
     ui->msgBrowser->append (ui->msgTextEdit->toHtml ());
+//    cursor = ui->msgBrowser->textCursor();
+//    textBlockFormat = cursor.blockFormat();
+//    textBlockFormat.setAlignment(Qt::AlignRight);
+//    cursor.mergeBlockFormat(textBlockFormat);
+    ui->msgBrowser->setTextCursor(cursor);
     ui->msgTextEdit->clear ();
     ui->msgTextEdit->setFocus ();
 }
@@ -312,6 +339,15 @@ void QClient::clickColorBtn()
     }
 }
 
+void QClient::setRedDot(const QString &name)
+{
+    QList<QTableWidgetItem*> find = ui->userTableWidget->findItems (name, Qt::MatchExactly);
+    int row = find.at (0)->row ();
+    QTableWidgetItem *item = new QTableWidgetItem(name);
+    item->setData (Qt::ForegroundRole, QColor(Qt::red));
+    ui->userTableWidget->setItem (row, 0, item);
+}
+
 
 void QClient::haveNewConnect(qintptr socketDescriptor)
 {
@@ -331,6 +367,7 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
         if (thread->getUserID () != currentID) {
             UserInfo *user = userList.getUser (thread->getUserID ());
             user->msgQueue.enqueue (msg->getArgv (1));
+            setRedDot(user->getName ());
         }
         else {
             ui->msgBrowser->setTextColor (Qt::blue);
@@ -342,12 +379,14 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
             cursor.mergeBlockFormat(textBlockFormat);
             ui->msgBrowser->setTextCursor(cursor);
             ui->msgBrowser->append (msg->getArgv (1));
+            ui->msgBrowser->setTextCursor(cursor);
         }
         break;
     case Message::ChatMsg:
         if (thread->getUserID () != currentID) {
             UserInfo *user = userList.getUser (thread->getUserID ());
             user->msgQueue.enqueue (msg->getArgv (0));
+            setRedDot(user->getName ());
         }
         else {
             ui->msgBrowser->setTextColor (Qt::blue);
@@ -359,6 +398,7 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
             cursor.mergeBlockFormat(textBlockFormat);
             ui->msgBrowser->setTextCursor(cursor);
             ui->msgBrowser->append (msg->getArgv (0));
+            ui->msgBrowser->setTextCursor(cursor);
         }
         break;
     default:

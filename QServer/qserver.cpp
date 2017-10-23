@@ -132,7 +132,8 @@ void QServer::haveNewMsg(ConnectThread *thread, Message *msg)
         msgFinishInit (thread, msg);
         break;
     case Message::OfflineMsg:
-
+        msgOfflineMsg (thread, msg);
+        break;
     default:
         break;
     }

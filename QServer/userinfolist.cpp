@@ -118,7 +118,9 @@ void UserInfoList::makeInitMsg(quint32 id, Message *msg)
     UserInfo* user = getUser (id);
     msg->addArgv (QString::number (user->msgQueue.size ()));
     while (!user->msgQueue.isEmpty ()) {
-
+        QPair<quint32, QString> pair = user->msgQueue.dequeue ();
+        msg->addArgv (QString::number (pair.first));
+        msg->addArgv (pair.second);
     }
 }
 

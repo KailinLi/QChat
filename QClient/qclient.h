@@ -49,7 +49,7 @@ public:
     void clickItalicBtn(bool checked);
     void clickUnderlineBtn(bool checked);
     void clickColorBtn();
-
+    void setRedDot(const QString &name);
 private slots:
     void haveNewConnect(qintptr socketDescriptor);
     void haveNewMsg(ConnectThread* thread, Message* msg);
