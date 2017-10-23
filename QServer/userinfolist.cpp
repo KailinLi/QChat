@@ -104,7 +104,7 @@ int UserInfoList::size()
     return list.size ();
 }
 
-void UserInfoList::makeInitMsg(Message *msg)
+void UserInfoList::makeInitMsg(quint32 id, Message *msg)
 {
     msg->addArgv (QString::number (list.size ()));
     foreach (UserInfo user, list) {
@@ -114,6 +114,11 @@ void UserInfoList::makeInitMsg(Message *msg)
         msg->addArgv (QString::number (user.getPort ()));
         if (user.getIfOnline ()) msg->addArgv (QObject::tr("y"));
         else msg->addArgv (QObject::tr("n"));
+    }
+    UserInfo* user = getUser (id);
+    msg->addArgv (QString::number (user->msgQueue.size ()));
+    while (!user->msgQueue.isEmpty ()) {
+
     }
 }
 
@@ -148,4 +153,14 @@ void UserInfoList::userSignOut(quint32 id)
             break;
         }
     }
+}
+
+UserInfo *UserInfoList::getUser(quint32 id)
+{
+    for (QList<UserInfo>::Iterator user = list.begin (); user != list.end(); ++user) {
+        if (user->getUserID () == id) {
+            return &(*user);
+        }
+    }
+    return &(*list.begin ());
 }

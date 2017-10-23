@@ -77,7 +77,7 @@ void QServer::msgLogIn(ConnectThread *thread, Message *msg)
 {
     thread->setUserID (static_cast<quint32>(msg->getArgv (0).toInt ()));
     Message *newMsg = new Message(Message::InitMsg);
-    userList.makeInitMsg (newMsg);
+    userList.makeInitMsg (thread->getUserID (), newMsg);
     emit msgToSend (thread, newMsg);
 }
 
@@ -95,6 +95,12 @@ void QServer::msgFinishInit(ConnectThread *thread, Message *msg)
             emit msgToSend (t, newMsg);
         }
     }
+}
+
+void QServer::msgOfflineMsg(ConnectThread *thread, Message *msg)
+{
+    UserInfo *user = userList.getUser (static_cast<quint32>(msg->getArgv (0).toInt ()));
+    user->msgQueue.enqueue (QPair<quint32, QString>(thread->getUserID (), msg->getArgv (1)));
 }
 
 void QServer::haveNewConnect(qintptr socketDescriptor)
@@ -125,6 +131,8 @@ void QServer::haveNewMsg(ConnectThread *thread, Message *msg)
     case Message::FinishInit:
         msgFinishInit (thread, msg);
         break;
+    case Message::OfflineMsg:
+
     default:
         break;
     }

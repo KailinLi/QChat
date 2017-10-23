@@ -18,7 +18,8 @@ public:
         FinishInit,
         UpdateMsg,
         ChatMsg,
-        HeartbeatMsg
+        HeartbeatMsg,
+        OfflineMsg
     };
 private:
     Message::Type type;

@@ -21,9 +21,10 @@ public:
     bool checkUserName(const QString &name);
     UserInfo *findPassword(const QString &name);
     int size();
-    void makeInitMsg(Message *msg);
+    void makeInitMsg(quint32 id, Message *msg);
     QString &newSignIn(quint32 id, const QString &address, quint16 port);
     void userSignOut(quint32 id);
+    UserInfo *getUser(quint32 id);
 };
 
 #endif // USERINFOLIST_H

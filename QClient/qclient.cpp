@@ -231,9 +231,13 @@ void QClient::clickSend()
             sendMsgToUI ();
         }
     }
-//    else {
-//        sendOfflineMsg();
-    //    }
+    else {
+        Message *msg = new Message(Message::OfflineMsg);
+        msg->addArgv (QString::number (currentID));
+        msg->addArgv (ui->msgTextEdit->toHtml ());
+        emit sendMsg (msg);
+        sendMsgToUI ();
+    }
 }
 
 void QClient::setUpCommunication(ConnectThread* thread)
@@ -365,5 +369,5 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
 
 void QClient::loseConnect(ConnectThread *thread)
 {
-
+    threadPool.removeThread (thread);
 }

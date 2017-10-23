@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "message.h"
+#include <QQueue>
 
 class UserInfo
 {
@@ -18,8 +19,10 @@ private:
     QString address;
     quint16 port;
     bool ifOnline;
-//    QList<Message> offlineMsg;
 public:
+
+    QQueue<QPair<quint32, QString>> msgQueue;
+
     quint32 getUserID();
     void setUserID(quint32 id);
     QString &getName();

@@ -29,6 +29,7 @@ private:
     void msgForgetPassword(ConnectThread *thread, Message *msg);
     void msgLogIn(ConnectThread *thread, Message *msg);
     void msgFinishInit(ConnectThread *thread, Message *msg);
+    void msgOfflineMsg(ConnectThread *thread, Message *msg);
 private slots:
     void haveNewConnect(qintptr socketDescriptor);
     void haveNewMsg(ConnectThread* thread, Message* msg);
