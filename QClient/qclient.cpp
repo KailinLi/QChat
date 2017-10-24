@@ -5,6 +5,7 @@
 #include <QColorDialog>
 #include <QSet>
 #include <QScrollBar>
+#include <QTextBlock>
 
 QClient::QClient(QWidget *parent) :
     QWidget(parent),
@@ -210,6 +211,7 @@ void QClient::changeTableWidget(quint32 id)
 
 void QClient::sendMsgToUI()
 {
+    ui->msgBrowser->acceptDrops ();
     ui->msgBrowser->setTextColor (Qt::red);
     ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
     ui->msgBrowser->append (userName + tr(" <"));
@@ -219,6 +221,10 @@ void QClient::sendMsgToUI()
     cursor.mergeBlockFormat(textBlockFormat);
     ui->msgBrowser->setTextCursor(cursor);
     ui->msgBrowser->append (ui->msgTextEdit->toHtml ());
+    cursor = ui->msgBrowser->textCursor();
+    textBlockFormat = cursor.blockFormat();
+    textBlockFormat.setAlignment(Qt::AlignRight);
+    cursor.mergeBlockFormat(textBlockFormat);
     ui->msgBrowser->setTextCursor(cursor);
     ui->msgBrowser->verticalScrollBar ()->setValue (ui->msgBrowser->verticalScrollBar ()->maximum ());
     ui->msgTextEdit->clear ();
@@ -235,6 +241,10 @@ void QClient::readMsgUpdateUI(const QString &name, const QString &msg)
     cursor.mergeBlockFormat(textBlockFormat);
     ui->msgBrowser->setTextCursor(cursor);
     ui->msgBrowser->append (msg);
+    cursor = ui->msgBrowser->textCursor();
+    textBlockFormat = cursor.blockFormat();
+    textBlockFormat.setAlignment(Qt::AlignLeft);
+    cursor.mergeBlockFormat(textBlockFormat);
     ui->msgBrowser->setTextCursor(cursor);
     ui->msgBrowser->verticalScrollBar ()->setValue (ui->msgBrowser->verticalScrollBar ()->maximum ());
 }
