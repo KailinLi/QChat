@@ -211,7 +211,7 @@ void QClient::changeTableWidget(quint32 id)
 
 void QClient::sendMsgToUI()
 {
-    ui->msgBrowser->acceptDrops ();
+    ui->msgBrowser->moveCursor (QTextCursor::NextBlock);
     ui->msgBrowser->setTextColor (Qt::red);
     ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
     ui->msgBrowser->append (userName + tr(" <"));
@@ -232,6 +232,7 @@ void QClient::sendMsgToUI()
 }
 void QClient::readMsgUpdateUI(const QString &name, const QString &msg)
 {
+    ui->msgBrowser->moveCursor (QTextCursor::NextBlock);
     ui->msgBrowser->setTextColor (Qt::blue);
     ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
     ui->msgBrowser->append (tr("> ") + name);
