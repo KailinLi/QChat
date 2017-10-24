@@ -171,6 +171,7 @@ void QClient::signOutUpdateUI(const QString &name)
 
 void QClient::quit()
 {
+    threadPool.closeAll ();
     close ();
 }
 
@@ -222,6 +223,20 @@ void QClient::sendMsgToUI()
     ui->msgBrowser->verticalScrollBar ()->setValue (ui->msgBrowser->verticalScrollBar ()->maximum ());
     ui->msgTextEdit->clear ();
     ui->msgTextEdit->setFocus ();
+}
+void QClient::readMsgUpdateUI(const QString &name, const QString &msg)
+{
+    ui->msgBrowser->setTextColor (Qt::blue);
+    ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
+    ui->msgBrowser->append (tr("> ") + name);
+    QTextCursor cursor = ui->msgBrowser->textCursor();
+    QTextBlockFormat textBlockFormat = cursor.blockFormat();
+    textBlockFormat.setAlignment(Qt::AlignLeft);
+    cursor.mergeBlockFormat(textBlockFormat);
+    ui->msgBrowser->setTextCursor(cursor);
+    ui->msgBrowser->append (msg);
+    ui->msgBrowser->setTextCursor(cursor);
+    ui->msgBrowser->verticalScrollBar ()->setValue (ui->msgBrowser->verticalScrollBar ()->maximum ());
 }
 
 void QClient::clickSend()
@@ -337,21 +352,6 @@ void QClient::setRedDot(const QString &name)
     QTableWidgetItem *item = new QTableWidgetItem(name);
     item->setData (Qt::ForegroundRole, QColor(Qt::red));
     ui->userTableWidget->setItem (row, 0, item);
-}
-
-void QClient::readMsgUpdateUI(const QString &name, const QString &msg)
-{
-    ui->msgBrowser->setTextColor (Qt::blue);
-    ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
-    ui->msgBrowser->append (tr("> ") + name);
-    QTextCursor cursor = ui->msgBrowser->textCursor();
-    QTextBlockFormat textBlockFormat = cursor.blockFormat();
-    textBlockFormat.setAlignment(Qt::AlignLeft);
-    cursor.mergeBlockFormat(textBlockFormat);
-    ui->msgBrowser->setTextCursor(cursor);
-    ui->msgBrowser->append (msg);
-    ui->msgBrowser->setTextCursor(cursor);
-    ui->msgBrowser->verticalScrollBar ()->setValue (ui->msgBrowser->verticalScrollBar ()->maximum ());
 }
 
 

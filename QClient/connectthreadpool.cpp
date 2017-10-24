@@ -30,3 +30,10 @@ quint32 ConnectThreadPool::getID(ConnectThread *thread)
 {
     return thread->getUserID ();
 }
+
+void ConnectThreadPool::closeAll()
+{
+    foreach (ConnectThread *thread, threadPool) {
+        removeThread (thread);
+    }
+}

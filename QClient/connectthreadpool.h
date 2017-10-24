@@ -16,6 +16,7 @@ public:
     void removeThread(ConnectThread* thread);
     ConnectThread *getThread(quint32 ID);
     quint32 getID(ConnectThread* thread);
+    void closeAll();
 };
 
 #endif // CONNECTTHREADPOOL_H
