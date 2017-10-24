@@ -44,12 +44,13 @@ public:
     void setUpCommunication(ConnectThread *thread);
     bool eventFilter(QObject* obj, QEvent* event);
     void currentFontChanged(QFont f);
-    void currentFontSizeChanged(QString &size);
+    void currentFontSizeChanged(const QString &size);
     void clickBoldBtn(bool checked);
     void clickItalicBtn(bool checked);
     void clickUnderlineBtn(bool checked);
     void clickColorBtn();
     void setRedDot(const QString &name);
+    void readMsgUpdateUI(const QString &name, const QString &msg);
 private slots:
     void haveNewConnect(qintptr socketDescriptor);
     void haveNewMsg(ConnectThread* thread, Message* msg);

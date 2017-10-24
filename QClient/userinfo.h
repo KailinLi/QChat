@@ -16,7 +16,6 @@ private:
     quint16 port;
     bool ifOnline;
     QString showMsg;
-//    QList<Message> offlineMsg;
 public:
 
     QQueue<QString> msgQueue;

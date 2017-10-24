@@ -4,6 +4,7 @@
 #include <QKeyEvent>
 #include <QColorDialog>
 #include <QSet>
+#include <QScrollBar>
 
 QClient::QClient(QWidget *parent) :
     QWidget(parent),
@@ -34,6 +35,8 @@ QClient::QClient(QWidget *parent) :
     ui->sendBtn->setDefault (true);
     ui->userTableWidget->verticalHeader()->setVisible(false);
     connect (server, &ParallelServer::newConnection, this, &QClient::haveNewConnect);
+    connect (ui->fontComboBox, &QFontComboBox::currentFontChanged, this, &QClient::currentFontChanged);
+    connect (ui->sizeComboBox, &QComboBox::currentTextChanged, this, &QClient::currentFontSizeChanged);
     connect (ui->boldToolBtn, &QToolButton::clicked, this, &QClient::clickBoldBtn);
     connect (ui->italicToolBtn, &QToolButton::clicked, this, &QClient::clickItalicBtn);
     connect (ui->underlineToolBtn, &QToolButton::clicked, this, &QClient::clickUnderlineBtn);
@@ -195,16 +198,7 @@ void QClient::changeTableWidget(quint32 id)
     ui->msgBrowser->setHtml (userList.getMsg (currentID));
     UserInfo *user = userList.getUser (id);
     while (!user->msgQueue.isEmpty ()) {
-        ui->msgBrowser->setTextColor (Qt::blue);
-        ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
-        ui->msgBrowser->append (user->getName ());
-        QTextCursor cursor = ui->msgBrowser->textCursor();
-        QTextBlockFormat textBlockFormat = cursor.blockFormat();
-        textBlockFormat.setAlignment(Qt::AlignLeft);
-        cursor.mergeBlockFormat(textBlockFormat);
-        ui->msgBrowser->setTextCursor(cursor);
-        ui->msgBrowser->append (user->msgQueue.dequeue ());
-        ui->msgBrowser->setTextCursor(cursor);
+        readMsgUpdateUI (user->getName (), user->msgQueue.dequeue ());
     }
     QList<QTableWidgetItem*> find = ui->userTableWidget->findItems (user->getName (), Qt::MatchExactly);
     int row = find.at (0)->row ();
@@ -217,18 +211,15 @@ void QClient::sendMsgToUI()
 {
     ui->msgBrowser->setTextColor (Qt::red);
     ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
-    ui->msgBrowser->append (userName);
+    ui->msgBrowser->append (userName + tr(" <"));
     QTextCursor cursor = ui->msgBrowser->textCursor();
     QTextBlockFormat textBlockFormat = cursor.blockFormat();
     textBlockFormat.setAlignment(Qt::AlignRight);
     cursor.mergeBlockFormat(textBlockFormat);
     ui->msgBrowser->setTextCursor(cursor);
     ui->msgBrowser->append (ui->msgTextEdit->toHtml ());
-//    cursor = ui->msgBrowser->textCursor();
-//    textBlockFormat = cursor.blockFormat();
-//    textBlockFormat.setAlignment(Qt::AlignRight);
-//    cursor.mergeBlockFormat(textBlockFormat);
     ui->msgBrowser->setTextCursor(cursor);
+    ui->msgBrowser->verticalScrollBar ()->setValue (ui->msgBrowser->verticalScrollBar ()->maximum ());
     ui->msgTextEdit->clear ();
     ui->msgTextEdit->setFocus ();
 }
@@ -303,7 +294,7 @@ void QClient::currentFontChanged(QFont f)
     ui->msgTextEdit->setFocus ();
 }
 
-void QClient::currentFontSizeChanged(QString &size)
+void QClient::currentFontSizeChanged(const QString &size)
 {
     ui->msgTextEdit->setFontPointSize (size.toDouble ());
     ui->msgTextEdit->setFocus ();
@@ -348,6 +339,21 @@ void QClient::setRedDot(const QString &name)
     ui->userTableWidget->setItem (row, 0, item);
 }
 
+void QClient::readMsgUpdateUI(const QString &name, const QString &msg)
+{
+    ui->msgBrowser->setTextColor (Qt::blue);
+    ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
+    ui->msgBrowser->append (tr("> ") + name);
+    QTextCursor cursor = ui->msgBrowser->textCursor();
+    QTextBlockFormat textBlockFormat = cursor.blockFormat();
+    textBlockFormat.setAlignment(Qt::AlignLeft);
+    cursor.mergeBlockFormat(textBlockFormat);
+    ui->msgBrowser->setTextCursor(cursor);
+    ui->msgBrowser->append (msg);
+    ui->msgBrowser->setTextCursor(cursor);
+    ui->msgBrowser->verticalScrollBar ()->setValue (ui->msgBrowser->verticalScrollBar ()->maximum ());
+}
+
 
 void QClient::haveNewConnect(qintptr socketDescriptor)
 {
@@ -370,16 +376,7 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
             setRedDot(user->getName ());
         }
         else {
-            ui->msgBrowser->setTextColor (Qt::blue);
-            ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
-            ui->msgBrowser->append (userList.getName (thread->getUserID ()));
-            QTextCursor cursor = ui->msgBrowser->textCursor();
-            QTextBlockFormat textBlockFormat = cursor.blockFormat();
-            textBlockFormat.setAlignment(Qt::AlignLeft);
-            cursor.mergeBlockFormat(textBlockFormat);
-            ui->msgBrowser->setTextCursor(cursor);
-            ui->msgBrowser->append (msg->getArgv (1));
-            ui->msgBrowser->setTextCursor(cursor);
+            readMsgUpdateUI (userList.getName (thread->getUserID ()), msg->getArgv (1));
         }
         break;
     case Message::ChatMsg:
@@ -389,16 +386,7 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
             setRedDot(user->getName ());
         }
         else {
-            ui->msgBrowser->setTextColor (Qt::blue);
-            ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
-            ui->msgBrowser->append (userList.getName (currentID));
-            QTextCursor cursor = ui->msgBrowser->textCursor();
-            QTextBlockFormat textBlockFormat = cursor.blockFormat();
-            textBlockFormat.setAlignment(Qt::AlignLeft);
-            cursor.mergeBlockFormat(textBlockFormat);
-            ui->msgBrowser->setTextCursor(cursor);
-            ui->msgBrowser->append (msg->getArgv (0));
-            ui->msgBrowser->setTextCursor(cursor);
+            readMsgUpdateUI (userList.getName (currentID), msg->getArgv (0));
         }
         break;
     default:
