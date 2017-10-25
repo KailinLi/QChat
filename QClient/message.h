@@ -13,6 +13,8 @@ public:
         AnswerSignUp,
         ForgetPassword,
         AnswerForgetPassword,
+        ResetPassword,
+        AnswerResetPassword,
         LogIn,
         InitMsg,
         FinishInit,

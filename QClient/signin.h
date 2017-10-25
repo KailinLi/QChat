@@ -27,12 +27,14 @@ private:
     Ui::SignIn *ui;
     TcpSocketMsg* tcpMsg;
     bool needPassword;
-
+    bool resetPassword;
+    QString inputNameTmp;
 public:
     void tryConnect();
     void trySignIn();
     void haveNewMsgFromServer();
     void tryFindPassword();
+    void tryResetPassword();
     bool showFindPasswordDialog(const QString& pwQuestion, const QString& pwAnswer);
 signals:
     void sendMsg(Message* msg);

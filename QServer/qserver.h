@@ -27,6 +27,7 @@ private:
     void msgSignIn(ConnectThread *thread, Message *msg);
     void msgSignUp(ConnectThread *thread, Message *msg);
     void msgForgetPassword(ConnectThread *thread, Message *msg);
+    void msgResetPassword(ConnectThread *thread, Message *msg);
     void msgLogIn(ConnectThread *thread, Message *msg);
     void msgFinishInit(ConnectThread *thread, Message *msg);
     void msgOfflineMsg(ConnectThread *thread, Message *msg);

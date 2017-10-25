@@ -1,18 +1,21 @@
 #include "signin.h"
 #include "ui_signin.h"
 #include <QInputDialog>
+#include <QCryptographicHash>
 
 SignIn::SignIn(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::SignIn),
     tcpMsg(new TcpSocketMsg(this)),
-    needPassword(false)
+    needPassword(false),
+    resetPassword(false)
 {
     ui->setupUi(this);
     ui->passwdLineEdit->setEchoMode (QLineEdit::Password);
     connect (ui->signinBtn, &QPushButton::clicked, this, &SignIn::tryConnect);
     connect (tcpMsg, &TcpSocketMsg::connected, this, &SignIn::trySignIn);
     connect (tcpMsg, &TcpSocketMsg::connected, this, &SignIn::tryFindPassword);
+    connect (tcpMsg, &TcpSocketMsg::connected, this , &SignIn::tryResetPassword);
     connect (tcpMsg, &TcpSocketMsg::readyRead, this, &SignIn::haveNewMsgFromServer);
     connect (this, &SignIn::sendMsg, tcpMsg, &TcpSocketMsg::send);
     connect (ui->exitBtn, &QPushButton::clicked, this, &SignIn::closeWindow);
@@ -21,7 +24,6 @@ SignIn::SignIn(QWidget *parent) :
     ui->nameLineEdit->setFocus ();
     ui->signinBtn->setAutoDefault (true);
     ui->signinBtn->setDefault (true);
-//    connect (tcpMsg, &TcpSocketMsg::readyRead, this, )
 }
 
 SignIn::~SignIn()
@@ -31,6 +33,15 @@ SignIn::~SignIn()
 
 void SignIn::tryConnect()
 {
+    if (resetPassword) {
+        if (QString::compare (ui->nameLineEdit->text (), ui->passwdLineEdit->text ())) {
+            ui->showLabel->setText (tr("两次密码不一致"));
+            ui->nameLineEdit->clear ();
+            ui->passwdLineEdit->clear ();
+            ui->nameLineEdit->setFocus ();
+            return;
+        }
+    }
     tcpMsg->setBlockSize (0);
     tcpMsg->abort ();
     tcpMsg->connectToHost (QHostAddress(tr("127.0.0.1")), 6666);
@@ -39,9 +50,13 @@ void SignIn::tryConnect()
 void SignIn::trySignIn()
 {
     if (needPassword) return;
+    if (resetPassword) return;
     Message *msg = new Message(Message::SignIn);
     msg->addArgv(ui->nameLineEdit->text ());
-    msg->addArgv(ui->passwdLineEdit->text ());
+    QByteArray passwordSHA256;
+    passwordSHA256.append (ui->passwdLineEdit->text ());
+    QByteArray hash = QCryptographicHash::hash (passwordSHA256, QCryptographicHash::Sha256);
+    msg->addArgv (hash.toHex ());
     emit sendMsg (msg);
 }
 
@@ -71,8 +86,15 @@ void SignIn::haveNewMsgFromServer()
             ui->nameLineEdit->setFocus ();
         }
         else if (showFindPasswordDialog (msg->getArgv (0), msg->getArgv (1))) {
-            ui->showLabel->setText (tr("密码:%1, 请牢记哦").arg (msg->getArgv (2)));
-//            tcpMsg->safeDelete ();
+            ui->showLabel->setText (tr("请重设密码"));
+            ui->nameLabel->setText (tr("密码:"));
+            ui->passwdLabel->setText (tr("再次输入密码:"));
+            ui->signinBtn->setText (tr("确定"));
+            ui->nameLineEdit->setEchoMode (QLineEdit::Password);
+            resetPassword = true;
+            inputNameTmp = ui->nameLineEdit->text ();
+            ui->nameLineEdit->clear ();
+            ui->nameLabel->setFocus ();
         }
         else {
             ui->showLabel->setText (tr("密保问题错误"));
@@ -80,6 +102,17 @@ void SignIn::haveNewMsgFromServer()
             ui->passwdLineEdit->clear ();
             ui->nameLineEdit->setFocus ();
         }
+        break;
+    case Message::AnswerResetPassword:
+        ui->showLabel->setText (tr("密码重置成功"));
+        ui->nameLabel->setText (tr("用户名:"));
+        ui->passwdLabel->setText (tr("密码:"));
+        ui->signinBtn->setText (tr("登录"));
+        ui->nameLineEdit->setEchoMode (QLineEdit::Normal);
+        ui->nameLineEdit->clear ();
+        ui->passwdLineEdit->clear ();
+        ui->nameLineEdit->setFocus ();
+        resetPassword = false;
         break;
     default:
         break;
@@ -90,10 +123,24 @@ void SignIn::haveNewMsgFromServer()
 void SignIn::tryFindPassword()
 {
     if (!needPassword) return;
+    if (resetPassword) return;
     Message *msg = new Message(Message::ForgetPassword);
     msg->addArgv(ui->nameLineEdit->text ());
     emit sendMsg (msg);
     needPassword = false;
+}
+
+void SignIn::tryResetPassword()
+{
+    if (!resetPassword) return;
+    if (needPassword) return;
+    Message *msg = new Message(Message::ResetPassword);
+    msg->addArgv (inputNameTmp);
+    QByteArray passwordSHA256;
+    passwordSHA256.append (ui->passwdLineEdit->text ());
+    QByteArray hash = QCryptographicHash::hash (passwordSHA256, QCryptographicHash::Sha256);
+    msg->addArgv (hash.toHex ());
+    emit sendMsg (msg);
 }
 
 bool SignIn::showFindPasswordDialog(const QString &pwQuestion, const QString &pwAnswer)
@@ -101,7 +148,10 @@ bool SignIn::showFindPasswordDialog(const QString &pwQuestion, const QString &pw
     bool hadInput;
     QString str = QInputDialog::getText (this, tr("找回密码"), pwQuestion, QLineEdit::Normal, tr("请输入密保答案"), &hadInput);
     if (hadInput) {
-        if (QString::compare (str, pwAnswer)) return false;
+        QByteArray passwordSHA256;
+        passwordSHA256.append (str);
+        QByteArray hash = QCryptographicHash::hash (passwordSHA256, QCryptographicHash::Sha256);
+        if (QString::compare (hash.toHex (), pwAnswer)) return false;
         else return true;
     }
     else return false;

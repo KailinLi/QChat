@@ -48,9 +48,15 @@ void SignUp::trySignUp()
 {
     Message *msg = new Message(Message::SignUp);
     msg->addArgv (ui->nameLineEdit->text ());
-    msg->addArgv (ui->passwordLineEdit->text ());
+    QByteArray passwordSHA256;
+    passwordSHA256.append (ui->passwordLineEdit->text ());
+    QByteArray hash = QCryptographicHash::hash (passwordSHA256, QCryptographicHash::Sha256);
+    msg->addArgv (hash.toHex ());
     msg->addArgv (ui->pwQuestionComboBox->currentText ());
-    msg->addArgv (ui->pwAnswerLineEdit->text ());
+    QByteArray pwAnswerSHA256;
+    pwAnswerSHA256.append (ui->pwAnswerLineEdit->text ());
+    QByteArray hashpwAnswer = QCryptographicHash::hash (pwAnswerSHA256, QCryptographicHash::Sha256);
+    msg->addArgv (hashpwAnswer.toHex ());
     emit sendMsg (msg);
 }
 

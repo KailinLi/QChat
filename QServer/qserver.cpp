@@ -73,6 +73,14 @@ void QServer::msgForgetPassword(ConnectThread *thread, Message *msg)
     }
 }
 
+void QServer::msgResetPassword(ConnectThread *thread, Message *msg)
+{
+    UserInfo* findP = userList.findPassword (msg->getArgv (0));
+    findP->setPassword (msg->getArgv(1));
+    Message *newMsg = new Message(Message::AnswerResetPassword);
+    emit msgToSend (thread, newMsg);
+}
+
 void QServer::msgLogIn(ConnectThread *thread, Message *msg)
 {
     thread->setUserID (static_cast<quint32>(msg->getArgv (0).toInt ()));
@@ -124,6 +132,9 @@ void QServer::haveNewMsg(ConnectThread *thread, Message *msg)
         break;
     case Message::ForgetPassword:
         msgForgetPassword (thread, msg);
+        break;
+    case Message::ResetPassword:
+        msgResetPassword (thread, msg);
         break;
     case Message::LogIn:
         msgLogIn (thread, msg);
