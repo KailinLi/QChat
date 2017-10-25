@@ -1,6 +1,7 @@
 #include "qserver.h"
 #include "ui_qserver.h"
 #include <QMessageBox>
+#include "handledir.cpp"
 
 QServer::QServer(QWidget *parent) :
     QWidget(parent),
@@ -8,7 +9,7 @@ QServer::QServer(QWidget *parent) :
     server(new ParallelServer(this))
 {
     ui->setupUi(this);
-    userList.newSignUp (tr("likailin"), tr("1234"), tr("你计网实验的成绩是多少?"), tr("100"));
+    loadUserInfo ();
     if (! server->listen (QHostAddress("127.0.0.1"), 6666)) {
         QMessageBox::critical(this, tr("Threaded Fortune Server"),
                               tr("Unable to start the server: %1.")
@@ -21,6 +22,7 @@ QServer::QServer(QWidget *parent) :
 
 QServer::~QServer()
 {
+    saveUserInfo ();
     server->close ();
     delete server;
     delete ui;
@@ -68,7 +70,6 @@ void QServer::msgForgetPassword(ConnectThread *thread, Message *msg)
         Message *newMsg = new Message(Message::AnswerForgetPassword);
         newMsg->addArgv (findP->getPwQuestion ());
         newMsg->addArgv (findP->getPwAnswer ());
-        newMsg->addArgv (findP->getPassword ());
         emit msgToSend (thread, newMsg);
     }
 }
@@ -109,6 +110,36 @@ void QServer::msgOfflineMsg(ConnectThread *thread, Message *msg)
 {
     UserInfo *user = userList.getUser (static_cast<quint32>(msg->getArgv (0).toInt ()));
     user->msgQueue.enqueue (QPair<quint32, QString>(thread->getUserID (), msg->getArgv (1)));
+}
+
+void QServer::loadUserInfo()
+{
+    QFile file (getPath ().append ("/userinfo"));
+    if (!file.open (QIODevice::ReadOnly)) {
+        qDebug() << "can not open file";
+        return;
+    }
+    QDataStream in (&file);
+    in.setVersion (QDataStream::Qt_5_6);
+
+    userList.readUserInfo (in);
+
+    file.close ();
+}
+
+void QServer::saveUserInfo()
+{
+    QFile file (getPath ().append ("/userinfo"));
+    if (!file.open (QIODevice::WriteOnly | QIODevice::Truncate)) {
+        qDebug() << "can not open file";
+        return;
+    }
+    QDataStream out (&file);
+    out.setVersion (QDataStream::Qt_5_6);
+
+    userList.saveUserInfo (out);
+
+    file.close ();
 }
 
 void QServer::haveNewConnect(qintptr socketDescriptor)

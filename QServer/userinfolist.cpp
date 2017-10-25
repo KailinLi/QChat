@@ -1,4 +1,5 @@
 #include "userinfolist.h"
+#include <QDataStream>
 
 UserInfoList::UserInfoList()
 {
@@ -165,4 +166,50 @@ UserInfo *UserInfoList::getUser(quint32 id)
         }
     }
     return &(*list.begin ());
+}
+
+void UserInfoList::readUserInfo(QDataStream &data)
+{
+    int size;
+    quint32 userID;
+    QString name;
+    QString password;
+    QString pwQuestion;
+    QString pwAnswer;
+    data >> size;
+    while (size--) {
+        data >> userID;
+        data >> name;
+        data >> password;
+        data >> pwQuestion;
+        data >> pwAnswer;
+        list.push_back (UserInfo(userID, name, password, pwQuestion, pwAnswer));
+        int queueSize;
+        data >> queueSize;
+        while (queueSize--) {
+            quint32 id;
+            QString msg;
+            data >> id;
+            data >> msg;
+            list.back ().msgQueue.enqueue (QPair<quint32, QString>(id, msg));
+        }
+    }
+}
+
+void UserInfoList::saveUserInfo(QDataStream &data)
+{
+    data << list.size ();
+    foreach (UserInfo user, list) {
+        data << user.getUserID ();
+        data << user.getName ();
+        data << user.getPassword ();
+        data << user.getPwQuestion ();
+        data << user.getPwAnswer ();
+        data << user.msgQueue.size ();
+        while (!user.msgQueue.isEmpty ()) {
+            QPair<quint32, QString> msg = user.msgQueue.dequeue ();
+            data << msg.first;
+            data << msg.second;
+        }
+    }
 }

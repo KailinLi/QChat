@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     connectthread.cpp \
     connectthreadpool.cpp \
     userinfo.cpp \
-    userinfolist.cpp
+    userinfolist.cpp \
+    handledir.cpp
 
 HEADERS  += qserver.h \
     message.h \
