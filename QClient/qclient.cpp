@@ -12,7 +12,7 @@ QClient::QClient(QWidget *parent) :
     ui(new Ui::QClient),
     server(new ParallelServer(this)),
     tcpToServer(new TcpSocketMsg(this)),
-    currentID(1)
+    currentID(0)
 {
     ui->setupUi(this);
     connect (tcpToServer, &TcpSocketMsg::connected, this, &QClient::logIn);
