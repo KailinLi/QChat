@@ -23,7 +23,9 @@ SOURCES += main.cpp\
     connectthreadpool.cpp \
     parallelserver.cpp \
     userinfo.cpp \
-    userinfolist.cpp
+    userinfolist.cpp \
+    sendfile.cpp \
+    sendfilethread.cpp
 
 HEADERS  += qclient.h \
     signin.h \
@@ -34,11 +36,14 @@ HEADERS  += qclient.h \
     connectthreadpool.h \
     parallelserver.h \
     userinfo.h \
-    userinfolist.h
+    userinfolist.h \
+    sendfile.h \
+    sendfilethread.h
 
 FORMS    += qclient.ui \
     signin.ui \
-    signup.ui
+    signup.ui \
+    sendfile.ui
 
 RESOURCES += \
     images.qrc

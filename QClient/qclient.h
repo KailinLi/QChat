@@ -29,6 +29,7 @@ private:
     QString userName;
     quint32 currentID;
     QColor color;
+    QFile *sendFile;
 public:
     void start();
     void logIn();
@@ -49,6 +50,7 @@ public:
     void clickItalicBtn(bool checked);
     void clickUnderlineBtn(bool checked);
     void clickColorBtn();
+    void clickSendFile();
     void setRedDot(const QString &name);
     void readMsgUpdateUI(const QString &name, const QString &msg);
 private slots:

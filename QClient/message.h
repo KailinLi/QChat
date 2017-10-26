@@ -21,7 +21,9 @@ public:
         UpdateMsg,
         ChatMsg,
         HeartbeatMsg,
-        OfflineMsg
+        OfflineMsg,
+        SendFileMsg,
+        AnswerSendFileMsg
     };
 private:
     Message::Type type;

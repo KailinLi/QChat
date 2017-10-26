@@ -6,6 +6,7 @@
 #include <QSet>
 #include <QScrollBar>
 #include <QTextBlock>
+#include <QFileDialog>
 
 QClient::QClient(QWidget *parent) :
     QWidget(parent),
@@ -42,6 +43,7 @@ QClient::QClient(QWidget *parent) :
     connect (ui->italicToolBtn, &QToolButton::clicked, this, &QClient::clickItalicBtn);
     connect (ui->underlineToolBtn, &QToolButton::clicked, this, &QClient::clickUnderlineBtn);
     connect (ui->colorToolBtn, &QToolButton::clicked, this, &QClient::clickColorBtn);
+    connect (ui->sendToolBtn, &QPushButton::clicked, this, &QClient::clickSendFile);
 //    ui->msgBrowser->setLineWrapMode(QTextEdit::NoWrap);
 }
 
@@ -356,6 +358,20 @@ void QClient::clickColorBtn()
     }
 }
 
+void QClient::clickSendFile()
+{
+    QString fileName = QFileDialog::getOpenFileName (this);
+    if (!fileName.isEmpty ()) {
+        Message *msg = new Message(Message::SendFileMsg);
+        sendFile = new QFile(fileName);
+        QString currentFileName = fileName.right (fileName.size () - fileName.lastIndexOf ('/') - 1);
+        msg->addArgv (currentFileName);
+        msg->addArgv (QString::number (sendFile->size ()));
+        ConnectThread *thread = threadPool.getThread (currentID);
+        emit msgToSend (thread, msg);
+    }
+}
+
 void QClient::setRedDot(const QString &name)
 {
     QList<QTableWidgetItem*> find = ui->userTableWidget->findItems (name, Qt::MatchExactly);
@@ -400,6 +416,23 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
             readMsgUpdateUI (userList.getName (currentID), msg->getArgv (0));
         }
         break;
+    case Message::SendFileMsg: {
+        int choose = QMessageBox::question (this, tr("新文件可接受"), tr("希望接收%1吗?").arg (msg->getArgv (0)), QMessageBox::Yes|QMessageBox::No, QMessageBox::Yes);
+        if (choose == QMessageBox::No) {
+            Message *newMsg = new Message(Message::AnswerSendFileMsg);
+            newMsg->addArgv (tr("n"));
+            emit msgToSend (thread, newMsg);
+        }
+        else if (choose == QMessageBox::Yes){
+
+        }
+        break;
+    }
+    case Message::AnswerSendFileMsg: {
+        if (!QString::compare (msg->getArgv (0), tr("n"))) {
+            QMessageBox::information (this, tr("发送文件"), tr("对方拒绝接收文件"), QMessageBox::Ok);
+        }
+    }
     default:
         break;
     }
