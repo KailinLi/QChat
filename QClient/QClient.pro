@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     userinfo.cpp \
     userinfolist.cpp \
     sendfile.cpp \
-    sendfilethread.cpp
+    sendfilethread.cpp \
+    rdtsender.cpp
 
 HEADERS  += qclient.h \
     signin.h \
@@ -38,7 +39,8 @@ HEADERS  += qclient.h \
     userinfo.h \
     userinfolist.h \
     sendfile.h \
-    sendfilethread.h
+    sendfilethread.h \
+    rdtsender.h
 
 FORMS    += qclient.ui \
     signin.ui \
