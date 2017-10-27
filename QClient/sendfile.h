@@ -18,15 +18,15 @@ public:
     ~SendFile();
 
     void initSocket(QFile *file,
-                    QHostAddress &destination, quint16 destinationPort,
-                    QHostAddress &address, quint16 port);
+                    QHostAddress destination, quint16 destinationPort,
+                    QHostAddress address, quint16 port);
 
 private:
     Ui::SendFile *ui;
     qint64 fileSize;
     SendFileThread *thread;
 
-    void updateProgress(int x);
+    void updateProgress(qint64 x);
 };
 
 #endif // SENDFILE_H

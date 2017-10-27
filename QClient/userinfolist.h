@@ -24,6 +24,7 @@ public:
     QString &getMsg(quint32 id);
     UserInfo *getUser(quint32 id);
     QString &getName(quint32 id);
+    void getNetworkInfo(quint32 id, QPair<QString, quint16> &info);
 //    quint32 newSignUp(const QString &name, const QString &password,
 //                   const QString &pwQuestion, const QString &pwAnswer);
 //    void signIn(quint32 id, quint16 port);

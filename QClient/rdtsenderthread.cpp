@@ -1,12 +1,10 @@
 #include "rdtsenderthread.h"
 
-RdtSenderThread::RdtSenderThread(QObject *parent, QHostAddress &address, quint16 port, volatile State *state):
+RdtSenderThread::RdtSenderThread(QObject *parent):
     QThread(parent),
-    listening(true),
-    state(state)
+    listening(true)
 {
     receiver = new QUdpSocket(this);
-    receiver->bind (address, port);
     connect (receiver, &QUdpSocket::readyRead, this, &RdtSenderThread::readRdtData);
 }
 
@@ -20,6 +18,12 @@ void RdtSenderThread::run()
         receiver->close ();
         receiver->deleteLater ();
     }
+}
+
+void RdtSenderThread::init(QHostAddress &address, quint16 port, volatile RdtSenderThread::State *state)
+{
+    receiver->bind (address, port);
+    this->state = state;
 }
 
 void RdtSenderThread::stopListen()

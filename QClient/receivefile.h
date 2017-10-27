@@ -17,8 +17,8 @@ public:
     ~ReceiveFile();
 
     void initSocket(QFile *file,
-                    QHostAddress &address, quint16 port,
-                    QHostAddress &destination, quint16 destinationPort);
+                    QHostAddress address, quint16 port,
+                    QHostAddress destination, quint16 destinationPort, qint64 fileSize);
 
 private:
     Ui::ReceiveFile *ui;
@@ -26,7 +26,7 @@ private:
     qint64 fileSize;
     ReceiveFileThread *thread;
 
-    void updateProgress(int x);
+    void updateProgress(qint64 x);
 };
 
 #endif // RECEIVEFILE_H

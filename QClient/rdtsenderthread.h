@@ -14,10 +14,11 @@ public:
         Send,
         Wait
     };
-    RdtSenderThread(QObject *parent, QHostAddress &address, quint16 port, volatile RdtSenderThread::State *state);
+    RdtSenderThread(QObject *parent);
 
 public:
     void run() Q_DECL_OVERRIDE;
+    void init (QHostAddress &address, quint16 port, volatile RdtSenderThread::State *state);
     volatile bool listening;
     QUdpSocket *receiver;
     volatile State *state;

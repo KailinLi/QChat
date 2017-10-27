@@ -22,6 +22,8 @@ public:
 
 private:
     QByteArray block;
+public slots:
+    void sendACK(qint64 sequence);
 };
 
 #endif // RDTRECEIVERTHREAD_H

@@ -30,6 +30,7 @@ private:
     quint32 currentID;
     QColor color;
     QFile *sendFile;
+    QHostAddress localAddress;
 public:
     void start();
     void logIn();

@@ -24,3 +24,12 @@ void RdtReceiverThread::stopSending()
 {
     sending = false;
 }
+
+void RdtReceiverThread::sendACK(qint64 sequence)
+{
+    QDataStream stream(&block, QIODevice::WriteOnly);
+    stream.setVersion (QDataStream::Qt_5_6);
+    stream << sequence;
+    sender->writeDatagram (block.constData (), block.size (), destination, destinationPort);
+    block.resize (0);
+}

@@ -7,13 +7,17 @@
 #include <QScrollBar>
 #include <QTextBlock>
 #include <QFileDialog>
+#include "sendfile.h"
+#include "receivefile.h"
+#include "handledir.cpp"
 
 QClient::QClient(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::QClient),
     server(new ParallelServer(this)),
     tcpToServer(new TcpSocketMsg(this)),
-    currentID(0)
+    currentID(0),
+    localAddress(QHostAddress(tr("127.0.0.1")))
 {
     ui->setupUi(this);
     connect (tcpToServer, &TcpSocketMsg::connected, this, &QClient::logIn);
@@ -25,7 +29,7 @@ QClient::QClient(QWidget *parent) :
     connect (ui->userTableWidget, &QTableWidget::cellDoubleClicked, this, &QClient::makeActive);
     connect (ui->sendBtn, &QPushButton::clicked, this, &QClient::clickSend);
     ui->msgTextEdit->installEventFilter (this);
-    if (! server->listen (QHostAddress("127.0.0.1"))) {
+    if (! server->listen (localAddress)) {
         QMessageBox::critical(this, tr("Threaded Fortune Server"),
                               tr("Unable to start the server: %1.")
                               .arg(server->errorString()));
@@ -98,7 +102,7 @@ void QClient::haveNewMsgFromServer()
             setRedDot (*item);
         }
         Message *newMsg = new Message(Message::FinishInit);
-        newMsg->addArgv (tr("127.0.0.1"));
+        newMsg->addArgv (localAddress.toString ());
         newMsg->addArgv (QString::number (server->serverPort ()));
         tcpToServer->send (newMsg);
         break;
@@ -421,14 +425,30 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
         }
         break;
     case Message::SendFileMsg: {
-        int choose = QMessageBox::question (this, tr("新文件可接受"), tr("希望接收%1吗?").arg (msg->getArgv (0)), QMessageBox::Yes|QMessageBox::No, QMessageBox::Yes);
+        int choose = QMessageBox::question (this, tr("新文件可接受"), tr("希望接收%1吗?").arg (msg->getArgv (0)),
+                                            QMessageBox::Yes|QMessageBox::No, QMessageBox::Yes);
         if (choose == QMessageBox::No) {
             Message *newMsg = new Message(Message::AnswerSendFileMsg);
             newMsg->addArgv (tr("n"));
             emit msgToSend (thread, newMsg);
         }
-        else if (choose == QMessageBox::Yes){
-
+        else if (choose == QMessageBox::Yes) {
+            ReceiveFile receiveFileWindow(this);
+            QFile *file = new QFile(getPath ().append (tr("/%1").arg (msg->getArgv (0))));
+            if (!file->open (QIODevice::WriteOnly | QIODevice::Truncate)) {
+                qDebug() << "can not open file";
+                return;
+            }
+            QPair<QString, quint16> info;
+            userList.getNetworkInfo (thread->getUserID (), info);
+            receiveFileWindow.initSocket (file, localAddress, server->serverPort (),
+                                          QHostAddress(info.first), info.second,
+                                          static_cast<qint64>(msg->getArgv (1).toInt ()));
+            Message *newMsg = new Message(Message::AnswerSendFileMsg);
+            newMsg->addArgv (tr("y"));
+            emit msgToSend (thread, newMsg);
+            receiveFileWindow.exec ();
+            qDebug() << "hehe";
         }
         break;
     }
@@ -437,6 +457,14 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
             sendFile->close ();
             sendFile->deleteLater ();
             QMessageBox::information (this, tr("发送文件"), tr("对方拒绝接收文件"), QMessageBox::Ok);
+        }
+        else {
+            SendFile sendFileWindow(this);
+            QPair<QString, quint16> info;
+            userList.getNetworkInfo (thread->getUserID (), info);
+            sendFileWindow.initSocket (sendFile, QHostAddress(info.first), info.second,
+                                       localAddress, server->serverPort ());
+            sendFileWindow.exec ();
         }
     }
     default:

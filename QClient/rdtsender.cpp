@@ -14,8 +14,10 @@ void RdtSender::initThread(QHostAddress &address, quint16 port)
 {
     totalSize = static_cast<quint64>(file->size ());
     bytesNotWrite = totalSize;
-    thread = new RdtSenderThread(this, address, port, &state);
+    state = RdtSenderThread::State::Send;
+    thread = new RdtSenderThread(this);
     connect (thread, &RdtSenderThread::finished, thread, &RdtSenderThread::deleteLater, Qt::QueuedConnection);
+    thread->init (address, port, &state);
     thread->start ();
 }
 
@@ -29,9 +31,16 @@ void RdtSender::startSend()
             stream << bytesHadWritten;
             stream << file->read (qMin(sendSize, bytesNotWrite));
             writeDatagram (outBlock.constData (), outBlock.size (), destination, destinationPort);
+            qDebug() << destinationPort;
             state = RdtSenderThread::State::Wait;
+            outBlock.resize (0);
+            bytesNotWrite -= qMin(sendSize, bytesNotWrite);
+            bytesHadWritten += qMin(sendSize, bytesNotWrite);
+            emit updateProgress (bytesHadWritten);
         }
     }
+    file->close ();
+    file->deleteLater ();
 }
 
 void RdtSender::setAddress(QHostAddress address)

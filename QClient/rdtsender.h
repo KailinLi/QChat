@@ -32,6 +32,8 @@ public:
 
     void initThread(QHostAddress &address, quint16 port);
     void startSend();
+signals:
+    void updateProgress(qint64);
 };
 
 #endif // RDTSENDER_H

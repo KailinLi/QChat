@@ -17,10 +17,15 @@ private:
     qint64 blockSize;
     qint64 bytesHadWritten;
     qint64 sequenceNumber;
+    qint64 totalSize;
 public:
     void setFile(QFile *file);
+    void setTotalSize(qint64 fileSize);
     void initThread(QHostAddress &destination, quint16 destinationPort);
     void readRdtData();
+signals:
+    void sendACK(qint64);
+    void updateProgress(qint64);
 };
 
 #endif // RDTRECEIVER_H

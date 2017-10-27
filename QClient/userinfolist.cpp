@@ -110,6 +110,17 @@ QString &UserInfoList::getName(quint32 id)
     return list.begin ()->getName ();
 }
 
+void UserInfoList::getNetworkInfo(quint32 id, QPair<QString, quint16> &info)
+{
+    for (QList<UserInfo>::Iterator user = list.begin (); user != list.end(); ++user) {
+        if (user->getUserID () == id) {
+            info.first = user->getAddress();
+            info.second = user->getPort();
+            return;
+        }
+    }
+}
+
 //quint32 UserInfoList::newSignUp(const QString &name, const QString &password, const QString &pwQuestion, const QString &pwAnswer)
 //{
 //    quint32 newID = (quint32)list.size ();

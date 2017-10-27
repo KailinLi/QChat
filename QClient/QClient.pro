@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     receivefile.cpp \
     receivefilethread.cpp \
     rdtreceiver.cpp \
-    rdtreceiverthread.cpp
+    rdtreceiverthread.cpp \
+    handledir.cpp
 
 HEADERS  += qclient.h \
     signin.h \

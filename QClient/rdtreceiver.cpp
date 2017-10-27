@@ -12,10 +12,16 @@ void RdtReceiver::setFile(QFile *file)
     this->file = file;
 }
 
+void RdtReceiver::setTotalSize(qint64 fileSize)
+{
+    totalSize = fileSize;
+}
+
 void RdtReceiver::initThread(QHostAddress &destination, quint16 destinationPort)
 {
     thread =  new RdtReceiverThread(this, destination, destinationPort);
     connect (thread, &RdtReceiverThread::finished, thread, &RdtReceiverThread::deleteLater);
+    connect (this, &RdtReceiver::sendACK, thread, &RdtReceiverThread::sendACK);
     thread->start ();
 }
 
@@ -44,6 +50,16 @@ void RdtReceiver::readRdtData()
         if (bytesHadWritten != sequenceNumber) {
             dataGram.resize (0);//GBN
         }
-
+        else {
+            bytesHadWritten += blockSize;
+            file->write (dataGram);
+        }
+        emit sendACK (bytesHadWritten);
+        emit updateProgress (bytesHadWritten);
+        if (bytesHadWritten == totalSize) {
+            file->close ();
+            file->deleteLater ();
+        }
+        blockSize = 0;
     }
 }
