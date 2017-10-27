@@ -364,6 +364,10 @@ void QClient::clickSendFile()
     if (!fileName.isEmpty ()) {
         Message *msg = new Message(Message::SendFileMsg);
         sendFile = new QFile(fileName);
+        if (!sendFile->open (QFile::ReadOnly)) {
+            QMessageBox::warning (this, tr("发送文件"), tr("无法读取文件"));
+            return;
+        }
         QString currentFileName = fileName.right (fileName.size () - fileName.lastIndexOf ('/') - 1);
         msg->addArgv (currentFileName);
         msg->addArgv (QString::number (sendFile->size ()));
@@ -430,6 +434,8 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
     }
     case Message::AnswerSendFileMsg: {
         if (!QString::compare (msg->getArgv (0), tr("n"))) {
+            sendFile->close ();
+            sendFile->deleteLater ();
             QMessageBox::information (this, tr("发送文件"), tr("对方拒绝接收文件"), QMessageBox::Ok);
         }
     }

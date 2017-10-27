@@ -26,7 +26,12 @@ SOURCES += main.cpp\
     userinfolist.cpp \
     sendfile.cpp \
     sendfilethread.cpp \
-    rdtsender.cpp
+    rdtsender.cpp \
+    rdtsenderthread.cpp \
+    receivefile.cpp \
+    receivefilethread.cpp \
+    rdtreceiver.cpp \
+    rdtreceiverthread.cpp
 
 HEADERS  += qclient.h \
     signin.h \
@@ -40,12 +45,18 @@ HEADERS  += qclient.h \
     userinfolist.h \
     sendfile.h \
     sendfilethread.h \
-    rdtsender.h
+    rdtsender.h \
+    rdtsenderthread.h \
+    receivefile.h \
+    receivefilethread.h \
+    rdtreceiver.h \
+    rdtreceiverthread.h
 
 FORMS    += qclient.ui \
     signin.ui \
     signup.ui \
-    sendfile.ui
+    sendfile.ui \
+    receivefile.ui
 
 RESOURCES += \
     images.qrc
