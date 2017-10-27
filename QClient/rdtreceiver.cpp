@@ -1,65 +1,31 @@
 #include "rdtreceiver.h"
 
-RdtReceiver::RdtReceiver(QObject *parent):
+
+RdtReceiver::RdtReceiver(QObject *parent, const QHostAddress &address, quint16 port):
     QUdpSocket(parent),
-    blockSize(0)
+    address(address),
+    port(port),
+    rcvSocket(new QUdpSocket(this))
 {
-    connect (this, &RdtReceiver::readyRead, this, &RdtReceiver::readRdtData);
+    rcvSocket->bind (QHostAddress("127.0.0.1"), 6001);
+    connect (rcvSocket, &QUdpSocket::readyRead, this, &RdtReceiver::receive);
 }
 
-void RdtReceiver::setFile(QFile *file)
+void RdtReceiver::receive()
 {
-    this->file = file;
-}
-
-void RdtReceiver::setTotalSize(qint64 fileSize)
-{
-    totalSize = fileSize;
-}
-
-void RdtReceiver::initThread(QHostAddress &destination, quint16 destinationPort)
-{
-    thread =  new RdtReceiverThread(this, destination, destinationPort);
-    connect (thread, &RdtReceiverThread::finished, thread, &RdtReceiverThread::deleteLater);
-    connect (this, &RdtReceiver::sendACK, thread, &RdtReceiverThread::sendACK);
-    thread->start ();
-}
-
-void RdtReceiver::readRdtData()
-{
-    if (blockSize == 0) {
-        if (bytesAvailable () < static_cast<qint64>(sizeof(qint64) * 2)) {
-            return;
-        }
-        else {
-            QByteArray dataGram;
-            dataGram.resize (static_cast<int>(sizeof(qint64) * 2));
-            readDatagram (dataGram.data (), dataGram.size ());
-            QDataStream in(dataGram);
-            in.setVersion (QDataStream::Qt_5_6);
-            in >> blockSize >> sequenceNumber;
-        }
+    QByteArray dataGram;
+    while (rcvSocket->hasPendingDatagrams ()) {
+        dataGram.resize (rcvSocket->pendingDatagramSize ());
+        rcvSocket->readDatagram (dataGram.data (), dataGram.size ());
+        qDebug() << dataGram;
     }
-    if (bytesAvailable () < static_cast<qint64>(blockSize)) {
-        return;
-    }
-    else {
-        QByteArray dataGram;
-        dataGram.resize (static_cast<int>(blockSize));
-        readDatagram (dataGram.data (), dataGram.size ());
-        if (bytesHadWritten != sequenceNumber) {
-            dataGram.resize (0);//GBN
-        }
-        else {
-            bytesHadWritten += blockSize;
-            file->write (dataGram);
-        }
-        emit sendACK (bytesHadWritten);
-        emit updateProgress (bytesHadWritten);
-        if (bytesHadWritten == totalSize) {
-            file->close ();
-            file->deleteLater ();
-        }
-        blockSize = 0;
+
+    writeDatagram (dataGram, address, port);
+    QString str = QString::fromUtf8(dataGram);
+    emit step(str.toInt ());
+    if (str.toInt () == 10000) {
+        rcvSocket->deleteLater ();
+        deleteLater ();
+        emit finish ();
     }
 }

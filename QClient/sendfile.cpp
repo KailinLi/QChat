@@ -6,7 +6,6 @@ SendFile::SendFile(QWidget *parent) :
     ui(new Ui::SendFile)
 {
     ui->setupUi(this);
-    setAttribute (Qt::WA_DeleteOnClose);
 }
 
 SendFile::~SendFile()
@@ -14,21 +13,15 @@ SendFile::~SendFile()
     delete ui;
 }
 
-void SendFile::initSocket(QFile *file,
-                          QHostAddress destination, quint16 destinationPort,
-                          QHostAddress address, quint16 port)
+void SendFile::updateProcess(qint64 t)
 {
-    fileSize = file->size ();
-    thread = new SendFileThread(this);
-    thread->init (file, destination, destinationPort, address, port);
-    connect (thread, &SendFileThread::updateProgress, this, &SendFile::updateProgress, Qt::QueuedConnection);
-    thread->start ();
-
-    sadfdsf;
+    ui->progressBar->setMaximum (10000);
+    ui->progressBar->setValue (t);
 }
 
-void SendFile::updateProgress(qint64 x)
+void SendFile::on_pushButton_clicked()
 {
-    ui->progressBar->setMaximum (fileSize);
-    ui->progressBar->setValue (x);
+    SendFileThread *thread = new SendFileThread(this);
+    connect (thread, &SendFileThread::updateProcess, this, &SendFile::updateProcess);
+    thread->start ();
 }

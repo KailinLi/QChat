@@ -2,7 +2,6 @@
 #define SENDFILE_H
 
 #include <QDialog>
-#include <QFile>
 #include "sendfilethread.h"
 
 namespace Ui {
@@ -17,16 +16,13 @@ public:
     explicit SendFile(QWidget *parent = 0);
     ~SendFile();
 
-    void initSocket(QFile *file,
-                    QHostAddress destination, quint16 destinationPort,
-                    QHostAddress address, quint16 port);
+private slots:
+    void updateProcess(qint64 t);
+
+    void on_pushButton_clicked();
 
 private:
     Ui::SendFile *ui;
-    qint64 fileSize;
-    SendFileThread *thread;
-
-    void updateProgress(qint64 x);
 };
 
 #endif // SENDFILE_H

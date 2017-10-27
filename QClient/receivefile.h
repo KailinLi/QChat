@@ -16,17 +16,12 @@ public:
     explicit ReceiveFile(QWidget *parent = 0);
     ~ReceiveFile();
 
-    void initSocket(QFile *file,
-                    QHostAddress address, quint16 port,
-                    QHostAddress destination, quint16 destinationPort, qint64 fileSize);
+private slots:
+    void updateProcess(qint64 t);
+    void on_pushButton_clicked();
 
 private:
     Ui::ReceiveFile *ui;
-
-    qint64 fileSize;
-    ReceiveFileThread *thread;
-
-    void updateProgress(qint64 x);
 };
 
 #endif // RECEIVEFILE_H

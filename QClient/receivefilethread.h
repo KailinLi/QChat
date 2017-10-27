@@ -2,6 +2,7 @@
 #define RECEIVEFILETHREAD_H
 
 #include <QObject>
+#include <QThread>
 #include "rdtreceiver.h"
 
 class ReceiveFileThread : public QThread
@@ -9,24 +10,13 @@ class ReceiveFileThread : public QThread
     Q_OBJECT
 public:
     ReceiveFileThread(QObject *parent);
-public:
-    void run() Q_DECL_OVERRIDE;
-    void init (QFile *file,
-              QHostAddress &address, quint16 port,
-              QHostAddress &destination, quint16 destinationPort,
-              qint64 fileSize);
-    void stopListen();
-    RdtReceiver *receiver;
+    void run () Q_DECL_OVERRIDE;
+    void stop();
 private:
-    volatile bool listening;
-    QFile *file;
-    QHostAddress address;
-    quint16 port;
-    QHostAddress destination;
-    quint16 destinationPort;
-    qint64 fileSize;
+    volatile bool stopflag;
+    RdtReceiver *rcv;
 signals:
-    void updateProgress(qint64);
+    void updateProcess(qint64 t);
 };
 
 #endif // RECEIVEFILETHREAD_H

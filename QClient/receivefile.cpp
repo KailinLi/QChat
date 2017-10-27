@@ -6,7 +6,6 @@ ReceiveFile::ReceiveFile(QWidget *parent) :
     ui(new Ui::ReceiveFile)
 {
     ui->setupUi(this);
-    setAttribute (Qt::WA_DeleteOnClose);
 }
 
 ReceiveFile::~ReceiveFile()
@@ -14,20 +13,15 @@ ReceiveFile::~ReceiveFile()
     delete ui;
 }
 
-void ReceiveFile::initSocket(QFile *file,
-                             QHostAddress address, quint16 port,
-                             QHostAddress destination, quint16 destinationPort,
-                             qint64 fileSize)
+void ReceiveFile::updateProcess(qint64 t)
 {
-    this->fileSize = fileSize;
-    thread = new ReceiveFileThread(this);
-    thread->init (file, address, port, destination, destinationPort, fileSize);
-    connect (thread, &ReceiveFileThread::updateProgress, this, &ReceiveFile::updateProgress, Qt::QueuedConnection);
-    thread->start ();
+    ui->progressBar->setMaximum (10000);
+    ui->progressBar->setValue (t);
 }
 
-void ReceiveFile::updateProgress(qint64 x)
+void ReceiveFile::on_pushButton_clicked()
 {
-    ui->progressBar->setMaximum (fileSize);
-    ui->progressBar->setValue (x);
+    ReceiveFileThread *thread = new ReceiveFileThread(this);
+    connect (thread, &ReceiveFileThread::updateProcess, this, &ReceiveFile::updateProcess);
+    thread->start();
 }

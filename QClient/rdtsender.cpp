@@ -2,59 +2,58 @@
 
 RdtSender::RdtSender(QObject *parent):
     QUdpSocket(parent),
-    sendSize(1200),
-    totalSize(0),
-    bytesHadWritten(0),
-    bytesNotWrite(0)
+    rcvSocket(new QUdpSocket(this))
 {
-
+    connect (this, &RdtSender::canSend, this, &RdtSender::sendPiece);
 }
 
-void RdtSender::initThread(QHostAddress &address, quint16 port)
+void RdtSender::setSender(const QHostAddress &address, quint16 port)
 {
-    totalSize = static_cast<quint64>(file->size ());
-    bytesNotWrite = totalSize;
-    state = RdtSenderThread::State::Send;
-    thread = new RdtSenderThread(this);
-    connect (thread, &RdtSenderThread::finished, thread, &RdtSenderThread::deleteLater, Qt::QueuedConnection);
-    thread->init (address, port, &state);
-    thread->start ();
+    this->address = address;
+    this->port = port;
+    this->data = 10;
+    this->current = 0;
 }
 
-void RdtSender::startSend()
+void RdtSender::setRcv(const QHostAddress &address, quint16 port)
 {
-    while (bytesNotWrite > 0) {
-        while (state == RdtSenderThread::State::Send) {
-            QDataStream stream(&outBlock, QIODevice::WriteOnly);
-            stream.setVersion (QDataStream::Qt_5_6);
-            stream << qMin(sendSize, bytesNotWrite);
-            stream << bytesHadWritten;
-            stream << file->read (qMin(sendSize, bytesNotWrite));
-            writeDatagram (outBlock.constData (), outBlock.size (), destination, destinationPort);
-            qDebug() << destinationPort;
-            state = RdtSenderThread::State::Wait;
-            outBlock.resize (0);
-            bytesNotWrite -= qMin(sendSize, bytesNotWrite);
-            bytesHadWritten += qMin(sendSize, bytesNotWrite);
-            emit updateProgress (bytesHadWritten);
+    rcvSocket->bind (address, port, QUdpSocket::ShareAddress);
+    connect (rcvSocket, &QUdpSocket::readyRead, this, &RdtSender::rdtRcv);
+    state = Send;
+}
+
+void RdtSender::sendData()
+{
+    while (state != Finish) {
+        if (state == Send) {
+            state = Wait;
+            emit canSend ();
         }
     }
-    file->close ();
-    file->deleteLater ();
+    rcvSocket->deleteLater ();
+    deleteLater ();
+    qDebug() << "ok";
 }
 
-void RdtSender::setAddress(QHostAddress address)
+void RdtSender::sendPiece()
 {
-    destination = address;
+    state = Wait;
+    QByteArray datagram;
+    qDebug() << tr("send %1").arg (current);
+    datagram.setNum (current++);
+    writeDatagram (datagram, address, port);
 }
 
-void RdtSender::setPort(quint16 port)
+void RdtSender::rdtRcv()
 {
-    destinationPort = port;
+    QByteArray dataGram;
+    while (rcvSocket->hasPendingDatagrams ()) {
+        dataGram.resize (rcvSocket->pendingDatagramSize ());
+        rcvSocket->readDatagram (dataGram.data (), dataGram.size ());
+        qDebug() << dataGram;
+    }
+    QString str = QString::fromUtf8(dataGram);
+    emit step(str.toInt ());
+    if (str.toInt () == 10000) state = Finish;
+    else state = Send;
 }
-
-void RdtSender::setFile(QFile *file)
-{
-    this->file = file;
-}
-

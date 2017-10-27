@@ -24,15 +24,13 @@ SOURCES += main.cpp\
     parallelserver.cpp \
     userinfo.cpp \
     userinfolist.cpp \
+    handledir.cpp \
     sendfile.cpp \
-    sendfilethread.cpp \
-    rdtsender.cpp \
-    rdtsenderthread.cpp \
     receivefile.cpp \
+    sendfilethread.cpp \
     receivefilethread.cpp \
-    rdtreceiver.cpp \
-    rdtreceiverthread.cpp \
-    handledir.cpp
+    rdtsender.cpp \
+    rdtreceiver.cpp
 
 HEADERS  += qclient.h \
     signin.h \
@@ -45,13 +43,11 @@ HEADERS  += qclient.h \
     userinfo.h \
     userinfolist.h \
     sendfile.h \
-    sendfilethread.h \
-    rdtsender.h \
-    rdtsenderthread.h \
     receivefile.h \
+    sendfilethread.h \
     receivefilethread.h \
-    rdtreceiver.h \
-    rdtreceiverthread.h
+    rdtsender.h \
+    rdtreceiver.h
 
 FORMS    += qclient.ui \
     signin.ui \

@@ -441,9 +441,9 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
             }
             QPair<QString, quint16> info;
             userList.getNetworkInfo (thread->getUserID (), info);
-            receiveFileWindow.initSocket (file, localAddress, server->serverPort (),
-                                          QHostAddress(info.first), info.second,
-                                          static_cast<qint64>(msg->getArgv (1).toInt ()));
+//            receiveFileWindow.initSocket (file, localAddress, server->serverPort (),
+//                                          QHostAddress(info.first), info.second,
+//                                          static_cast<qint64>(msg->getArgv (1).toInt ()));
             Message *newMsg = new Message(Message::AnswerSendFileMsg);
             newMsg->addArgv (tr("y"));
             emit msgToSend (thread, newMsg);
@@ -462,8 +462,8 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
             SendFile sendFileWindow(this);
             QPair<QString, quint16> info;
             userList.getNetworkInfo (thread->getUserID (), info);
-            sendFileWindow.initSocket (sendFile, QHostAddress(info.first), info.second,
-                                       localAddress, server->serverPort ());
+//            sendFileWindow.initSocket (sendFile, QHostAddress(info.first), info.second,
+//                                       localAddress, server->serverPort ());
             sendFileWindow.exec ();
         }
     }

@@ -2,38 +2,35 @@
 #define RDTSENDER_H
 
 #include <QObject>
-#include "rdtsenderthread.h"
-#include <QFile>
+#include <QtNetwork>
 
 class RdtSender : public QUdpSocket
 {
     Q_OBJECT
 public:
     RdtSender(QObject *parent);
+    enum State {
+        Wait,
+        Send,
+        Finish
+    };
 
+    void setSender(const QHostAddress &address, quint16 port);
+    void setRcv(const QHostAddress &address, quint16 port);
+    void sendData();
+    void sendPiece();
+    void rdtRcv();
 private:
-    QHostAddress destination;
-    quint16 destinationPort;
-    QFile *file;
-    RdtSenderThread *thread;
-
-    qint64 sendSize;
-    qint64 totalSize;
-    qint64 bytesHadWritten;
-    qint64 bytesNotWrite;
-
-    QByteArray outBlock;
-
-public:
-    volatile RdtSenderThread::State state;
-    void setAddress(QHostAddress address);
-    void setPort(quint16 port);
-    void setFile(QFile *file);
-
-    void initThread(QHostAddress &address, quint16 port);
-    void startSend();
+    QUdpSocket *rcvSocket;
+    int data;
+    int current;
+    QHostAddress address;
+    quint16 port;
+    State state;
 signals:
-    void updateProgress(qint64);
+    void canSend();
+    void finish();
+    void step(qint64);
 };
 
 #endif // RDTSENDER_H

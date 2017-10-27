@@ -2,6 +2,7 @@
 #define SENDFILETHREAD_H
 
 #include <QObject>
+#include <QThread>
 #include "rdtsender.h"
 
 class SendFileThread : public QThread
@@ -9,21 +10,11 @@ class SendFileThread : public QThread
     Q_OBJECT
 public:
     SendFileThread(QObject* parent);
-
-public:
     void run() Q_DECL_OVERRIDE;
-    void init(QFile *file,
-              QHostAddress &destination, quint16 destinationPort,
-              QHostAddress &address, quint16 port);
-    RdtSender *sender;
 private:
-    QFile *file;
-    QHostAddress destination;
-    quint16 destinationPort;
-    QHostAddress address;
-    quint16 port;
+    RdtSender *sender;
 signals:
-    void updateProgress(qint64);
+    void updateProcess(qint64 x);
 };
 
 #endif // SENDFILETHREAD_H
