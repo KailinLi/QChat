@@ -23,6 +23,8 @@ void SendFile::initSocket(QFile *file,
     thread->init (file, destination, destinationPort, address, port);
     connect (thread, &SendFileThread::updateProgress, this, &SendFile::updateProgress, Qt::QueuedConnection);
     thread->start ();
+
+    sadfdsf;
 }
 
 void SendFile::updateProgress(qint64 x)
