@@ -7,7 +7,7 @@ RdtSenderThread::RdtSenderThread(QObject *parent, QHostAddress &address, quint16
 {
     receiver = new QUdpSocket(this);
     receiver->bind (address, port);
-    connect (receiver, &QUdpSocket::readyRead, this, &RdtSenderThread::readData);
+    connect (receiver, &QUdpSocket::readyRead, this, &RdtSenderThread::readRdtData);
 }
 
 void RdtSenderThread::run()
@@ -27,14 +27,14 @@ void RdtSenderThread::stopListen()
     listening = false;
 }
 
-void RdtSenderThread::readData()
+void RdtSenderThread::readRdtData()
 {
-    if (receiver->bytesAvailable () < static_cast<qint64>(sizeof(quint64))) {
+    if (receiver->bytesAvailable () < static_cast<qint64>(sizeof(qint64))) {
         return;
     }
     QByteArray dataGram;
-    dataGram.resize (static_cast<qint64>(sizeof(quint64)));
+    dataGram.resize (static_cast<int>(sizeof(qint64)));
     receiver->readDatagram (dataGram.data (), dataGram.size ());
-    quint64 sequence = dataGram.toULongLong ();
+    qint64 sequence = dataGram.toLongLong ();
     *state = State::Send;
 }

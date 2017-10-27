@@ -22,7 +22,7 @@ public:
     QUdpSocket *receiver;
     volatile State *state;
     void stopListen();
-    void readData();
+    void readRdtData();
 
 private:
     QByteArray block;

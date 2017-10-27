@@ -17,10 +17,10 @@ private:
     QFile *file;
     RdtSenderThread *thread;
 
-    quint64 sendSize;
-    quint64 totalSize;
-    quint64 bytesHadWritten;
-    quint64 bytesNotWrite;
+    qint64 sendSize;
+    qint64 totalSize;
+    qint64 bytesHadWritten;
+    qint64 bytesNotWrite;
 
     QByteArray outBlock;
 

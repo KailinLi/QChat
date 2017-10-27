@@ -13,10 +13,14 @@ public:
 
 private:
     RdtReceiverThread *thread;
-
+    QFile *file;
+    qint64 blockSize;
+    qint64 bytesHadWritten;
+    qint64 sequenceNumber;
 public:
+    void setFile(QFile *file);
     void initThread(QHostAddress &destination, quint16 destinationPort);
-
+    void readRdtData();
 };
 
 #endif // RDTRECEIVER_H

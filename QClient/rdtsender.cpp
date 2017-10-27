@@ -24,6 +24,7 @@ void RdtSender::startSend()
     while (bytesNotWrite > 0) {
         while (state == RdtSenderThread::State::Send) {
             QDataStream stream(&outBlock, QIODevice::WriteOnly);
+            stream.setVersion (QDataStream::Qt_5_6);
             stream << qMin(sendSize, bytesNotWrite);
             stream << bytesHadWritten;
             stream << file->read (qMin(sendSize, bytesNotWrite));

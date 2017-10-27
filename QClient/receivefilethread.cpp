@@ -8,7 +8,9 @@ ReceiveFileThread::ReceiveFileThread(QObject *parent, QFile *file,
     listening(true)
 {
     receiver = new RdtReceiver(this);
-
+    receiver->setFile (file);
+    receiver->bind (address, port);
+    receiver->initThread (destination, destinationPort);
 }
 
 void ReceiveFileThread::run()
