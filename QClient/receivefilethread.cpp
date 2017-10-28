@@ -2,10 +2,10 @@
 
 ReceiveFileThread::ReceiveFileThread(QObject *parent):
     QThread(parent),
-    rcv(new RdtReceiver(this, QHostAddress("127.0.0.1"), 6000))
+    receiver(new RdtReceiver(this))
 {
-    connect (rcv, &RdtReceiver::step, this, &ReceiveFileThread::updateProcess);
-    connect (rcv, &RdtReceiver::finish, this, &ReceiveFileThread::stop);
+    connect (receiver, &RdtReceiver::updateProgress, this, &ReceiveFileThread::updateProcess);
+    connect (receiver, &RdtReceiver::finish, this, &ReceiveFileThread::stop);
     stopflag = true;
 }
 

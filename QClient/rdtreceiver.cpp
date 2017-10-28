@@ -1,31 +1,45 @@
 #include "rdtreceiver.h"
 
 
-RdtReceiver::RdtReceiver(QObject *parent, const QHostAddress &address, quint16 port):
+RdtReceiver::RdtReceiver(QObject *parent):
     QUdpSocket(parent),
-    address(address),
-    port(port),
-    rcvSocket(new QUdpSocket(this))
+    sender(new QUdpSocket(this))
 {
-    rcvSocket->bind (QHostAddress("127.0.0.1"), 6001);
-    connect (rcvSocket, &QUdpSocket::readyRead, this, &RdtReceiver::receive);
+
 }
 
 void RdtReceiver::receive()
 {
     QByteArray dataGram;
-    while (rcvSocket->hasPendingDatagrams ()) {
-        dataGram.resize (rcvSocket->pendingDatagramSize ());
-        rcvSocket->readDatagram (dataGram.data (), dataGram.size ());
+    while (hasPendingDatagrams ()) {
+        dataGram.resize (pendingDatagramSize ());
+        readDatagram (dataGram.data (), dataGram.size ());
         qDebug() << dataGram;
     }
 
-    writeDatagram (dataGram, address, port);
+    sender->writeDatagram (dataGram, destination, destinationPort);
     QString str = QString::fromUtf8(dataGram);
-    emit step(str.toInt ());
+    emit updateProgress(str.toInt ());
     if (str.toInt () == 10000) {
-        rcvSocket->deleteLater ();
         deleteLater ();
+        sender->deleteLater ();
         emit finish ();
     }
+}
+
+void RdtReceiver::setFile(QFile *file)
+{
+    this->file = file;
+}
+
+void RdtReceiver::setDestination(QHostAddress &destination, quint16 destinationPort)
+{
+    this->destination = destination;
+    this->destinationPort = destinationPort;
+}
+
+void RdtReceiver::bindListen(QHostAddress &address, quint16 port)
+{
+    bind (address, port);
+    connect (this, &RdtReceiver::readyRead, this, &RdtReceiver::receive);
 }

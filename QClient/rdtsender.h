@@ -15,22 +15,27 @@ public:
         Finish
     };
 
-    void setSender(const QHostAddress &address, quint16 port);
-    void setRcv(const QHostAddress &address, quint16 port);
+//    void setSender(const QHostAddress &destination, quint16 destinationPort);
+//    void setRcv(const QHostAddress &destination, quint16 destinationPort);
     void sendData();
     void sendPiece();
     void rdtRcv();
 private:
-    QUdpSocket *rcvSocket;
+    QUdpSocket *receiver;
+    QFile *file;
+    QHostAddress destination;
+    quint16 destinationPort;
+    State state;
     int data;
     int current;
-    QHostAddress address;
-    quint16 port;
-    State state;
+public:
+    void setFile(QFile *file);
+    void setDestination(QHostAddress &destination, quint16 destinationPort);
+    void bindListen(QHostAddress &address, quint16 port);
 signals:
     void canSend();
     void finish();
-    void step(qint64);
+    void updateProgress(qint64);
 };
 
 #endif // RDTSENDER_H

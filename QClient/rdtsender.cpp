@@ -2,25 +2,25 @@
 
 RdtSender::RdtSender(QObject *parent):
     QUdpSocket(parent),
-    rcvSocket(new QUdpSocket(this))
+    receiver(new QUdpSocket(this))
 {
     connect (this, &RdtSender::canSend, this, &RdtSender::sendPiece);
 }
 
-void RdtSender::setSender(const QHostAddress &address, quint16 port)
-{
-    this->address = address;
-    this->port = port;
-    this->data = 10;
-    this->current = 0;
-}
+//void RdtSender::setSender(const QHostAddress &address, quint16 port)
+//{
+//    this->destination = address;
+//    this->destinationPort = port;
+//    this->data = 10;
+//    this->current = 0;
+//}
 
-void RdtSender::setRcv(const QHostAddress &address, quint16 port)
-{
-    rcvSocket->bind (address, port, QUdpSocket::ShareAddress);
-    connect (rcvSocket, &QUdpSocket::readyRead, this, &RdtSender::rdtRcv);
-    state = Send;
-}
+//void RdtSender::setRcv(const QHostAddress &address, quint16 port)
+//{
+//    receiver->bind (address, port, QUdpSocket::ShareAddress);
+//    connect (receiver, &QUdpSocket::readyRead, this, &RdtSender::rdtRcv);
+//    state = Send;
+//}
 
 void RdtSender::sendData()
 {
@@ -30,7 +30,7 @@ void RdtSender::sendData()
             emit canSend ();
         }
     }
-    rcvSocket->deleteLater ();
+    receiver->deleteLater ();
     deleteLater ();
     qDebug() << "ok";
 }
@@ -41,19 +41,39 @@ void RdtSender::sendPiece()
     QByteArray datagram;
     qDebug() << tr("send %1").arg (current);
     datagram.setNum (current++);
-    writeDatagram (datagram, address, port);
+    writeDatagram (datagram, destination, destinationPort);
 }
 
 void RdtSender::rdtRcv()
 {
     QByteArray dataGram;
-    while (rcvSocket->hasPendingDatagrams ()) {
-        dataGram.resize (rcvSocket->pendingDatagramSize ());
-        rcvSocket->readDatagram (dataGram.data (), dataGram.size ());
+    while (receiver->hasPendingDatagrams ()) {
+        dataGram.resize (receiver->pendingDatagramSize ());
+        receiver->readDatagram (dataGram.data (), dataGram.size ());
         qDebug() << dataGram;
     }
     QString str = QString::fromUtf8(dataGram);
-    emit step(str.toInt ());
+    emit updateProgress(str.toInt ());
     if (str.toInt () == 10000) state = Finish;
     else state = Send;
+}
+
+void RdtSender::setFile(QFile *file)
+{
+    this->file = file;
+}
+
+void RdtSender::setDestination(QHostAddress &destination, quint16 destinationPort)
+{
+    this->destination = destination;
+    this->destinationPort = destinationPort;
+    this->data = 10;
+    this->current = 0;
+}
+
+void RdtSender::bindListen(QHostAddress &address, quint16 port)
+{
+    receiver->bind (address, port);
+    connect (receiver, &QUdpSocket::readyRead, this, &RdtSender::rdtRcv);
+    state = Send;
 }

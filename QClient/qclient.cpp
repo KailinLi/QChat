@@ -433,7 +433,6 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
             emit msgToSend (thread, newMsg);
         }
         else if (choose == QMessageBox::Yes) {
-            ReceiveFile receiveFileWindow(this);
             QFile *file = new QFile(getPath ().append (tr("/%1").arg (msg->getArgv (0))));
             if (!file->open (QIODevice::WriteOnly | QIODevice::Truncate)) {
                 qDebug() << "can not open file";
@@ -441,6 +440,10 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
             }
             QPair<QString, quint16> info;
             userList.getNetworkInfo (thread->getUserID (), info);
+            ReceiveFile receiveFileWindow(this);
+            receiveFileWindow.initData (file, localAddress, server->serverPort (),
+                                        QHostAddress(info.first), info.second,
+                                        static_cast<qint64>(msg->getArgv (1).toInt ()));
 //            receiveFileWindow.initSocket (file, localAddress, server->serverPort (),
 //                                          QHostAddress(info.first), info.second,
 //                                          static_cast<qint64>(msg->getArgv (1).toInt ()));
@@ -459,9 +462,11 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
             QMessageBox::information (this, tr("发送文件"), tr("对方拒绝接收文件"), QMessageBox::Ok);
         }
         else {
-            SendFile sendFileWindow(this);
             QPair<QString, quint16> info;
             userList.getNetworkInfo (thread->getUserID (), info);
+            SendFile sendFileWindow(this);
+            sendFileWindow.initData (sendFile, QHostAddress(info.first), info.second,
+                                     localAddress, server->serverPort ());//server->serverPort ());
 //            sendFileWindow.initSocket (sendFile, QHostAddress(info.first), info.second,
 //                                       localAddress, server->serverPort ());
             sendFileWindow.exec ();

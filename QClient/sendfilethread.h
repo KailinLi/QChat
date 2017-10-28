@@ -11,7 +11,7 @@ class SendFileThread : public QThread
 public:
     SendFileThread(QObject* parent);
     void run() Q_DECL_OVERRIDE;
-private:
+public:
     RdtSender *sender;
 signals:
     void updateProcess(qint64 x);

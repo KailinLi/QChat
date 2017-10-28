@@ -8,9 +8,20 @@ SendFile::SendFile(QWidget *parent) :
     ui->setupUi(this);
 }
 
+
 SendFile::~SendFile()
 {
     delete ui;
+}
+
+void SendFile::initData(QFile *file, QHostAddress destination, quint16 destinationPort,
+                        QHostAddress address, quint16 port)
+{
+    this->file = file;
+    this->destination = destination;
+    this->destinationPort = destinationPort;
+    this->address = address;
+    this->port = port;
 }
 
 void SendFile::updateProcess(qint64 t)
@@ -22,6 +33,9 @@ void SendFile::updateProcess(qint64 t)
 void SendFile::on_pushButton_clicked()
 {
     SendFileThread *thread = new SendFileThread(this);
+    thread->sender->setFile (file);
+    thread->sender->setDestination (destination, destinationPort);
+    thread->sender->bindListen (address, port);
     connect (thread, &SendFileThread::updateProcess, this, &SendFile::updateProcess);
     thread->start ();
 }

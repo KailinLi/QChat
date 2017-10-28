@@ -16,12 +16,24 @@ public:
     explicit ReceiveFile(QWidget *parent = 0);
     ~ReceiveFile();
 
-private slots:
-    void updateProcess(qint64 t);
-    void on_pushButton_clicked();
 
 private:
     Ui::ReceiveFile *ui;
+    QFile *file;
+    QHostAddress address;
+    quint16 port;
+    QHostAddress destination;
+    quint16 destinationPort;
+    qint64 fileSize;
+
+public:
+    void initData(QFile *file,
+                  QHostAddress address, quint16 port,
+                  QHostAddress destination, quint16 destinationPort, qint64 fileSize);
+
+public slots:
+    void updateProcess(qint64 t);
+    void on_pushButton_clicked();
 };
 
 #endif // RECEIVEFILE_H

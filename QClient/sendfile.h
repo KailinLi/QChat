@@ -16,13 +16,23 @@ public:
     explicit SendFile(QWidget *parent = 0);
     ~SendFile();
 
-private slots:
+private:
+    Ui::SendFile *ui;
+
+    QFile *file;
+    QHostAddress destination;
+    quint16 destinationPort;
+    QHostAddress address;
+    quint16 port;
+public:
+    void initData(QFile *file,
+                  QHostAddress destination, quint16 destinationPort,
+                  QHostAddress address, quint16 port);
+
+public slots:
     void updateProcess(qint64 t);
 
     void on_pushButton_clicked();
-
-private:
-    Ui::SendFile *ui;
 };
 
 #endif // SENDFILE_H

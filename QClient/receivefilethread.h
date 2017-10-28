@@ -14,7 +14,8 @@ public:
     void stop();
 private:
     volatile bool stopflag;
-    RdtReceiver *rcv;
+public:
+    RdtReceiver *receiver;
 signals:
     void updateProcess(qint64 t);
 };
