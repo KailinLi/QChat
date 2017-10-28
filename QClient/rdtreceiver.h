@@ -8,7 +8,7 @@ class RdtReceiver : public QUdpSocket
 {
     Q_OBJECT
 public:
-    RdtReceiver(QObject *parent);
+    RdtReceiver(QObject *parent = Q_NULLPTR);
 private:
     int hasRcv;
     QUdpSocket *sender;

@@ -2,7 +2,7 @@
 
 ReceiveFileThread::ReceiveFileThread(QObject *parent):
     QThread(parent),
-    receiver(new RdtReceiver(this))
+    receiver(new RdtReceiver())
 {
     connect (receiver, &RdtReceiver::updateProgress, this, &ReceiveFileThread::updateProcess);
     connect (receiver, &RdtReceiver::finish, this, &ReceiveFileThread::stop);

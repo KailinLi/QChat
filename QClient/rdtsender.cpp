@@ -34,7 +34,7 @@ void RdtSender::startSend()
             stream << bytesHadWritten;
             qint64 size = qMin(sendSize, bytesNotWrite);
             stream << file->read (size);
-            writeDatagram (outBlock.constData (), outBlock.size (), destination, destinationPort);
+            write (outBlock.constData (), outBlock.size ());
             outBlock.resize (0);
             bytesNotWrite -= size;
             bytesHadWritten += size;
@@ -105,6 +105,7 @@ void RdtSender::setDestination(QHostAddress &destination, quint16 destinationPor
 {
     this->destination = destination;
     this->destinationPort = destinationPort;
+    connectToHost (destination, destinationPort);
 //    this->data = 10;
 //    this->current = 0;
 }

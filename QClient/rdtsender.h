@@ -8,7 +8,7 @@ class RdtSender : public QUdpSocket
 {
     Q_OBJECT
 public:
-    RdtSender(QObject *parent);
+    RdtSender(QObject *parent = Q_NULLPTR);
     enum State {
         Wait,
         Send,
