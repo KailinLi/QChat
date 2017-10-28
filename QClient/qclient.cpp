@@ -451,7 +451,6 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
             newMsg->addArgv (tr("y"));
             emit msgToSend (thread, newMsg);
             receiveFileWindow.exec ();
-            qDebug() << "hehe";
         }
         break;
     }

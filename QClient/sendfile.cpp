@@ -26,7 +26,7 @@ void SendFile::initData(QFile *file, QHostAddress destination, quint16 destinati
 
 void SendFile::updateProcess(qint64 t)
 {
-    ui->progressBar->setMaximum (10000);
+    ui->progressBar->setMaximum (file->size ());
     ui->progressBar->setValue (t);
 }
 
@@ -36,6 +36,6 @@ void SendFile::on_pushButton_clicked()
     thread->sender->setFile (file);
     thread->sender->setDestination (destination, destinationPort);
     thread->sender->bindListen (address, port);
-    connect (thread, &SendFileThread::updateProcess, this, &SendFile::updateProcess);
+    connect (thread, &SendFileThread::updateProcess, this, &SendFile::updateProcess, Qt::QueuedConnection);
     thread->start ();
 }

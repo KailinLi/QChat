@@ -17,17 +17,25 @@ public:
 
 //    void setSender(const QHostAddress &destination, quint16 destinationPort);
 //    void setRcv(const QHostAddress &destination, quint16 destinationPort);
-    void sendData();
-    void sendPiece();
-    void rdtRcv();
+    void startSend();
+    void sendFilePiece();
+    void readRdtACK();
 private:
     QUdpSocket *receiver;
     QFile *file;
     QHostAddress destination;
     quint16 destinationPort;
     State state;
-    int data;
-    int current;
+//    int data;
+//    int current;
+    qint64 sendSize;
+    qint64 totalSize;
+    qint64 bytesHadWritten;
+    qint64 bytesNotWrite;
+
+    QByteArray outBlock;
+    QByteArray dataGram;
+//    char dataGram[sizeof(qint64)];
 public:
     void setFile(QFile *file);
     void setDestination(QHostAddress &destination, quint16 destinationPort);

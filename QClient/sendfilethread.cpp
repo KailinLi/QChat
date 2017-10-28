@@ -11,5 +11,5 @@ SendFileThread::SendFileThread(QObject* parent):
 
 void SendFileThread::run()
 {
-    sender->sendData ();
+    sender->startSend ();
 }

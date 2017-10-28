@@ -9,7 +9,6 @@ class RdtReceiver : public QUdpSocket
     Q_OBJECT
 public:
     RdtReceiver(QObject *parent);
-    void receive();
 private:
     int hasRcv;
     QUdpSocket *sender;
@@ -17,11 +16,21 @@ private:
     QFile *file;
     QHostAddress destination;
     quint16 destinationPort;
+    qint64 blockSize;
+    qint64 bytesHadWritten;
+    qint64 sequenceNumber;
+    qint64 totalSize;
+
+    QByteArray block;
+    QByteArray dataGram;
 public:
-    void setFile(QFile *file);
+    void readRdtData();
+    void setFile(QFile *file, qint64 fileSize);
     void setDestination(QHostAddress &destination, quint16 destinationPort);
     void bindListen(QHostAddress &address, quint16 port);
+    void sendACK(qint64 sequenceNumber);
 signals:
+    void callACK(qint64);
     void finish();
     void updateProgress(qint64);
 };

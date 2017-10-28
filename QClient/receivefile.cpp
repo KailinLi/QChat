@@ -26,16 +26,16 @@ void ReceiveFile::initData(QFile *file, QHostAddress address, quint16 port,
 
 void ReceiveFile::updateProcess(qint64 t)
 {
-    ui->progressBar->setMaximum (10000);
+    ui->progressBar->setMaximum (fileSize);
     ui->progressBar->setValue (t);
 }
 
 void ReceiveFile::on_pushButton_clicked()
 {
     ReceiveFileThread *thread = new ReceiveFileThread(this);
-    thread->receiver->setFile (file);
+    thread->receiver->setFile (file, fileSize);
     thread->receiver->setDestination (destination, destinationPort);
     thread->receiver->bindListen (address, port);
-    connect (thread, &ReceiveFileThread::updateProcess, this, &ReceiveFile::updateProcess);
+    connect (thread, &ReceiveFileThread::updateProcess, this, &ReceiveFile::updateProcess, Qt::QueuedConnection);
     thread->start();
 }
