@@ -66,6 +66,9 @@ void RdtReceiver::readRdtData()
         if (bytesHadWritten == totalSize) {
             file->close ();
             file->deleteLater ();
+            sender->disconnectFromHost ();
+            sender->deleteLater ();
+            emit finish ();
         }
         blockSize = 0;
     }
@@ -83,6 +86,7 @@ void RdtReceiver::setDestination(QHostAddress &destination, quint16 destinationP
 {
     this->destination = destination;
     this->destinationPort = destinationPort;
+    sender->connectToHost (destination, destinationPort);
 }
 
 void RdtReceiver::bindListen(QHostAddress &address, quint16 port)
@@ -96,7 +100,7 @@ void RdtReceiver::sendACK(qint64 sequenceNumber)
     QDataStream stream(&block, QIODevice::WriteOnly);
     stream.setVersion (QDataStream::Qt_5_6);
     stream << sequenceNumber;
-    sender->writeDatagram (block.constData (), block.size (), destination, destinationPort);
+    sender->write (block.constData (), block.size ());
     block.resize (0);
 }
 

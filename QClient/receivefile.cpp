@@ -6,6 +6,7 @@ ReceiveFile::ReceiveFile(QWidget *parent) :
     ui(new Ui::ReceiveFile)
 {
     ui->setupUi(this);
+    setAttribute (Qt::WA_DeleteOnClose);
 }
 
 ReceiveFile::~ReceiveFile()
@@ -37,5 +38,6 @@ void ReceiveFile::on_pushButton_clicked()
     thread->receiver->setDestination (destination, destinationPort);
     thread->receiver->bindListen (address, port);
     connect (thread, &ReceiveFileThread::updateProcess, this, &ReceiveFile::updateProcess, Qt::QueuedConnection);
+    connect (thread, &ReceiveFileThread::finished, thread, &ReceiveFileThread::deleteLater);
     thread->start();
 }

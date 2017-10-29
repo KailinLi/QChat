@@ -44,6 +44,7 @@ void RdtSender::startSend()
     file->close ();
     file->deleteLater ();
     receiver->deleteLater ();
+    disconnectFromHost ();
     deleteLater ();
     qDebug() << "ok";
 }

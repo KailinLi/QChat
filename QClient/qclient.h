@@ -5,6 +5,8 @@
 #include "connectthreadpool.h"
 #include "parallelserver.h"
 #include "userinfolist.h"
+#include "sendfile.h"
+#include "receivefile.h"
 
 namespace Ui {
 class QClient;
@@ -31,6 +33,9 @@ private:
     QColor color;
     QFile *sendFile;
     QHostAddress localAddress;
+
+    ReceiveFile *receiveFileWindow;
+    SendFile *sendFileWindow;
 public:
     void start();
     void logIn();

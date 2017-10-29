@@ -12,6 +12,8 @@ ReceiveFileThread::ReceiveFileThread(QObject *parent):
 void ReceiveFileThread::run()
 {
     while(stopflag);
+    receiver->deleteLater ();
+    qDebug() << "finish receiver";
 }
 
 void ReceiveFileThread::stop()

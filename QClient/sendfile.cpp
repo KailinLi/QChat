@@ -6,6 +6,7 @@ SendFile::SendFile(QWidget *parent) :
     ui(new Ui::SendFile)
 {
     ui->setupUi(this);
+    setAttribute (Qt::WA_DeleteOnClose);
 }
 
 
@@ -37,5 +38,6 @@ void SendFile::on_pushButton_clicked()
     thread->sender->setDestination (destination, destinationPort);
     thread->sender->bindListen (address, port);
     connect (thread, &SendFileThread::updateProcess, this, &SendFile::updateProcess, Qt::QueuedConnection);
+    connect (thread, &SendFileThread::finished, thread, &SendFileThread::deleteLater);
     thread->start ();
 }
