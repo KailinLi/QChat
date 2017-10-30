@@ -1,47 +1,37 @@
 #include "rdtsender.h"
-#define sendSize 1300
+#define SendSize 1400
+#define N 100
 
 RdtSender::RdtSender(QObject *parent):
     QUdpSocket(parent),
     receiver(new QUdpSocket(this))
 {
 //    connect (this, &RdtSender::canSend, this, &RdtSender::sendFilePiece);
+    connect (&timer, &QTimer::timeout, this, &RdtSender::timeOut);
 }
-
-//void RdtSender::setSender(const QHostAddress &address, quint16 port)
-//{
-//    this->destination = address;
-//    this->destinationPort = port;
-//    this->data = 10;
-//    this->current = 0;
-//}
-
-//void RdtSender::setRcv(const QHostAddress &address, quint16 port)
-//{
-//    receiver->bind (address, port, QUdpSocket::ShareAddress);
-//    connect (receiver, &QUdpSocket::readyRead, this, &RdtSender::rdtRcv);
-//    state = Send;
-//}
 
 void RdtSender::startSend()
 {
-    while (bytesNotWrite > 0) {
-        if (state == State::Send) {
-            state = State::Wait;
-//            emit canSend ();
+    while (base < totalSize) {
+        if (nextSeqnum < base + N * SendSize && nextSeqnum < totalSize) {
+//        if (state == State::Send) {
+//            state = State::Wait;
             QDataStream stream(&outBlock, QIODevice::WriteOnly);
             stream.setVersion (QDataStream::Qt_5_6);
-            qint64 size = (sendSize > bytesNotWrite) ? bytesNotWrite : sendSize;//qMin(sendSize, bytesNotWrite);
+            qint64 size = (SendSize > (totalSize - nextSeqnum)) ? (totalSize - nextSeqnum) : SendSize;//qMin(sendSize, bytesNotWrite);
             stream << size;
-            stream << bytesHadWritten;
-//            qint64 size = qMin(sendSize, bytesNotWrite);
+            stream << nextSeqnum;
             stream << file->read (size);
             write (outBlock.constData (), outBlock.size ());
             outBlock.resize (0);
-            bytesNotWrite -= size;
-            bytesHadWritten += size;
-            if (!(bytesHadWritten % (sendSize * 200)))
-                emit updateProgress (bytesHadWritten);
+
+            if (base == nextSeqnum) timer.start ();
+
+            nextSeqnum += size;
+//            bytesNotWrite -= size;
+//            base += size;
+//            if (!(bytesHadWritten % (sendSize * 200)))
+//                emit updateProgress (bytesHadWritten);
         }
     }
     qDebug() << "startSend finish";
@@ -55,56 +45,41 @@ void RdtSender::startSend()
     qDebug() << "return startSend";
 }
 
-//void RdtSender::sendFilePiece()
-//{
-//    QDataStream stream(&outBlock, QIODevice::WriteOnly);
-//    stream.setVersion (QDataStream::Qt_5_6);
-//    stream << qMin(sendSize, bytesNotWrite);
-//    stream << bytesHadWritten;
-//    qint64 size = qMin(sendSize, bytesNotWrite);
-//    stream << file->read (size);
-//    writeDatagram (outBlock.constData (), outBlock.size (), destination, destinationPort);
-//    outBlock.resize (0);
-//    bytesNotWrite -= size;
-//    bytesHadWritten += size;
-//    emit updateProgress (bytesHadWritten);
-
-////    state = Wait;
-////    QByteArray datagram;
-////    qDebug() << tr("send %1").arg (current);
-////    datagram.setNum (current++);
-////    writeDatagram (datagram, destination, destinationPort);
-//}
 
 void RdtSender::readRdtACK()
 {
-//    QByteArray dataGram;
-//    while (receiver->hasPendingDatagrams ()) {
-//        dataGram.resize (receiver->pendingDatagramSize ());
-//        receiver->readDatagram (dataGram.data (), dataGram.size ());
-//        qDebug() << dataGram;
-//    }
-//    QString str = QString::fromUtf8(dataGram);
-//    emit updateProgress(str.toInt ());
-//    if (str.toInt () == 10000) state = Finish;
-//    else state = Send;
     if (receiver->pendingDatagramSize ()< sizeof(qint64)) {
             return;
     }
 //    dataGram.resize (sizeof(qint64));
     receiver->readDatagram (dataGram.data (), sizeof(qint64));
+    QDataStream in(dataGram);
+    in.setVersion (QDataStream::Qt_5_6);
+    qint64 sequence;
+    in >> sequence;
+    base = sequence;
+    if (base == nextSeqnum) {
+        timer.stop ();
+    }
+    else {
+        timer.start ();
+    }
+    if (!(base % (SendSize * 200)))
+        emit updateProgress (base);
+//    bytesNotWrite -= sequence;
 //    qint64 sequence = dataGram.toLongLong ();
 //    qint64 number = qFromLittleEndian<qint64>(reinterpret_cast<const uchar *>(dataGram.data()));
 //    qDebug() << number;
-    state = State::Send;
+//    state = State::Send;
 }
 
 void RdtSender::setFile(QFile *file)
 {
     this->file = file;
     totalSize = file->size ();
-    bytesNotWrite = totalSize;
-    bytesHadWritten = 0;
+//    bytesNotWrite = totalSize;
+    base = 0;
+    nextSeqnum = 0;
 }
 
 void RdtSender::setDestination(QHostAddress &destination, quint16 destinationPort)
@@ -112,8 +87,6 @@ void RdtSender::setDestination(QHostAddress &destination, quint16 destinationPor
     this->destination = destination;
     this->destinationPort = destinationPort;
     connectToHost (destination, destinationPort);
-//    this->data = 10;
-//    this->current = 0;
 }
 
 void RdtSender::bindListen(QHostAddress &address, quint16 port)
@@ -122,4 +95,22 @@ void RdtSender::bindListen(QHostAddress &address, quint16 port)
     connect (receiver, &QUdpSocket::readyRead, this, &RdtSender::readRdtACK);
     state = State::Send;
     dataGram.resize (sizeof(qint64));
+    timer.setInterval (1000);
+}
+
+void RdtSender::timeOut()
+{
+    timer.start ();
+    file->seek (base);
+    for (qint64 index = base; index < nextSeqnum; index += SendSize) {
+        QDataStream stream(&outBlock, QIODevice::WriteOnly);
+        stream.setVersion (QDataStream::Qt_5_6);
+        qint64 size = (SendSize > (totalSize - index)) ? (totalSize - index) : SendSize;//qMin(sendSize, bytesNotWrite);
+        stream << size;
+        stream << index;
+        stream << file->read (size);
+        write (outBlock.constData (), outBlock.size ());
+        outBlock.resize (0);
+        index += size;
+    }
 }

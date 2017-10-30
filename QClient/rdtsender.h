@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QtNetwork>
+#include <QTimer>
 
 class RdtSender : public QUdpSocket
 {
@@ -15,8 +16,6 @@ public:
         Finish
     };
 
-//    void setSender(const QHostAddress &destination, quint16 destinationPort);
-//    void setRcv(const QHostAddress &destination, quint16 destinationPort);
     void startSend();
     void sendFilePiece();
     void readRdtACK();
@@ -26,20 +25,24 @@ private:
     QHostAddress destination;
     quint16 destinationPort;
     State state;
-//    int data;
-//    int current;
-//    qint64 sendSize;
+
     qint64 totalSize;
-    qint64 bytesHadWritten;
-    qint64 bytesNotWrite;
+
+    qint64 base;
+    qint64 nextSeqnum;
+
+//    qint64 bytesNotWrite;
 
     QByteArray outBlock;
     QByteArray dataGram;
+
+    QTimer timer;
 //    char dataGram[sizeof(qint64)];
 public:
     void setFile(QFile *file);
     void setDestination(QHostAddress &destination, quint16 destinationPort);
     void bindListen(QHostAddress &address, quint16 port);
+    void timeOut();
 signals:
     void canSend();
 //    void finish();

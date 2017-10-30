@@ -1,5 +1,5 @@
 #include "rdtreceiver.h"
-#define sendSize 1300
+#define SendSize 1400
 
 RdtReceiver::RdtReceiver(QObject *parent):
     QUdpSocket(parent),
@@ -10,21 +10,6 @@ RdtReceiver::RdtReceiver(QObject *parent):
 
 void RdtReceiver::readRdtData()
 {
-//    QByteArray dataGram;
-//    while (hasPendingDatagrams ()) {
-//        dataGram.resize (pendingDatagramSize ());
-//        readDatagram (dataGram.data (), dataGram.size ());
-//        qDebug() << dataGram;
-//    }
-
-//    sender->writeDatagram (dataGram, destination, destinationPort);
-//    QString str = QString::fromUtf8(dataGram);
-//    emit updateProgress(str.toInt ());
-//    if (str.toInt () == 10000) {
-//        deleteLater ();
-//        sender->deleteLater ();
-//        emit finish ();
-//    }
     if (blockSize == 0) {
         if (pendingDatagramSize () < static_cast<qint64>(sizeof(qint64) * 2)) {
             return;
@@ -49,20 +34,17 @@ void RdtReceiver::readRdtData()
         return;
     }
     else {
-//         QByteArray dataGram;
-//         dataGram.resize (static_cast<int>(blockSize));
-//         readDatagram (dataGram.data (), dataGram.size ());
-//         qDebug() << dataGram;
         if (bytesHadWritten != sequenceNumber) {
             dataGram.resize (0);//GBN
         }
         else {
+            dataGram.resize (blockSize);
             bytesHadWritten += blockSize;
             file->write (dataGram);
             dataGram.resize (0);
         }
         emit callACK (bytesHadWritten);
-        if (! (bytesHadWritten % (sendSize * 200)))
+        if (! (bytesHadWritten % (SendSize * 200)))
             emit updateProgress (bytesHadWritten);
         if (bytesHadWritten == totalSize) {
             qDebug() << "finish receive";

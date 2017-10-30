@@ -54,11 +54,13 @@ void ReceiveFile::receiveFile()
 
 void ReceiveFile::finishReceive()
 {
+    qDebug() << "back to UI";
     ui->progressBar->setValue (fileSize);
     ui->fileNameLabel->setText (tr("接收完毕"));
     ui->speedLabel->clear ();
     ui->exitBtn->setEnabled (true);
     ui->receiveBtn->setEnabled (false);
+    qDebug() << "UI ok";
 }
 
 void ReceiveFile::endReceive()
