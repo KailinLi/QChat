@@ -11,10 +11,13 @@ class SendFileThread : public QThread
 public:
     SendFileThread(QObject* parent);
     void run() Q_DECL_OVERRIDE;
+    void stop();
 public:
     RdtSender *sender;
+    volatile bool sending;
 signals:
     void updateProcess(qint64 x);
+    void finishSend();
 };
 
 #endif // SENDFILETHREAD_H

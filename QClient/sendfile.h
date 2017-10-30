@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include "sendfilethread.h"
+#include <QTime>
 
 namespace Ui {
 class SendFile;
@@ -24,15 +25,20 @@ private:
     quint16 destinationPort;
     QHostAddress address;
     quint16 port;
+
+    QTime time;
+    QString fileName;
+    SendFileThread *thread;
 public:
-    void initData(QFile *file,
+    void initData(QString fileName, QFile *file,
                   QHostAddress destination, quint16 destinationPort,
                   QHostAddress address, quint16 port);
 
 public slots:
     void updateProcess(qint64 t);
-
+    void finishSend();
     void sendFile();
+    void endSend();
 };
 
 #endif // SENDFILE_H

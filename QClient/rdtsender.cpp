@@ -1,4 +1,5 @@
 #include "rdtsender.h"
+#define sendSize 1300
 
 RdtSender::RdtSender(QObject *parent):
     QUdpSocket(parent),
@@ -30,15 +31,17 @@ void RdtSender::startSend()
 //            emit canSend ();
             QDataStream stream(&outBlock, QIODevice::WriteOnly);
             stream.setVersion (QDataStream::Qt_5_6);
-            stream << qMin(sendSize, bytesNotWrite);
+            qint64 size = (sendSize > bytesNotWrite) ? bytesNotWrite : sendSize;//qMin(sendSize, bytesNotWrite);
+            stream << size;
             stream << bytesHadWritten;
-            qint64 size = qMin(sendSize, bytesNotWrite);
+//            qint64 size = qMin(sendSize, bytesNotWrite);
             stream << file->read (size);
             write (outBlock.constData (), outBlock.size ());
             outBlock.resize (0);
             bytesNotWrite -= size;
             bytesHadWritten += size;
-            emit updateProgress (bytesHadWritten);
+            if (!(bytesHadWritten % (sendSize * 50)))
+                emit updateProgress (bytesHadWritten);
         }
     }
     qDebug() << "startSend finish";
@@ -99,7 +102,6 @@ void RdtSender::readRdtACK()
 void RdtSender::setFile(QFile *file)
 {
     this->file = file;
-    sendSize = 1200;
     totalSize = file->size ();
     bytesNotWrite = totalSize;
     bytesHadWritten = 0;

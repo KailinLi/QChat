@@ -11,9 +11,9 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>发送文件</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>50</x>
@@ -57,7 +57,7 @@
     <item row="0" column="0" colspan="2">
      <widget class="QLabel" name="fileNameLabel">
       <property name="text">
-       <string/>
+       <string>发送文件</string>
       </property>
      </widget>
     </item>

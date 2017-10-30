@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include "receivefilethread.h"
+#include <QTime>
 
 namespace Ui {
 class ReceiveFile;
@@ -25,15 +26,19 @@ private:
     QHostAddress destination;
     quint16 destinationPort;
     qint64 fileSize;
-
+    QString fileName;
+    QTime time;
+    ReceiveFileThread *thread;
 public:
-    void initData(QFile *file,
+    void initData(const QString &fileName, QFile *file,
                   QHostAddress address, quint16 port,
                   QHostAddress destination, quint16 destinationPort, qint64 fileSize);
 
 public slots:
     void updateProcess(qint64 t);
-    void on_pushButton_clicked();
+    void receiveFile();
+    void finishReceive();
+    void endReceive();
 };
 
 #endif // RECEIVEFILE_H

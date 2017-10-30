@@ -2,7 +2,8 @@
 
 SendFileThread::SendFileThread(QObject* parent):
     QThread(parent),
-    sender(new RdtSender())
+    sender(new RdtSender()),
+    sending(true)
 {
 //    sender = new RdtSender();
 //    sender->setDestination (QHostAddress("127.0.0.1"), 6001);
@@ -15,8 +16,16 @@ void SendFileThread::run()
 {
     sender->startSend ();
     qDebug() << "getBack";
-    sender->disconnectFromHost ();
-    sender->deleteLater ();
-    sleep (1000);
+    if (sender) {
+        sender->disconnectFromHost ();
+        sender->deleteLater ();
+    }
+    emit finishSend ();
+    while (sending) {}
     qDebug() << "will finish run";
+}
+
+void SendFileThread::stop()
+{
+    sending = false;
 }

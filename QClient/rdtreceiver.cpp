@@ -1,5 +1,5 @@
 #include "rdtreceiver.h"
-
+#define sendSize 1300
 
 RdtReceiver::RdtReceiver(QObject *parent):
     QUdpSocket(parent),
@@ -62,7 +62,8 @@ void RdtReceiver::readRdtData()
             dataGram.resize (0);
         }
         emit callACK (bytesHadWritten);
-        emit updateProgress (bytesHadWritten);
+        if (!(bytesHadWritten % (sendSize * 50)))
+            emit updateProgress (bytesHadWritten);
         if (bytesHadWritten == totalSize) {
             qDebug() << "finish receive";
             file->close ();

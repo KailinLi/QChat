@@ -13,11 +13,12 @@ public:
     void run () Q_DECL_OVERRIDE;
     void stop();
 private:
-    volatile bool stopflag;
+    volatile bool receiving;
 public:
     RdtReceiver *receiver;
 signals:
     void updateProcess(qint64 t);
+    void finishReceive();
 };
 
 #endif // RECEIVEFILETHREAD_H

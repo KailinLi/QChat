@@ -28,7 +28,7 @@ private:
     State state;
 //    int data;
 //    int current;
-    qint64 sendSize;
+//    qint64 sendSize;
     qint64 totalSize;
     qint64 bytesHadWritten;
     qint64 bytesNotWrite;
@@ -42,7 +42,7 @@ public:
     void bindListen(QHostAddress &address, quint16 port);
 signals:
     void canSend();
-    void finish();
+//    void finish();
     void updateProgress(qint64);
 };
 
