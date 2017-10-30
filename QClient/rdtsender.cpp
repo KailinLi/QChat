@@ -41,12 +41,15 @@ void RdtSender::startSend()
             emit updateProgress (bytesHadWritten);
         }
     }
+    qDebug() << "startSend finish";
     file->close ();
     file->deleteLater ();
+    qDebug() << "delete file";
     receiver->deleteLater ();
-    disconnectFromHost ();
-    deleteLater ();
-    qDebug() << "ok";
+    qDebug() << "delete receiver";
+//    disconnectFromHost ();
+//    deleteLater ();
+    qDebug() << "return startSend";
 }
 
 //void RdtSender::sendFilePiece()

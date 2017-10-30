@@ -14,5 +14,8 @@ SendFileThread::SendFileThread(QObject* parent):
 void SendFileThread::run()
 {
     sender->startSend ();
-    qDebug() << "okokok";
+    qDebug() << "getBack";
+    sender->disconnectFromHost ();
+    sender->deleteLater ();
+    qDebug() << "will finish run";
 }

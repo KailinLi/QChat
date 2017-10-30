@@ -64,10 +64,13 @@ void RdtReceiver::readRdtData()
         emit callACK (bytesHadWritten);
         emit updateProgress (bytesHadWritten);
         if (bytesHadWritten == totalSize) {
+            qDebug() << "finish receive";
             file->close ();
             file->deleteLater ();
+            qDebug() << "delete file";
             sender->disconnectFromHost ();
             sender->deleteLater ();
+            qDebug() << "emit finish";
             emit finish ();
         }
         blockSize = 0;
