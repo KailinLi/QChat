@@ -62,7 +62,7 @@ void RdtReceiver::readRdtData()
             dataGram.resize (0);
         }
         emit callACK (bytesHadWritten);
-        if (!(bytesHadWritten % (sendSize * 50)))
+        if (! (bytesHadWritten % (sendSize * 200)))
             emit updateProgress (bytesHadWritten);
         if (bytesHadWritten == totalSize) {
             qDebug() << "finish receive";

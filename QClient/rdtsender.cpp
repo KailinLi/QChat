@@ -40,7 +40,7 @@ void RdtSender::startSend()
             outBlock.resize (0);
             bytesNotWrite -= size;
             bytesHadWritten += size;
-            if (!(bytesHadWritten % (sendSize * 50)))
+            if (!(bytesHadWritten % (sendSize * 200)))
                 emit updateProgress (bytesHadWritten);
         }
     }
