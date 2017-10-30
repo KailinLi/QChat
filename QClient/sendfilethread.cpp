@@ -17,5 +17,6 @@ void SendFileThread::run()
     qDebug() << "getBack";
     sender->disconnectFromHost ();
     sender->deleteLater ();
+    sleep (1000);
     qDebug() << "will finish run";
 }

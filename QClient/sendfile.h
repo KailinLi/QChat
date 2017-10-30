@@ -32,7 +32,7 @@ public:
 public slots:
     void updateProcess(qint64 t);
 
-    void on_pushButton_clicked();
+    void sendFile();
 };
 
 #endif // SENDFILE_H
