@@ -44,7 +44,7 @@ void RdtReceiver::readRdtData()
             dataGram.resize (0);
         }
         emit callACK (bytesHadWritten);
-        if (! (bytesHadWritten % (SendSize * 200)))
+        if (! (bytesHadWritten % (SendSize * 300)))
             emit updateProgress (bytesHadWritten);
         if (bytesHadWritten == totalSize) {
             qDebug() << "finish receive";
@@ -77,7 +77,6 @@ void RdtReceiver::setDestination(QHostAddress &destination, quint16 destinationP
 
 void RdtReceiver::bindListen(QHostAddress &address, quint16 port)
 {
-    qDebug() << port;
     bind (address, port);
     connect (this, &RdtReceiver::readyRead, this, &RdtReceiver::readRdtData);
 }

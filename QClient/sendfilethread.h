@@ -15,15 +15,7 @@ public:
 public:
     RdtSender *sender;
     volatile bool sending;
-    void setFile(QFile *file);
-    void setDestination(QHostAddress &destination, quint16 destinationPort);
-    void setAddress(QHostAddress &address, quint16 port);
-private:
-    QFile *file;
-    QHostAddress address;
-    quint16 port;
-    QHostAddress destination;
-    quint16 destinationPort;
+
 signals:
     void updateProcess(qint64 x);
     void finishSend();

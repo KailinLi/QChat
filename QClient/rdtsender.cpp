@@ -1,6 +1,6 @@
 #include "rdtsender.h"
 #define SendSize 1400
-#define N 120
+#define N 150
 
 RdtSender::RdtSender(QObject *parent):
     QUdpSocket(parent),
@@ -12,7 +12,6 @@ RdtSender::RdtSender(QObject *parent):
 
 void RdtSender::startSend()
 {
-    qDebug() << destinationPort;
     while (base < totalSize) {
         if (nextSeqnum < base + N * SendSize && nextSeqnum < totalSize) {
 //        if (state == State::Send) {
@@ -65,7 +64,7 @@ void RdtSender::readRdtACK()
     else {
         timer.start ();
     }
-    if (!(base % (SendSize * 200)))
+    if (!(base % (SendSize * 300)))
         emit updateProgress (base);
 //    bytesNotWrite -= sequence;
 //    qint64 sequence = dataGram.toLongLong ();
@@ -101,6 +100,7 @@ void RdtSender::bindListen(QHostAddress &address, quint16 port)
 
 void RdtSender::timeOut()
 {
+    qDebug() << "time out";
     timer.start ();
     file->seek (base);
     for (qint64 index = base; index < nextSeqnum; index += SendSize) {

@@ -33,8 +33,10 @@ void ReceiveFile::updateProcess(qint64 t)
 {
     float useTime = time.elapsed ();
     ui->speedLabel->setText (tr("已接收 %1MB (%2MB/s)").arg (t / (1024 * 1024))
-                             .arg ((static_cast<float_t>(t)/useTime) / 1000, 0, 'f', 2));
+                             .arg ((static_cast<float_t>(t - saveT)/(useTime - saveTime)) / 1000, 0, 'f', 2));
     //(static_cast<float_t>(t)/useTime) * 1000 / (1024 * 1024)
+    saveT = t;
+    saveTime = useTime;
     ui->progressBar->setValue (t);
 }
 

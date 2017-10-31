@@ -14,10 +14,6 @@ SendFileThread::SendFileThread(QObject* parent):
 
 void SendFileThread::run()
 {
-    sender = new RdtSender();
-    sender->setFile (file);
-    sender->setDestination (destination, destinationPort);
-    sender->bindListen (address, port);
     sender->startSend ();
     qDebug() << "getBack";
     if (sender) {
@@ -32,21 +28,4 @@ void SendFileThread::run()
 void SendFileThread::stop()
 {
     sending = false;
-}
-
-void SendFileThread::setFile(QFile *file)
-{
-    this->file = file;
-}
-
-void SendFileThread::setDestination(QHostAddress &destination, quint16 destinationPort)
-{
-    this->destination = destination;
-    this->destinationPort = destinationPort;
-}
-
-void SendFileThread::setAddress(QHostAddress &address, quint16 port)
-{
-    this->address = address;
-    this->port = port;
 }
