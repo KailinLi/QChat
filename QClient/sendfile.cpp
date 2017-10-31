@@ -53,9 +53,9 @@ void SendFile::sendFile()
     ui->progressBar->setMaximum (file->size ());
     ui->fileNameLabel->setText (tr("正在发送 %1 ...").arg(fileName));
     thread = new SendFileThread(this);
-    thread->sender->setFile (file);
-    thread->sender->setDestination (destination, destinationPort);
-    thread->sender->bindListen (address, port);
+    thread->setFile (file);
+    thread->setDestination (destination, destinationPort);
+    thread->setAddress (address, port);
     connect (thread, &SendFileThread::updateProcess, this, &SendFile::updateProcess, Qt::QueuedConnection);
     connect (thread, &SendFileThread::finishSend, this, &SendFile::finishSend, Qt::QueuedConnection);
 //    connect (thread, &SendFileThread::finished, thread, &SendFileThread::deleteLater);

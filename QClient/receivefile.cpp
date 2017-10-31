@@ -33,7 +33,8 @@ void ReceiveFile::updateProcess(qint64 t)
 {
     float useTime = time.elapsed ();
     ui->speedLabel->setText (tr("已接收 %1MB (%2MB/s)").arg (t / (1024 * 1024))
-                             .arg ((static_cast<float_t>(t)/useTime) * 1000 / (1024 * 1024), 0, 'f', 2));
+                             .arg ((static_cast<float_t>(t)/useTime) / 1000, 0, 'f', 2));
+    //(static_cast<float_t>(t)/useTime) * 1000 / (1024 * 1024)
     ui->progressBar->setValue (t);
 }
 
@@ -42,9 +43,12 @@ void ReceiveFile::receiveFile()
     ui->progressBar->setMaximum (fileSize);
     ui->fileNameLabel->setText (tr("正在接收 %1 ...").arg(fileName));
     thread = new ReceiveFileThread(this);
-    thread->receiver->setFile (file, fileSize);
-    thread->receiver->setDestination (destination, destinationPort);
-    thread->receiver->bindListen (address, port);
+    thread->setFile (file, fileSize);
+    thread->setDestination (destination, destinationPort);
+    thread->setAddress (address, port);
+//    thread->receiver->setFile (file, fileSize);
+//    thread->receiver->setDestination (destination, destinationPort);
+//    thread->receiver->bindListen (address, port);
     connect (thread, &ReceiveFileThread::updateProcess, this, &ReceiveFile::updateProcess, Qt::QueuedConnection);
     connect (thread, &ReceiveFileThread::finishReceive, this, &ReceiveFile::finishReceive, Qt::QueuedConnection);
 //    connect (thread, &ReceiveFileThread::finished, thread, &ReceiveFileThread::deleteLater);

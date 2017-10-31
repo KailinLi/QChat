@@ -77,6 +77,7 @@ void RdtReceiver::setDestination(QHostAddress &destination, quint16 destinationP
 
 void RdtReceiver::bindListen(QHostAddress &address, quint16 port)
 {
+    qDebug() << port;
     bind (address, port);
     connect (this, &RdtReceiver::readyRead, this, &RdtReceiver::readRdtData);
 }

@@ -1,6 +1,6 @@
 #include "rdtsender.h"
 #define SendSize 1400
-#define N 100
+#define N 120
 
 RdtSender::RdtSender(QObject *parent):
     QUdpSocket(parent),
@@ -12,6 +12,7 @@ RdtSender::RdtSender(QObject *parent):
 
 void RdtSender::startSend()
 {
+    qDebug() << destinationPort;
     while (base < totalSize) {
         if (nextSeqnum < base + N * SendSize && nextSeqnum < totalSize) {
 //        if (state == State::Send) {

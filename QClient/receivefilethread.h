@@ -13,9 +13,18 @@ public:
     void run () Q_DECL_OVERRIDE;
     void stop();
 private:
-    volatile bool receiving;
+//    volatile bool receiving;
+    QFile *file;
+    qint64 fileSize;
+    QHostAddress destination;
+    quint16 destinationPort;
+    QHostAddress address;
+    quint16 port;
 public:
     RdtReceiver *receiver;
+    void setFile(QFile *file, qint64 fileSize);
+    void setDestination(QHostAddress &destination, quint16 destinationPort);
+    void setAddress(QHostAddress &address, quint16 port);
 signals:
     void updateProcess(qint64 t);
     void finishReceive();
