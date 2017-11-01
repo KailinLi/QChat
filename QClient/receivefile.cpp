@@ -3,7 +3,9 @@
 
 ReceiveFile::ReceiveFile(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::ReceiveFile)
+    ui(new Ui::ReceiveFile),
+    saveTime(0),
+    saveT(0)
 {
     ui->setupUi(this);
     setAttribute (Qt::WA_DeleteOnClose);
@@ -32,7 +34,7 @@ void ReceiveFile::initData(const QString &fileName, QFile *file, QHostAddress ad
 void ReceiveFile::updateProcess(qint64 t)
 {
     float useTime = time.elapsed ();
-    ui->speedLabel->setText (tr("已接收 %1MB (%2MB/s)").arg (t / (1024 * 1024))
+    ui->speedLabel->setText (tr("已接收 %1MB (%2MB/s)").arg (t / (1000 * 1000))
                              .arg ((static_cast<float_t>(t - saveT)/(useTime - saveTime)) / 1000, 0, 'f', 2));
     //(static_cast<float_t>(t)/useTime) * 1000 / (1024 * 1024)
     saveT = t;

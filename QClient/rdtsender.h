@@ -10,11 +10,11 @@ class RdtSender : public QUdpSocket
     Q_OBJECT
 public:
     RdtSender(QObject *parent = Q_NULLPTR);
-    enum State {
-        Wait,
-        Send,
-        Finish
-    };
+//    enum State {
+//        Wait,
+//        Send,
+//        Finish
+//    };
 
     void startSend();
     void sendFilePiece();
@@ -24,7 +24,6 @@ private:
     QFile *file;
     QHostAddress destination;
     quint16 destinationPort;
-    State state;
 
     qint64 totalSize;
 
@@ -36,17 +35,20 @@ private:
     QByteArray outBlock;
     QByteArray dataGram;
 
-    QTimer timer;
+    QTimer *timer;
 //    char dataGram[sizeof(qint64)];
 public:
     void setFile(QFile *file);
     void setDestination(QHostAddress &destination, quint16 destinationPort);
     void bindListen(QHostAddress &address, quint16 port);
     void timeOut();
+    void startTheTimer();
 signals:
     void canSend();
 //    void finish();
     void updateProgress(qint64);
+    void timerStartSignal();
+    void timerStopSignal();
 };
 
 #endif // RDTSENDER_H

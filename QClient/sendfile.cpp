@@ -3,7 +3,9 @@
 
 SendFile::SendFile(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::SendFile)
+    ui(new Ui::SendFile),
+    saveTime(0),
+    saveT(0)
 {
     ui->setupUi(this);
     setAttribute (Qt::WA_DeleteOnClose);
@@ -33,9 +35,11 @@ void SendFile::updateProcess(qint64 t)
 {
 //    if (!(t % 24000)) return;
     float useTime = time.elapsed ();
-    ui->speedLabel->setText (tr("已发送 %1MB (%2MB/s)").arg (t / (1024 * 1024))
-                             .arg ((static_cast<float_t>(t)/useTime) * 1000 / (1024 * 1024), 0, 'f', 2));
+    ui->speedLabel->setText (tr("已发送 %1MB (%2MB/s)").arg (t / (1000 * 1000))
+                             .arg ((static_cast<float_t>(t - saveT)/ (useTime - saveTime)) / 1000, 0, 'f', 2));
 //    ui->progressBar->setMaximum (file->size ());
+    saveT = t;
+    saveTime = useTime;
     ui->progressBar->setValue (t);
 }
 

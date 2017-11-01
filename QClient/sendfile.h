@@ -29,6 +29,9 @@ private:
     QTime time;
     QString fileName;
     SendFileThread *thread;
+
+    float_t saveTime;
+    qint64 saveT;
 public:
     void initData(QString fileName, QFile *file,
                   QHostAddress destination, quint16 destinationPort,

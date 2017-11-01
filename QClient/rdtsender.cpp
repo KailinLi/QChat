@@ -1,13 +1,18 @@
 #include "rdtsender.h"
 #define SendSize 1400
-#define N 150
+#define N 120
 
 RdtSender::RdtSender(QObject *parent):
     QUdpSocket(parent),
-    receiver(new QUdpSocket(this))
+    receiver(new QUdpSocket())
+//    timer(new QTimer())
 {
 //    connect (this, &RdtSender::canSend, this, &RdtSender::sendFilePiece);
-    connect (&timer, &QTimer::timeout, this, &RdtSender::timeOut);
+    timer = new QTimer(this);
+    connect (this, &RdtSender::timerStartSignal, this, &RdtSender::startTheTimer);
+    connect (this, &RdtSender::timerStopSignal, timer, &QTimer::stop);
+    connect (timer, &QTimer::timeout, this, &RdtSender::timeOut);
+    timer->setInterval (1000);
 }
 
 void RdtSender::startSend()
@@ -25,7 +30,10 @@ void RdtSender::startSend()
             write (outBlock.constData (), outBlock.size ());
             outBlock.resize (0);
 
-            if (base == nextSeqnum) timer.start ();
+            if (base == nextSeqnum) {
+                emit timerStartSignal ();
+            }
+                //timer->start ();
 
             nextSeqnum += size;
 //            bytesNotWrite -= size;
@@ -59,10 +67,10 @@ void RdtSender::readRdtACK()
     in >> sequence;
     base = sequence;
     if (base == nextSeqnum) {
-        timer.stop ();
+        emit timerStopSignal ();
     }
     else {
-        timer.start ();
+        emit timerStartSignal ();
     }
     if (!(base % (SendSize * 300)))
         emit updateProgress (base);
@@ -93,15 +101,13 @@ void RdtSender::bindListen(QHostAddress &address, quint16 port)
 {
     receiver->bind (address, port);
     connect (receiver, &QUdpSocket::readyRead, this, &RdtSender::readRdtACK);
-    state = State::Send;
     dataGram.resize (sizeof(qint64));
-    timer.setInterval (1000);
 }
 
 void RdtSender::timeOut()
 {
     qDebug() << "time out";
-    timer.start ();
+    emit timerStartSignal ();
     file->seek (base);
     for (qint64 index = base; index < nextSeqnum; index += SendSize) {
         QDataStream stream(&outBlock, QIODevice::WriteOnly);
@@ -114,4 +120,9 @@ void RdtSender::timeOut()
         outBlock.resize (0);
         index += size;
     }
+}
+
+void RdtSender::startTheTimer()
+{
+    timer->start ();
 }

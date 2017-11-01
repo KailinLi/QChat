@@ -11,17 +11,18 @@ RdtReceiver::RdtReceiver(QObject *parent):
 void RdtReceiver::readRdtData()
 {
     if (blockSize == 0) {
-        if (pendingDatagramSize () < static_cast<qint64>(sizeof(qint64) * 2)) {
+        if (pendingDatagramSize () + dataGram.size () < static_cast<qint64>(sizeof(qint64) * 2 + 4)) {
             return;
         }
         else {
-            dataGram.resize (static_cast<int>(pendingDatagramSize ()));
-            readDatagram (dataGram.data (), dataGram.size ());
+            QByteArray appendBytes;
+            appendBytes.resize (static_cast<int>(pendingDatagramSize ()));
+            readDatagram (appendBytes.data (), appendBytes.size ());
+            dataGram.append (appendBytes);
             QDataStream in(dataGram);
             in.setVersion (QDataStream::Qt_5_6);
             in >> blockSize >> sequenceNumber;
-            dataGram.remove (0, sizeof(qint64) * 2);
-            dataGram.remove (0, 4);
+            dataGram.remove (0, sizeof(qint64) * 2 + 4);
         }
     }
     else {
@@ -35,16 +36,37 @@ void RdtReceiver::readRdtData()
     }
     else {
         if (bytesHadWritten != sequenceNumber) {
-            dataGram.resize (0);//GBN
+//            dataGram.resize (0);//GBN
+            qDebug() << tr("miss %1 %2").arg (bytesHadWritten).arg (sequenceNumber);
+            dataGram.remove (0, blockSize);
+            if (dataGram.size () >= sizeof(qint64) * 2 + 4) {
+                QDataStream in(dataGram);
+                in.setVersion (QDataStream::Qt_5_6);
+                in >> blockSize >> sequenceNumber;
+                dataGram.remove (0, sizeof(qint64) * 2 + 4);
+            }
+            else {
+                blockSize = 0;
+            }
         }
         else {
-            dataGram.resize (blockSize);
+//            dataGram.resize (blockSize);
             bytesHadWritten += blockSize;
-            file->write (dataGram);
-            dataGram.resize (0);
+            file->write (dataGram, blockSize);
+//            qDebug() << bytesHadWritten;
+            dataGram.remove (0, blockSize);
+            if (dataGram.size () >= sizeof(qint64) * 2 + 4) {
+                QDataStream in(dataGram);
+                in.setVersion (QDataStream::Qt_5_6);
+                in >> blockSize >> sequenceNumber;
+                dataGram.remove (0, sizeof(qint64) * 2 + 4);
+            }
+            else {
+                blockSize = 0;
+            }
         }
         emit callACK (bytesHadWritten);
-        if (! (bytesHadWritten % (SendSize * 300)))
+        if (! (bytesHadWritten % (SendSize * 500)))
             emit updateProgress (bytesHadWritten);
         if (bytesHadWritten == totalSize) {
             qDebug() << "finish receive";
@@ -56,7 +78,7 @@ void RdtReceiver::readRdtData()
             qDebug() << "emit finish";
             emit finish ();
         }
-        blockSize = 0;
+//        blockSize = 0;
     }
 }
 
@@ -79,6 +101,7 @@ void RdtReceiver::bindListen(QHostAddress &address, quint16 port)
 {
     bind (address, port);
     connect (this, &RdtReceiver::readyRead, this, &RdtReceiver::readRdtData);
+    dataGram.resize (0);
 }
 
 void RdtReceiver::sendACK(qint64 sequenceNumber)
@@ -86,6 +109,7 @@ void RdtReceiver::sendACK(qint64 sequenceNumber)
     QDataStream stream(&block, QIODevice::WriteOnly);
     stream.setVersion (QDataStream::Qt_5_6);
     stream << sequenceNumber;
+    qDebug() << sequenceNumber;
     sender->write (block.constData (), block.size ());
     block.resize (0);
 }
