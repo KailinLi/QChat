@@ -2,20 +2,24 @@
 #define RDTRECEIVER_H
 
 #include <QObject>
-#include <QtNetwork>
+#include "rdtreceiversocket.h"
 
 class RdtReceiver : public QUdpSocket
 {
     Q_OBJECT
 public:
-    RdtReceiver(QObject *parent = Q_NULLPTR);
+    RdtReceiver(QObject *parent = Q_NULLPTR, QHostAddress destination = QHostAddress(),
+                quint16 destinationPort = 0);
+    ~RdtReceiver();
 private:
     int hasRcv;
-    QUdpSocket *sender;
+    RdtReceiverSocket *sender;
+    QThread thread;
+//    QUdpSocket *sender;
 //    QUdpSocket* rcvSocket;
     QFile *file;
-    QHostAddress destination;
-    quint16 destinationPort;
+//    QHostAddress destination;
+//    quint16 destinationPort;
     qint64 blockSize;
     qint64 bytesHadWritten;
     qint64 sequenceNumber;
@@ -28,9 +32,10 @@ public:
     void setFile(QFile *file, qint64 fileSize);
     void setDestination(QHostAddress &destination, quint16 destinationPort);
     void bindListen(QHostAddress &address, quint16 port);
-    void sendACK(qint64 sequenceNumber);
+//    void sendACK(qint64 sequenceNumber);
 signals:
-    void callACK(qint64);
+    void sendACK(qint64 sequenceNumber);
+    void deleteSender();
     void finish();
     void updateProgress(qint64);
 };

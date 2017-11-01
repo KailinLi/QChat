@@ -1,6 +1,6 @@
 #include "rdtsender.h"
 #define SENDSIZE 1400
-#define N 120
+#define N 160
 
 RdtSender::RdtSender(QFile *file, QHostAddress &destination, quint16 destinationPort):
     receiver(new QUdpSocket()),

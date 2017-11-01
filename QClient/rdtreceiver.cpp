@@ -1,11 +1,35 @@
 #include "rdtreceiver.h"
 #define SendSize 1400
 
-RdtReceiver::RdtReceiver(QObject *parent):
-    QUdpSocket(parent),
-    sender(new QUdpSocket(this))
+RdtReceiver::RdtReceiver(QObject *parent, QHostAddress destination, quint16 destinationPort):
+    QUdpSocket(parent)
 {
-    connect (this, &RdtReceiver::callACK, this, &RdtReceiver::sendACK);
+
+    sender = new RdtReceiverSocket(nullptr, destination, destinationPort);
+    sender->moveToThread (&thread);
+    connect (this, &RdtReceiver::sendACK, sender, &RdtReceiverSocket::sendACK, Qt::QueuedConnection);
+    connect (this, &RdtReceiver::deleteSender, sender, &RdtReceiverSocket::deleteSelf);
+    connect (&thread, &QThread::finished, &thread, &QThread::deleteLater);
+    thread.start ();
+
+//    sender = new RdtSenderSocket(nullptr, file, destination, destinationPort, file->size ());
+//    sender->moveToThread (&thread);
+//    connect (this, &RdtSender::sendFile, sender, &RdtSenderSocket::sendFile, Qt::QueuedConnection);
+//    connect (this, &RdtSender::resendFile, sender, &RdtSenderSocket::timeOut, Qt::QueuedConnection);
+//    connect (sender, &RdtSender::updateProgress, this, &SendFile::updateProcess, Qt::QueuedConnection);
+//    connect (&thread, &QThread::finished, &thread, &QThread::deleteLater);
+
+//    connect (this, &SendFile::startSend, sender, &RdtSender::startSend, Qt::QueuedConnection);
+//    connect (sender, &RdtSender::finish, this, &SendFile::finishSend, Qt::QueuedConnection);
+//    thread.start ();
+    //    connect (this, &RdtReceiver::callACK, this, &RdtReceiver::sendACK);
+}
+
+RdtReceiver::~RdtReceiver()
+{
+    thread.quit ();
+    thread.wait ();
+    deleteLater ();
 }
 
 void RdtReceiver::readRdtData()
@@ -65,7 +89,7 @@ void RdtReceiver::readRdtData()
                 blockSize = 0;
             }
         }
-        emit callACK (bytesHadWritten);
+        emit sendACK (bytesHadWritten);
         if (! (bytesHadWritten % (SendSize * 500)))
             emit updateProgress (bytesHadWritten);
         if (bytesHadWritten == totalSize) {
@@ -73,8 +97,10 @@ void RdtReceiver::readRdtData()
             file->close ();
             file->deleteLater ();
             qDebug() << "delete file";
-            sender->disconnectFromHost ();
-            sender->deleteLater ();
+            emit deleteSender ();
+//            thread.quit ();
+//            qDebug() << "quit thread";
+//            thread.wait ();
             qDebug() << "emit finish";
             emit finish ();
         }
@@ -90,12 +116,12 @@ void RdtReceiver::setFile(QFile *file, qint64 fileSize)
     this->bytesHadWritten = 0;
 }
 
-void RdtReceiver::setDestination(QHostAddress &destination, quint16 destinationPort)
-{
-    this->destination = destination;
-    this->destinationPort = destinationPort;
-    sender->connectToHost (destination, destinationPort);
-}
+//void RdtReceiver::setDestination(QHostAddress &destination, quint16 destinationPort)
+//{
+//    this->destination = destination;
+//    this->destinationPort = destinationPort;
+//    sender->connectToHost (destination, destinationPort);
+//}
 
 void RdtReceiver::bindListen(QHostAddress &address, quint16 port)
 {
@@ -104,13 +130,12 @@ void RdtReceiver::bindListen(QHostAddress &address, quint16 port)
     dataGram.resize (0);
 }
 
-void RdtReceiver::sendACK(qint64 sequenceNumber)
-{
-    QDataStream stream(&block, QIODevice::WriteOnly);
-    stream.setVersion (QDataStream::Qt_5_6);
-    stream << sequenceNumber;
-//    qDebug() << sequenceNumber;
-    sender->write (block.constData (), block.size ());
-    block.resize (0);
-}
-
+//void RdtReceiver::sendACK(qint64 sequenceNumber)
+//{
+////    QDataStream stream(&block, QIODevice::WriteOnly);
+////    stream.setVersion (QDataStream::Qt_5_6);
+////    stream << sequenceNumber;
+//////    qDebug() << sequenceNumber;
+////    sender->write (block.constData (), block.size ());
+////    block.resize (0);
+//}

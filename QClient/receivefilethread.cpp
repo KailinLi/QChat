@@ -9,15 +9,14 @@ ReceiveFileThread::ReceiveFileThread(QObject *parent):
 
 void ReceiveFileThread::run()
 {
-    receiver = new RdtReceiver();
+    receiver = new RdtReceiver(nullptr, destination, destinationPort);
     receiver->setFile (file, fileSize);
-    receiver->setDestination (destination, destinationPort);
     receiver->bindListen (address, port);
     connect (receiver, &RdtReceiver::updateProgress, this, &ReceiveFileThread::updateProcess, Qt::QueuedConnection);
     connect (receiver, &RdtReceiver::finish, this, &ReceiveFileThread::finishReceive, Qt::QueuedConnection);
     exec();
 //    while(receiving);
-    receiver->deleteLater ();
+    receiver->~RdtReceiver ();
     qDebug() << "finish receiver";
 }
 

@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     receivefilethread.cpp \
     rdtsender.cpp \
     rdtreceiver.cpp \
-    rdtsendersocket.cpp
+    rdtsendersocket.cpp \
+    rdtreceiversocket.cpp
 
 HEADERS  += qclient.h \
     signin.h \
@@ -48,7 +49,8 @@ HEADERS  += qclient.h \
     receivefilethread.h \
     rdtsender.h \
     rdtreceiver.h \
-    rdtsendersocket.h
+    rdtsendersocket.h \
+    rdtreceiversocket.h
 
 FORMS    += qclient.ui \
     signin.ui \
