@@ -109,7 +109,7 @@ void RdtReceiver::sendACK(qint64 sequenceNumber)
     QDataStream stream(&block, QIODevice::WriteOnly);
     stream.setVersion (QDataStream::Qt_5_6);
     stream << sequenceNumber;
-    qDebug() << sequenceNumber;
+//    qDebug() << sequenceNumber;
     sender->write (block.constData (), block.size ());
     block.resize (0);
 }

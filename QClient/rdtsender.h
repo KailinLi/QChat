@@ -2,53 +2,63 @@
 #define RDTSENDER_H
 
 #include <QObject>
-#include <QtNetwork>
 #include <QTimer>
+#include "rdtsendersocket.h"
 
-class RdtSender : public QUdpSocket
+class RdtSender: public QObject
 {
     Q_OBJECT
 public:
-    RdtSender(QObject *parent = Q_NULLPTR);
+    RdtSender(QFile *file, QHostAddress &destination, quint16 destinationPort);
+    ~RdtSender();
 //    enum State {
 //        Wait,
 //        Send,
 //        Finish
 //    };
 
-    void startSend();
-    void sendFilePiece();
-    void readRdtACK();
+//    void startSend();
+//    void readRdtACK();
 private:
+    RdtSenderSocket *sender;
     QUdpSocket *receiver;
     QFile *file;
-    QHostAddress destination;
-    quint16 destinationPort;
+//    QHostAddress destination;
+//    quint16 destinationPort;
+//    QHostAddress address;
+//    quint16 port;
 
     qint64 totalSize;
+    qint64 baseSize;
 
-    qint64 base;
-    qint64 nextSeqnum;
+    volatile qint64 base;
+    volatile qint64 nextSeqnum;
 
 //    qint64 bytesNotWrite;
 
-    QByteArray outBlock;
+//    QByteArray outBlock;
     QByteArray dataGram;
 
     QTimer *timer;
+
+    QThread thread;
 //    char dataGram[sizeof(qint64)];
 public:
     void setFile(QFile *file);
-    void setDestination(QHostAddress &destination, quint16 destinationPort);
+//    void setDestination(QHostAddress &destination, quint16 destinationPort);
+    void startSend();
+    void readRdtACK();
     void bindListen(QHostAddress &address, quint16 port);
     void timeOut();
-    void startTheTimer();
+//    void startTheTimer();
+//    void sendFilePiece();
+//    void setFile(QFile *file);
 signals:
-    void canSend();
-//    void finish();
+//    void canSend();
+    void finish();
     void updateProgress(qint64);
-    void timerStartSignal();
-    void timerStopSignal();
+    void sendFile(volatile qint64 *base, volatile qint64 *nextSeqnum);
+    void resendFile(volatile qint64 *base, volatile qint64 *nextSeqnum);
 };
 
 #endif // RDTSENDER_H

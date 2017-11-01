@@ -28,10 +28,10 @@ SOURCES += main.cpp\
     handledir.cpp \
     sendfile.cpp \
     receivefile.cpp \
-    sendfilethread.cpp \
     receivefilethread.cpp \
     rdtsender.cpp \
-    rdtreceiver.cpp
+    rdtreceiver.cpp \
+    rdtsendersocket.cpp
 
 HEADERS  += qclient.h \
     signin.h \
@@ -45,10 +45,10 @@ HEADERS  += qclient.h \
     userinfolist.h \
     sendfile.h \
     receivefile.h \
-    sendfilethread.h \
     receivefilethread.h \
     rdtsender.h \
-    rdtreceiver.h
+    rdtreceiver.h \
+    rdtsendersocket.h
 
 FORMS    += qclient.ui \
     signin.ui \

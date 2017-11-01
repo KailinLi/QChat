@@ -2,7 +2,8 @@
 #define SENDFILE_H
 
 #include <QDialog>
-#include "sendfilethread.h"
+#include <QObject>
+#include "rdtsender.h"
 #include <QTime>
 
 namespace Ui {
@@ -12,7 +13,6 @@ class SendFile;
 class SendFile : public QDialog
 {
     Q_OBJECT
-
 public:
     explicit SendFile(QWidget *parent = 0);
     ~SendFile();
@@ -28,7 +28,11 @@ private:
 
     QTime time;
     QString fileName;
-    SendFileThread *thread;
+
+
+//    QThread thread;
+//    SendFileThread *thread;
+    RdtSender *sender;
 
     float_t saveTime;
     qint64 saveT;
@@ -42,6 +46,8 @@ public slots:
     void finishSend();
     void sendFile();
     void endSend();
+signals:
+    void startSend();
 };
 
 #endif // SENDFILE_H

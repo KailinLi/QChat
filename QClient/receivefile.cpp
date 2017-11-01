@@ -62,20 +62,20 @@ void ReceiveFile::receiveFile()
 
 void ReceiveFile::finishReceive()
 {
-    qDebug() << "back to UI";
+//    qDebug() << "back to UI";
     ui->progressBar->setValue (fileSize);
     ui->fileNameLabel->setText (tr("接收完毕"));
     ui->speedLabel->clear ();
     ui->exitBtn->setEnabled (true);
     ui->receiveBtn->setEnabled (false);
-    qDebug() << "UI ok";
+//    qDebug() << "UI ok";s
 }
 
 void ReceiveFile::endReceive()
 {
     thread->stop ();
     while(! thread->isFinished ()) {
-        qDebug() << "kill";
+//        qDebug() << "kill";
     }
     thread->deleteLater ();
     qDebug() << "kill all";

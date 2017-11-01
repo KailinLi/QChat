@@ -12,11 +12,24 @@ SendFile::SendFile(QWidget *parent) :
     ui->exitBtn->setEnabled (false);
     connect (ui->sendBtn, &QPushButton::clicked, this, &SendFile::sendFile);
     connect (ui->exitBtn, &QPushButton::clicked, this, &SendFile::endSend);
+
+
+//    connect (sender, &RdtSender::updateProgress, this, &SendFile::updateProcess);
+//    connect (this, &SendFile::startSend, sender, &RdtSender::startSend);
+//    connect (sender, &RdtSender::finish, this, &SendFile::finishSend);
+//    qDebug() << QThread::currentThreadId ();
+//    sender = new RdtSender();
+//    connect (sender, &RdtSender::updateProgress, this, &SendFile::updateProcess, Qt::QueuedConnection);
+//    connect (this, &SendFile::startSend, sender, &RdtSender::startSend, Qt::QueuedConnection);
+//    connect (sender, &RdtSender::finish, this, &SendFile::finishSend, Qt::QueuedConnection);
+//    thread.start ();
 }
 
 
 SendFile::~SendFile()
 {
+//    thread.quit ();
+//    thread.wait ();
     delete ui;
 }
 
@@ -29,6 +42,7 @@ void SendFile::initData(QString fileName, QFile *file, QHostAddress destination,
     this->destinationPort = destinationPort;
     this->address = address;
     this->port = port;
+//    sender = new RdtSender(this);
 }
 
 void SendFile::updateProcess(qint64 t)
@@ -50,30 +64,50 @@ void SendFile::finishSend()
     ui->speedLabel->clear ();
     ui->exitBtn->setEnabled (true);
     ui->sendBtn->setEnabled (false);
+    if (sender) {
+//        sender->disconnectFromHost ();
+        sender->RdtSender::~RdtSender ();
+    }
 }
 
 void SendFile::sendFile()
 {
     ui->progressBar->setMaximum (file->size ());
     ui->fileNameLabel->setText (tr("正在发送 %1 ...").arg(fileName));
-    thread = new SendFileThread(this);
-    thread->sender->setFile (file);
-    thread->sender->setDestination (destination, destinationPort);
-    thread->sender->bindListen (address, port);
-    connect (thread, &SendFileThread::updateProcess, this, &SendFile::updateProcess, Qt::QueuedConnection);
-    connect (thread, &SendFileThread::finishSend, this, &SendFile::finishSend, Qt::QueuedConnection);
-//    connect (thread, &SendFileThread::finished, thread, &SendFileThread::deleteLater);
-    thread->start ();
+
+    sender = new RdtSender(file, destination, destinationPort);
+
+    connect (sender, &RdtSender::updateProgress, this, &SendFile::updateProcess);
+    connect (this, &SendFile::startSend, sender, &RdtSender::startSend);
+    connect (sender, &RdtSender::finish, this, &SendFile::finishSend);
+    sender->setFile (file);
+    sender->bindListen (address, port);
+    emit startSend ();
     time.start ();
+//    sender->startSend ();
+
+//    if (sender) {
+//        sender->disconnectFromHost ();
+//        sender->deleteLater ();
+//    }
+//    thread = new SendFileThread(this);
+//    thread->sender->setFile (file);
+//    thread->sender->setDestination (destination, destinationPort);
+//    thread->sender->bindListen (address, port);
+//    connect (thread, &SendFileThread::updateProcess, this, &SendFile::updateProcess, Qt::QueuedConnection);
+//    connect (thread, &SendFileThread::finishSend, this, &SendFile::finishSend, Qt::QueuedConnection);
+//    connect (thread, &SendFileThread::finished, thread, &SendFileThread::deleteLater);
+//    thread->start ();
+//    time.start ();
 }
 
 void SendFile::endSend()
 {
-    thread->stop ();
-    while(! thread->isFinished ()) {
-        qDebug() << "kill";
-    }
-    thread->deleteLater ();
-    qDebug() << "kill all";
+//    thread->stop ();
+//    while(! thread->isFinished ()) {
+//        qDebug() << "kill";
+//    }
+//    thread->deleteLater ();
+//    qDebug() << "kill all";
     close ();
 }
