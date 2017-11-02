@@ -25,6 +25,7 @@ public:
     QString &newSignIn(quint32 id, const QString &address, quint16 port);
     void userSignOut(quint32 id);
     UserInfo *getUser(quint32 id);
+    QString getUserName(quint32 id);
 
     void readUserInfo(QDataStream &data);
     void saveUserInfo(QDataStream &data);

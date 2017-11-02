@@ -36,6 +36,8 @@ private:
     void loadUserInfo();
     void saveUserInfo();
 
+    void initUI();
+
     QHostAddress getIP();
 
     void clickSetBtn(bool checked);

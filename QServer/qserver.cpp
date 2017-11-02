@@ -21,6 +21,7 @@ QServer::QServer(QWidget *parent) :
     connect (server, &ParallelServer::newConnection, this, &QServer::haveNewConnect);
     connect (ui->setToolButton, &QToolButton::clicked, this, &QServer::clickSetBtn);
     ui->showLabel->setText (tr("服务器地址 %1 监听端口%2").arg (localAddress.toString ()).arg (QString::number (6666)));
+    initUI ();
 }
 
 QServer::~QServer()
@@ -96,6 +97,16 @@ void QServer::msgLogIn(ConnectThread *thread, Message *msg)
 void QServer::msgFinishInit(ConnectThread *thread, Message *msg)
 {
     QString name = userList.newSignIn(thread->getUserID (), msg->getArgv (0), static_cast<quint16>(msg->getArgv (1).toInt ()));
+
+    QList<QTableWidgetItem*> find = ui->userTableWidget->findItems (name, Qt::MatchExactly);
+    int row = find.at (0)->row ();
+    QTableWidgetItem *addressItem = new QTableWidgetItem(msg->getArgv (0));
+    QTableWidgetItem *portItem = new QTableWidgetItem(msg->getArgv (1));
+    QTableWidgetItem *ifOnlineItem = new QTableWidgetItem(tr("在线"));
+    ui->userTableWidget->setItem (row, 1, addressItem);
+    ui->userTableWidget->setItem (row, 2, portItem);
+    ui->userTableWidget->setItem (row, 3, ifOnlineItem);
+
     QList<ConnectThread *> *p = threadPool.getPool ();
     foreach (ConnectThread* t, *p) {
         if (t->getUserID ()) {
@@ -143,6 +154,21 @@ void QServer::saveUserInfo()
     userList.saveUserInfo (out);
 
     file.close ();
+}
+
+void QServer::initUI()
+{
+    for (int i = 1; i <= userList.size (); ++i) {
+        QTableWidgetItem *nameItem = new QTableWidgetItem(userList.getUserName (i));
+        QTableWidgetItem *addressItem = new QTableWidgetItem();
+        QTableWidgetItem *portItem = new QTableWidgetItem();
+        QTableWidgetItem *ifOnlineItem = new QTableWidgetItem(tr("离线"));
+        ui->userTableWidget->insertRow (0);
+        ui->userTableWidget->setItem (0, 0, nameItem);
+        ui->userTableWidget->setItem (0, 1, addressItem);
+        ui->userTableWidget->setItem (0, 2, portItem);
+        ui->userTableWidget->setItem (0, 3, ifOnlineItem);
+    }
 }
 
 QHostAddress QServer::getIP()
@@ -232,6 +258,16 @@ void QServer::loseConnect(ConnectThread *thread)
 //    }
     if (thread->getUserID ()) {
         userList.userSignOut (thread->getUserID ());
+
+        QList<QTableWidgetItem*> find = ui->userTableWidget->findItems (userList.getUserName (thread->getUserID ()), Qt::MatchExactly);
+        int row = find.at (0)->row ();
+        QTableWidgetItem *addressItem = new QTableWidgetItem();
+        QTableWidgetItem *portItem = new QTableWidgetItem();
+        QTableWidgetItem *ifOnlineItem = new QTableWidgetItem(tr("离线"));
+        ui->userTableWidget->setItem (row, 1, addressItem);
+        ui->userTableWidget->setItem (row, 2, portItem);
+        ui->userTableWidget->setItem (row, 3, ifOnlineItem);
+
         QList<ConnectThread *> *p = threadPool.getPool ();
         foreach (ConnectThread* t, *p) {
             if (t->getUserID ()) {

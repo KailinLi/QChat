@@ -168,6 +168,16 @@ UserInfo *UserInfoList::getUser(quint32 id)
     return &(*list.begin ());
 }
 
+QString UserInfoList::getUserName(quint32 id)
+{
+    for (QList<UserInfo>::Iterator user = list.begin (); user != list.end(); ++user) {
+        if (user->getUserID () == id) {
+            return user->getName();
+        }
+    }
+    return QString();
+}
+
 void UserInfoList::readUserInfo(QDataStream &data)
 {
     int size;
