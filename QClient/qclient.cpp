@@ -14,8 +14,8 @@ QClient::QClient(QWidget *parent) :
     ui(new Ui::QClient),
     server(new ParallelServer(this)),
     tcpToServer(new TcpSocketMsg(this)),
-    currentID(0),
-    serverAddress(QHostAddress("127.0.0.1"))
+    serverAddress(QHostAddress("127.0.0.1")),
+    currentID(0)
 {
     ui->setupUi(this);
     connect (tcpToServer, &TcpSocketMsg::connected, this, &QClient::logIn);

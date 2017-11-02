@@ -55,6 +55,7 @@ public:
 //    void setFile(QFile *file);
 signals:
 //    void canSend();
+    void deleteSender();
     void finish();
     void updateProgress(qint64);
     void sendFile(volatile qint64 *base, volatile qint64 *nextSeqnum);

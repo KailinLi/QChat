@@ -23,6 +23,7 @@ RdtSender::RdtSender(QFile *file, QHostAddress &destination, quint16 destination
     sender->moveToThread (&thread);
     connect (this, &RdtSender::sendFile, sender, &RdtSenderSocket::sendFile, Qt::QueuedConnection);
     connect (this, &RdtSender::resendFile, sender, &RdtSenderSocket::timeOut, Qt::QueuedConnection);
+    connect (this, &RdtSender::deleteSender, sender, &RdtSenderSocket::deleteSelf, Qt::QueuedConnection);
 //    connect (sender, &RdtSender::updateProgress, this, &SendFile::updateProcess, Qt::QueuedConnection);
     connect (&thread, &QThread::finished, &thread, &QThread::deleteLater);
 
@@ -35,10 +36,6 @@ RdtSender::~RdtSender()
 {
     thread.quit ();
     thread.wait ();
-    if (sender) {
-        sender->disconnectFromHost ();
-        sender->deleteLater ();
-    }
     if (receiver) {
         receiver->deleteLater ();
     }
@@ -126,6 +123,9 @@ void RdtSender::readRdtACK()
         emit updateProgress (base);
 //    qDebug() << base << " " << baseSize;
     if (base >= totalSize) {
+        if (sender) {
+            emit deleteSender ();
+        }
         emit finish ();
     }
     else if (base > baseSize){

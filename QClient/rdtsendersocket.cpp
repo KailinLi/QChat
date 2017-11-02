@@ -53,3 +53,9 @@ void RdtSenderSocket::timeOut(volatile qint64 *base, volatile qint64 *nextSeqnum
         index += size;
     }
 }
+
+void RdtSenderSocket::deleteSelf()
+{
+    disconnectFromHost ();
+    deleteLater ();
+}

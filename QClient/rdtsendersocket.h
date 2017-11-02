@@ -17,6 +17,7 @@ private:
 public:
     void sendFile(volatile qint64 *base, volatile qint64 *nextSeqnum);
     void timeOut(volatile qint64 *base, volatile qint64 *nextSeqnum);
+    void deleteSelf();
 //    QHostAddress destination;
 //    quint16 destinationPort;
 };

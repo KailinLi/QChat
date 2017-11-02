@@ -99,13 +99,26 @@ void QServer::msgFinishInit(ConnectThread *thread, Message *msg)
     QString name = userList.newSignIn(thread->getUserID (), msg->getArgv (0), static_cast<quint16>(msg->getArgv (1).toInt ()));
 
     QList<QTableWidgetItem*> find = ui->userTableWidget->findItems (name, Qt::MatchExactly);
-    int row = find.at (0)->row ();
-    QTableWidgetItem *addressItem = new QTableWidgetItem(msg->getArgv (0));
-    QTableWidgetItem *portItem = new QTableWidgetItem(msg->getArgv (1));
-    QTableWidgetItem *ifOnlineItem = new QTableWidgetItem(tr("在线"));
-    ui->userTableWidget->setItem (row, 1, addressItem);
-    ui->userTableWidget->setItem (row, 2, portItem);
-    ui->userTableWidget->setItem (row, 3, ifOnlineItem);
+    if (find.size ()) {
+        int row = find.at (0)->row ();
+        QTableWidgetItem *addressItem = new QTableWidgetItem(msg->getArgv (0));
+        QTableWidgetItem *portItem = new QTableWidgetItem(msg->getArgv (1));
+        QTableWidgetItem *ifOnlineItem = new QTableWidgetItem(tr("在线"));
+        ui->userTableWidget->setItem (row, 1, addressItem);
+        ui->userTableWidget->setItem (row, 2, portItem);
+        ui->userTableWidget->setItem (row, 3, ifOnlineItem);
+    }
+    else {
+        ui->userTableWidget->insertRow (0);
+        QTableWidgetItem *nameItem = new QTableWidgetItem(name);
+        QTableWidgetItem *addressItem = new QTableWidgetItem(msg->getArgv (0));
+        QTableWidgetItem *portItem = new QTableWidgetItem(msg->getArgv (1));
+        QTableWidgetItem *ifOnlineItem = new QTableWidgetItem(tr("在线"));
+        ui->userTableWidget->setItem (0, 0, nameItem);
+        ui->userTableWidget->setItem (0, 1, addressItem);
+        ui->userTableWidget->setItem (0, 2, portItem);
+        ui->userTableWidget->setItem (0, 3, ifOnlineItem);
+    }
 
     QList<ConnectThread *> *p = threadPool.getPool ();
     foreach (ConnectThread* t, *p) {
