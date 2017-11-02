@@ -1,6 +1,6 @@
 #include "rdtsendersocket.h"
-#define N 160
-#define SENDSIZE 1400
+#define N 130
+#define SENDSIZE 1380
 
 RdtSenderSocket::RdtSenderSocket(QObject *parent, QFile *file,
                                  QHostAddress destination, quint16 destinationPort, qint64 totalSize):

@@ -10,7 +10,7 @@ QServer::QServer(QWidget *parent) :
 {
     ui->setupUi(this);
     loadUserInfo ();
-    if (! server->listen (QHostAddress("127.0.0.1"), 6666)) {
+    if (! server->listen (getIP (), 6666)) {
         QMessageBox::critical(this, tr("Threaded Fortune Server"),
                               tr("Unable to start the server: %1.")
                               .arg(server->errorString()));
@@ -18,6 +18,7 @@ QServer::QServer(QWidget *parent) :
         return;
     }
     connect (server, &ParallelServer::newConnection, this, &QServer::haveNewConnect);
+    ui->showLabel->setText (tr("服务器地址 %1 监听端口%2").arg (localAddress.toString ()).arg (QString::number (6666)));
 }
 
 QServer::~QServer()
@@ -140,6 +141,18 @@ void QServer::saveUserInfo()
     userList.saveUserInfo (out);
 
     file.close ();
+}
+
+QHostAddress QServer::getIP()
+{
+    QList<QHostAddress> list = QNetworkInterface::allAddresses();
+    foreach (QHostAddress address, list) {
+        if(address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost)) {
+            localAddress = address;
+            return address;
+        }
+    }
+    return QHostAddress();
 }
 
 void QServer::haveNewConnect(qintptr socketDescriptor)

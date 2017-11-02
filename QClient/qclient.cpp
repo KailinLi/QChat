@@ -14,8 +14,7 @@ QClient::QClient(QWidget *parent) :
     ui(new Ui::QClient),
     server(new ParallelServer(this)),
     tcpToServer(new TcpSocketMsg(this)),
-    currentID(0),
-    localAddress(QHostAddress(tr("127.0.0.1")))
+    currentID(0)
 {
     ui->setupUi(this);
     connect (tcpToServer, &TcpSocketMsg::connected, this, &QClient::logIn);
@@ -27,7 +26,7 @@ QClient::QClient(QWidget *parent) :
     connect (ui->userTableWidget, &QTableWidget::cellDoubleClicked, this, &QClient::makeActive);
     connect (ui->sendBtn, &QPushButton::clicked, this, &QClient::clickSend);
     ui->msgTextEdit->installEventFilter (this);
-    if (! server->listen (localAddress)) {
+    if (! server->listen (getIP ())) {
         QMessageBox::critical(this, tr("Threaded Fortune Server"),
                               tr("Unable to start the server: %1.")
                               .arg(server->errorString()));
@@ -252,6 +251,18 @@ void QClient::readMsgUpdateUI(const QString &name, const QString &msg)
     cursor.mergeBlockFormat(textBlockFormat);
     ui->msgBrowser->setTextCursor(cursor);
     ui->msgBrowser->verticalScrollBar ()->setValue (ui->msgBrowser->verticalScrollBar ()->maximum ());
+}
+
+QHostAddress QClient::getIP()
+{
+    QList<QHostAddress> list = QNetworkInterface::allAddresses();
+    foreach (QHostAddress address, list) {
+        if(address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost)) {
+            localAddress = address;
+            return address;
+        }
+    }
+    return QHostAddress();
 }
 
 void QClient::clickSend()

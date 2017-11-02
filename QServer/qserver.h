@@ -23,6 +23,7 @@ private:
     ConnectThreadPool threadPool;
     ParallelServer *server;
     UserInfoList userList;
+    QHostAddress localAddress;
 
     void msgSignIn(ConnectThread *thread, Message *msg);
     void msgSignUp(ConnectThread *thread, Message *msg);
@@ -34,6 +35,8 @@ private:
 
     void loadUserInfo();
     void saveUserInfo();
+
+    QHostAddress getIP();
 private slots:
     void haveNewConnect(qintptr socketDescriptor);
     void haveNewMsg(ConnectThread* thread, Message* msg);
