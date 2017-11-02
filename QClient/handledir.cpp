@@ -26,8 +26,10 @@ QString getPath()
 #if defined(Q_OS_WIN)
     if (dir.dirName().toLower() == "debug"
             || dir.dirName().toLower() == "release"
-            || dir.dirName().toLower() == "bin")
+            || dir.dirName().toLower() == "bin") {
         dir.cdUp();
+        dir.cdUp();
+    }
 #elif defined(Q_OS_MAC)
     if (dir.dirName() == "MacOS") {
         dir.cdUp();
@@ -36,7 +38,7 @@ QString getPath()
         dir.cdUp();
         dir.cdUp();
     }
-#endif
     dir.cd("Tmpfile");
+#endif
     return dir.absolutePath ();
 }
