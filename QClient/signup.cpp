@@ -1,5 +1,6 @@
 #include "signup.h"
 #include "ui_signup.h"
+#include <QInputDialog>
 
 SignUp::SignUp(QWidget *parent) :
     QDialog(parent),
@@ -12,6 +13,7 @@ SignUp::SignUp(QWidget *parent) :
     connect (tcpMsg, &TcpSocketMsg::readyRead, this, &SignUp::haveNewMsgFromServer);
     connect (this, &SignUp::sendMsg, tcpMsg, &TcpSocketMsg::send);
     connect (ui->exitBtn, &QPushButton::clicked, this, &SignUp::closeWindow);
+    connect (ui->setToolButton, &QToolButton::clicked, this, &SignUp::clickSetBtn);
     ui->nameLineEdit->setFocus ();
     ui->signUpBtn->setAutoDefault (true);
     ui->signUpBtn->setDefault (true);
@@ -40,7 +42,7 @@ void SignUp::tryConnect()
     else {
         tcpMsg->setBlockSize (0);
         tcpMsg->abort ();
-        tcpMsg->connectToHost (QHostAddress(tr("127.0.0.1")), 6666);
+        tcpMsg->connectToHost (*serverAddress, 6666);
     }
 }
 
@@ -84,6 +86,15 @@ void SignUp::haveNewMsgFromServer()
         break;
     }
     delete msg;
+}
+
+void SignUp::clickSetBtn()
+{
+    bool hadInput;
+    QString str = QInputDialog::getText (this, tr("设置"), tr("请输入服务器地址"), QLineEdit::Normal, tr("255.255.255.255"), &hadInput);
+    if (hadInput) {
+        *serverAddress = QHostAddress(str);
+    }
 }
 
 void SignUp::closeWindow()

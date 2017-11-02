@@ -14,7 +14,8 @@ QClient::QClient(QWidget *parent) :
     ui(new Ui::QClient),
     server(new ParallelServer(this)),
     tcpToServer(new TcpSocketMsg(this)),
-    currentID(0)
+    currentID(0),
+    serverAddress(QHostAddress("127.0.0.1"))
 {
     ui->setupUi(this);
     connect (tcpToServer, &TcpSocketMsg::connected, this, &QClient::logIn);
@@ -61,7 +62,7 @@ void QClient::start()
     tcpToServer->abort ();
     qDebug() << userID;
     tcpToServer->setBlockSize (0);
-    tcpToServer->connectToHost (QHostAddress(tr("127.0.0.1")), 6666);
+    tcpToServer->connectToHost (serverAddress, 6666);
 }
 
 void QClient::logIn()

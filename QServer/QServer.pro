@@ -35,3 +35,6 @@ HEADERS  += qserver.h \
     userinfolist.h
 
 FORMS    += qserver.ui
+
+RESOURCES += \
+    images.qrc

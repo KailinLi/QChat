@@ -37,6 +37,8 @@ private:
     void saveUserInfo();
 
     QHostAddress getIP();
+
+    void clickSetBtn(bool checked);
 private slots:
     void haveNewConnect(qintptr socketDescriptor);
     void haveNewMsg(ConnectThread* thread, Message* msg);

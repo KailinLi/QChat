@@ -17,6 +17,7 @@ public:
     ~SignUp();
 
     quint32 *id;
+    QHostAddress *serverAddress;
 
 private:
     Ui::SignUp *ui;
@@ -26,6 +27,7 @@ public:
     void tryConnect();
     void trySignUp();
     void haveNewMsgFromServer();
+    void clickSetBtn();
 signals:
     void sendMsg(Message* msg);
 private slots:

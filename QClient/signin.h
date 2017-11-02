@@ -30,12 +30,14 @@ private:
     bool resetPassword;
     QString inputNameTmp;
 public:
+    QHostAddress *serverAddress;
     void tryConnect();
     void trySignIn();
     void haveNewMsgFromServer();
     void tryFindPassword();
     void tryResetPassword();
     bool showFindPasswordDialog(const QString& pwQuestion, const QString& pwAnswer);
+    void clickSetBtn();
 signals:
     void sendMsg(Message* msg);
 private slots:

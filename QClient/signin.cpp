@@ -17,6 +17,7 @@ SignIn::SignIn(QWidget *parent) :
     connect (tcpMsg, &TcpSocketMsg::connected, this, &SignIn::tryFindPassword);
     connect (tcpMsg, &TcpSocketMsg::connected, this , &SignIn::tryResetPassword);
     connect (tcpMsg, &TcpSocketMsg::readyRead, this, &SignIn::haveNewMsgFromServer);
+    connect (ui->setToolButton, &QToolButton::clicked, this, &SignIn::clickSetBtn);
     connect (this, &SignIn::sendMsg, tcpMsg, &TcpSocketMsg::send);
     connect (ui->exitBtn, &QPushButton::clicked, this, &SignIn::closeWindow);
     connect (ui->signUpBtn, &QPushButton::clicked, this, &SignIn::callSignUp);
@@ -44,7 +45,7 @@ void SignIn::tryConnect()
     }
     tcpMsg->setBlockSize (0);
     tcpMsg->abort ();
-    tcpMsg->connectToHost (QHostAddress(tr("127.0.0.1")), 6666);
+    tcpMsg->connectToHost (*serverAddress, 6666);
 }
 
 void SignIn::trySignIn()
@@ -155,6 +156,15 @@ bool SignIn::showFindPasswordDialog(const QString &pwQuestion, const QString &pw
         else return true;
     }
     else return false;
+}
+
+void SignIn::clickSetBtn()
+{
+    bool hadInput;
+    QString str = QInputDialog::getText (this, tr("设置"), tr("请输入服务器地址"), QLineEdit::Normal, tr("255.255.255.255"), &hadInput);
+    if (hadInput) {
+        *serverAddress = QHostAddress(str);
+    }
 }
 
 

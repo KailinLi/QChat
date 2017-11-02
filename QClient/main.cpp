@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
     SignIn signinWindow;
     SignUp *signupWindow;
     signinWindow.id = &w.userID;
+    signinWindow.serverAddress = &w.serverAddress;
     SignIn::DoneType returnType = static_cast<SignIn::DoneType>(signinWindow.exec());
     switch (returnType) {
     case SignIn::SignInSuccess:
@@ -21,6 +22,7 @@ int main(int argc, char *argv[])
     case SignIn::SignUp:
         signupWindow = new SignUp;
         signupWindow->id = &w.userID;
+        signupWindow->serverAddress = &w.serverAddress;
         if (signupWindow->exec () == QDialog::Accepted) {
             signupWindow->deleteLater ();
             w.show ();

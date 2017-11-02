@@ -21,6 +21,7 @@ public:
     ~QClient();
 
     quint32 userID;
+    QHostAddress serverAddress;
 
 private:
     Ui::QClient *ui;
@@ -59,6 +60,7 @@ public:
     void clickSendFile();
     void setRedDot(const QString &name);
     void readMsgUpdateUI(const QString &name, const QString &msg);
+    QHostAddress getIP();
 private slots:
     void haveNewConnect(qintptr socketDescriptor);
     void haveNewMsg(ConnectThread* thread, Message* msg);
