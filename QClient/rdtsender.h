@@ -31,6 +31,8 @@ private:
     qint64 totalSize;
     qint64 baseSize;
 
+    volatile qint64 N;
+
     volatile qint64 base;
     volatile qint64 nextSeqnum;
 
@@ -40,6 +42,7 @@ private:
     QByteArray dataGram;
 
     QTimer *timer;
+    QTimer updateTimer;
 
     QThread thread;
 //    char dataGram[sizeof(qint64)];
@@ -50,6 +53,7 @@ public:
     void readRdtACK();
     void bindListen(QHostAddress &address, quint16 port);
     void timeOut();
+    void canUpdate();
 //    void startTheTimer();
 //    void sendFilePiece();
 //    void setFile(QFile *file);
@@ -58,8 +62,8 @@ signals:
     void deleteSender();
     void finish();
     void updateProgress(qint64);
-    void sendFile(volatile qint64 *base, volatile qint64 *nextSeqnum);
-    void resendFile(volatile qint64 *base, volatile qint64 *nextSeqnum);
+    void sendFile(volatile qint64 *base, volatile qint64 *nextSeqnum, volatile qint64 *N);
+    void resendFile(volatile qint64 *base, volatile qint64 *nextSeqnum, volatile qint64 *N);
 };
 
 #endif // RDTSENDER_H

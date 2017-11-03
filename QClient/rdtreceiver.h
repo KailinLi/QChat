@@ -2,6 +2,7 @@
 #define RDTRECEIVER_H
 
 #include <QObject>
+#include <QTimer>
 #include "rdtreceiversocket.h"
 
 class RdtReceiver : public QUdpSocket
@@ -27,11 +28,13 @@ private:
 
     QByteArray block;
     QByteArray dataGram;
+    QTimer updateTimer;
 public:
     void readRdtData();
     void setFile(QFile *file, qint64 fileSize);
     void setDestination(QHostAddress &destination, quint16 destinationPort);
     void bindListen(QHostAddress &address, quint16 port);
+    void canUpdate();
 //    void sendACK(qint64 sequenceNumber);
 signals:
     void sendACK(qint64 sequenceNumber);

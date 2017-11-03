@@ -15,8 +15,8 @@ private:
     QByteArray outBlock;
     qint64 totalSize;
 public:
-    void sendFile(volatile qint64 *base, volatile qint64 *nextSeqnum);
-    void timeOut(volatile qint64 *base, volatile qint64 *nextSeqnum);
+    void sendFile(volatile qint64 *base, volatile qint64 *nextSeqnum, volatile qint64 *N);
+    void timeOut(volatile qint64 *base, volatile qint64 *nextSeqnum, volatile qint64 *N);
     void deleteSelf();
 //    QHostAddress destination;
 //    quint16 destinationPort;

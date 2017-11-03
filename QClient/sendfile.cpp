@@ -77,6 +77,7 @@ void SendFile::sendFile()
 {
     ui->progressBar->setMaximum (file->size ());
     ui->fileNameLabel->setText (tr("正在发送 %1 ...").arg(fileName));
+    ui->sendBtn->setEnabled (false);
 
     sender = new RdtSender(file, destination, destinationPort);
 

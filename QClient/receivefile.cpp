@@ -46,6 +46,7 @@ void ReceiveFile::receiveFile()
 {
     ui->progressBar->setMaximum (fileSize);
     ui->fileNameLabel->setText (tr("正在接收 %1 ...").arg(fileName));
+    ui->receiveBtn->setEnabled (false);
     thread = new ReceiveFileThread(this);
     thread->setFile (file, fileSize);
     thread->setDestination (destination, destinationPort);

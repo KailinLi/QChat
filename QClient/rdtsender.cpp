@@ -1,6 +1,6 @@
 #include "rdtsender.h"
 #define SENDSIZE 1380
-#define N 130
+//#define N 130
 
 RdtSender::RdtSender(QFile *file, QHostAddress &destination, quint16 destinationPort):
     receiver(new QUdpSocket()),
@@ -8,8 +8,9 @@ RdtSender::RdtSender(QFile *file, QHostAddress &destination, quint16 destination
     timer(new QTimer())
 {
     timer->setInterval (200);
-
+    updateTimer.setInterval (500);
     connect (timer, &QTimer::timeout, this, &RdtSender::timeOut);
+    connect (&updateTimer, &QTimer::timeout, this, &RdtSender::canUpdate);
 
     sender = new RdtSenderSocket(nullptr, file, destination, destinationPort, file->size ());
     sender->moveToThread (&thread);
@@ -43,7 +44,8 @@ RdtSender::~RdtSender()
 void RdtSender::startSend()
 {
     timer->start ();
-    emit sendFile (&base, &nextSeqnum);
+    updateTimer.start ();
+    emit sendFile (&base, &nextSeqnum, &N);
 
 }
 
@@ -57,13 +59,12 @@ void RdtSender::readRdtACK()
     in >> sequence;
     base = sequence;
     if (base == nextSeqnum) {
-        timer->start ();
+        timer->stop ();
     }
     else {
         timer->start ();
     }
-    if (!(base % (SENDSIZE * 800)))
-        emit updateProgress (base);
+
     if (base >= totalSize) {
         if (sender) {
             emit deleteSender ();
@@ -72,7 +73,8 @@ void RdtSender::readRdtACK()
     }
     else if (base > baseSize){
         baseSize += N * SENDSIZE;
-        emit sendFile (&base, &nextSeqnum);
+        if (base == nextSeqnum) timer->start ();
+        emit sendFile (&base, &nextSeqnum, &N);
     }
 }
 
@@ -82,6 +84,7 @@ void RdtSender::setFile(QFile *file)
     totalSize = file->size ();
     base = 0;
     nextSeqnum = 0;
+    N = 130;
 }
 
 
@@ -97,6 +100,11 @@ void RdtSender::timeOut()
 {
     qDebug() << "time out";
     timer->start ();
-    emit resendFile (&base, &nextSeqnum);
+    emit resendFile (&base, &nextSeqnum, &N);
+}
+
+void RdtSender::canUpdate()
+{
+    emit updateProgress (base);
 }
 
