@@ -1,5 +1,5 @@
 #include "rdtsendersocket.h"
-#define N 130
+#define N 300
 #define SENDSIZE 1380
 
 RdtSenderSocket::RdtSenderSocket(QObject *parent, QFile *file,

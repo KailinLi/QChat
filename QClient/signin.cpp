@@ -45,7 +45,7 @@ void SignIn::tryConnect()
     }
     tcpMsg->setBlockSize (0);
     tcpMsg->abort ();
-    tcpMsg->connectToHost (*serverAddress, 6666);
+    tcpMsg->connectToHost (*serverAddress, 16666);
 }
 
 void SignIn::trySignIn()

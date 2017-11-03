@@ -42,7 +42,7 @@ void SignUp::tryConnect()
     else {
         tcpMsg->setBlockSize (0);
         tcpMsg->abort ();
-        tcpMsg->connectToHost (*serverAddress, 6666);
+        tcpMsg->connectToHost (*serverAddress, 16666);
     }
 }
 

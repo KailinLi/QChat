@@ -11,7 +11,7 @@ QServer::QServer(QWidget *parent) :
     ui->setupUi(this);
     loadUserInfo ();
     localAddress = QHostAddress("127.0.0.1");
-    if (! server->listen (localAddress, 6666)) {
+    if (! server->listen (localAddress, 16666)) {
         QMessageBox::critical(this, tr("Threaded Fortune Server"),
                               tr("Unable to start the server: %1.")
                               .arg(server->errorString()));
@@ -20,7 +20,7 @@ QServer::QServer(QWidget *parent) :
     }
     connect (server, &ParallelServer::newConnection, this, &QServer::haveNewConnect);
     connect (ui->setToolButton, &QToolButton::clicked, this, &QServer::clickSetBtn);
-    ui->showLabel->setText (tr("服务器地址 %1 监听端口%2").arg (localAddress.toString ()).arg (QString::number (6666)));
+    ui->showLabel->setText (tr("服务器地址 %1 监听端口%2").arg (localAddress.toString ()).arg (QString::number (16666)));
     initUI ();
 }
 
@@ -200,27 +200,29 @@ void QServer::clickSetBtn(bool checked)
 {
     if (checked) {
         server->close ();
-        if (! server->listen (getIP (), 6666)) {
+        while (server->isListening ()) {}
+        if (! server->listen (getIP (), 16666)) {
             QMessageBox::critical(this, tr("Threaded Fortune Server"),
                                   tr("Unable to start the server: %1.")
                                   .arg(server->errorString()));
             close();
             return;
         }
-        ui->showLabel->setText (tr("服务器地址 %1 监听端口%2").arg (localAddress.toString ()).arg (QString::number (6666)));
+        ui->showLabel->setText (tr("服务器地址 %1 监听端口%2").arg (localAddress.toString ()).arg (QString::number (16666)));
     }
 
     else {
         server->close ();
         localAddress = QHostAddress("127.0.0.1");
-        if (! server->listen (localAddress, 6666)) {
+        while (server->isListening ()) {}
+        if (! server->listen (localAddress, 16666)) {
             QMessageBox::critical(this, tr("Threaded Fortune Server"),
                                   tr("Unable to start the server: %1.")
                                   .arg(server->errorString()));
             close();
             return;
         }
-        ui->showLabel->setText (tr("服务器地址 %1 监听端口%2").arg (localAddress.toString ()).arg (QString::number (6666)));
+        ui->showLabel->setText (tr("服务器地址 %1 监听端口%2").arg (localAddress.toString ()).arg (QString::number (16666)));
     }
 }
 
