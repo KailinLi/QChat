@@ -33,7 +33,7 @@ void RdtReceiver::readRdtData()
     }
     else {
         bytesHadWritten += blockSize;
-//        file->write (dataGram.data () + (sizeof(qint64) * 2 + 4), blockSize);
+        file->write (dataGram.data () + (sizeof(qint64) * 2 + 4), blockSize);
     }
     emit sendACK (bytesHadWritten);
     if (! (bytesHadWritten % (SENDSIZE * 800)))

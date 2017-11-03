@@ -1,5 +1,5 @@
 #include "rdtsendersocket.h"
-#define N 300
+#define N 130
 #define SENDSIZE 1380
 
 RdtSenderSocket::RdtSenderSocket(QObject *parent, QFile *file,
@@ -24,16 +24,8 @@ void RdtSenderSocket::sendFile(volatile qint64 *base, volatile qint64 *nextSeqnu
         write (outBlock.constData (), outBlock.size ());
         outBlock.resize (0);
 
-//        if (base == nextSeqnum) {
-//            emit timerStartSignal ();
-//        }
-            //timer->start ();
-
         *nextSeqnum += size;
-//            bytesNotWrite -= size;
-//            base += size;
-//            if (!(bytesHadWritten % (sendSize * 200)))
-//                emit updateProgress (bytesHadWritten);
+
     }
 }
 

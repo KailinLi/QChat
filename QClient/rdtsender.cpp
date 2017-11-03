@@ -1,13 +1,13 @@
 #include "rdtsender.h"
 #define SENDSIZE 1380
-#define N 300
+#define N 130
 
 RdtSender::RdtSender(QFile *file, QHostAddress &destination, quint16 destinationPort):
     receiver(new QUdpSocket()),
     baseSize(0),
     timer(new QTimer())
 {
-    timer->setInterval (1000);
+    timer->setInterval (200);
 
     connect (timer, &QTimer::timeout, this, &RdtSender::timeOut);
 
@@ -50,9 +50,6 @@ void RdtSender::startSend()
 
 void RdtSender::readRdtACK()
 {
-    if (receiver->pendingDatagramSize () < static_cast<qint64>(sizeof(qint64))) {
-            return;
-    }
     receiver->readDatagram (dataGram.data (), sizeof(qint64));
     QDataStream in(dataGram);
     in.setVersion (QDataStream::Qt_5_6);
@@ -74,7 +71,7 @@ void RdtSender::readRdtACK()
         emit finish ();
     }
     else if (base > baseSize){
-        baseSize += (N / 2) * SENDSIZE;
+        baseSize += N * SENDSIZE;
         emit sendFile (&base, &nextSeqnum);
     }
 }

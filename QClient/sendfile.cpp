@@ -59,9 +59,12 @@ void SendFile::updateProcess(qint64 t)
 
 void SendFile::finishSend()
 {
+    float useTime = time.elapsed ();
+
     ui->progressBar->setValue (ui->progressBar->maximum ());
     ui->fileNameLabel->setText (tr("发送完毕"));
-    ui->speedLabel->clear ();
+//    ui->speedLabel->clear ();
+    ui->speedLabel->setText (tr("耗时%1").arg(useTime, 0, 'f', 2));
     ui->exitBtn->setEnabled (true);
     ui->sendBtn->setEnabled (false);
     if (sender) {
@@ -84,21 +87,7 @@ void SendFile::sendFile()
     sender->bindListen (address, port);
     emit startSend ();
     time.start ();
-//    sender->startSend ();
 
-//    if (sender) {
-//        sender->disconnectFromHost ();
-//        sender->deleteLater ();
-//    }
-//    thread = new SendFileThread(this);
-//    thread->sender->setFile (file);
-//    thread->sender->setDestination (destination, destinationPort);
-//    thread->sender->bindListen (address, port);
-//    connect (thread, &SendFileThread::updateProcess, this, &SendFile::updateProcess, Qt::QueuedConnection);
-//    connect (thread, &SendFileThread::finishSend, this, &SendFile::finishSend, Qt::QueuedConnection);
-//    connect (thread, &SendFileThread::finished, thread, &SendFileThread::deleteLater);
-//    thread->start ();
-//    time.start ();
 }
 
 void SendFile::endSend()
