@@ -34,6 +34,7 @@ QClient::QClient(QWidget *parent) :
         close();
         return;
     }
+
     ui->msgTextEdit->setFocus ();
     ui->sendBtn->setAutoDefault (true);
     ui->sendBtn->setDefault (true);
@@ -46,6 +47,9 @@ QClient::QClient(QWidget *parent) :
     connect (ui->underlineToolBtn, &QToolButton::clicked, this, &QClient::clickUnderlineBtn);
     connect (ui->colorToolBtn, &QToolButton::clicked, this, &QClient::clickColorBtn);
     connect (ui->sendToolBtn, &QPushButton::clicked, this, &QClient::clickSendFile);
+    connect (ui->saveToolBtn, &QToolButton::clicked, this, &QClient::clickSaveFile);
+    connect (ui->clearToolBtn, &QToolButton::clicked, this, &QClient::clickClearBtn);
+    connect (ui->msgTextEdit, &QTextEdit::currentCharFormatChanged, this, &QClient::currentFormatChanged);
 //    ui->msgBrowser->setLineWrapMode(QTextEdit::NoWrap);
 }
 
@@ -216,7 +220,7 @@ void QClient::changeTableWidget(quint32 id)
 void QClient::sendMsgToUI()
 {
     ui->msgBrowser->moveCursor (QTextCursor::NextBlock);
-    ui->msgBrowser->setTextColor (Qt::red);
+    ui->msgBrowser->setTextColor (QColor(93, 94, 95));
     ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
     ui->msgBrowser->append (userName + tr(" <"));
     QTextCursor cursor = ui->msgBrowser->textCursor();
@@ -237,7 +241,7 @@ void QClient::sendMsgToUI()
 void QClient::readMsgUpdateUI(const QString &name, const QString &msg)
 {
     ui->msgBrowser->moveCursor (QTextCursor::NextBlock);
-    ui->msgBrowser->setTextColor (Qt::blue);
+    ui->msgBrowser->setTextColor (QColor(93, 94, 95));
     ui->msgBrowser->setCurrentFont (QFont("Times new Roman", 12));
     ui->msgBrowser->append (tr("> ") + name);
     QTextCursor cursor = ui->msgBrowser->textCursor();
@@ -394,6 +398,45 @@ void QClient::clickSendFile()
         ConnectThread *thread = threadPool.getThread (currentID);
         emit msgToSend (thread, msg);
     }
+}
+
+void QClient::clickSaveFile()
+{
+    if (ui->msgBrowser->document ()->isEmpty ()) {
+        QMessageBox::warning (0, tr("对不起"), tr("聊天记录为空哦!"), QMessageBox::Ok);
+    }
+    else {
+        QString saveFileName = QFileDialog::getSaveFileName (this, tr("保存聊天记录"), tr("聊天记录"), tr("文本(*.txt);;All File(*.*)"));
+        if (!saveFileName.isEmpty ()) {
+            QFile saveMsgFile(saveFileName);
+            if (! saveMsgFile.open (QFile::WriteOnly | QFile::Text)) {
+                QMessageBox::warning (this, tr("保存聊天记录"), tr("保存文件失败 %1:\n%2").arg (saveFileName).arg (saveMsgFile.errorString ()));
+            }
+            QTextStream out(&saveMsgFile);
+            out << ui->msgBrowser->toPlainText ();
+        }
+    }
+}
+
+void QClient::clickClearBtn()
+{
+    userList.saveMsg (currentID, ui->msgBrowser->toHtml ());
+    ui->msgBrowser->clear ();
+}
+
+void QClient::currentFormatChanged(const QTextCharFormat &format)
+{
+    ui->fontComboBox->setCurrentFont (format.font ());
+    if (format.fontPointSize () < 12) {
+        ui->sizeComboBox->setCurrentIndex (4);
+    }
+    else {
+        ui->sizeComboBox->setCurrentIndex (ui->sizeComboBox->findText (QString::number (format.fontPointSize ())));
+    }
+    ui->boldToolBtn->setChecked (format.font ().bold ());
+    ui->italicToolBtn->setChecked (format.font ().italic ());
+    ui->underlineToolBtn->setChecked (format.font ().underline ());
+    color = format.foreground ().color ();
 }
 
 void QClient::setRedDot(const QString &name)

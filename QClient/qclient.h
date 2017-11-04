@@ -2,6 +2,7 @@
 #define QCLIENT_H
 
 #include <QWidget>
+#include <QTextCharFormat>
 #include "connectthreadpool.h"
 #include "parallelserver.h"
 #include "userinfolist.h"
@@ -58,6 +59,9 @@ public:
     void clickUnderlineBtn(bool checked);
     void clickColorBtn();
     void clickSendFile();
+    void clickSaveFile();
+    void clickClearBtn();
+    void currentFormatChanged(const QTextCharFormat &format);
     void setRedDot(const QString &name);
     void readMsgUpdateUI(const QString &name, const QString &msg);
     QHostAddress getIP();

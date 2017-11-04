@@ -27,7 +27,7 @@ QString getPath()
     if (dir.dirName().toLower() == "debug"
             || dir.dirName().toLower() == "release"
             || dir.dirName().toLower() == "bin") {
-        dir.cdUp()
+        dir.cdUp();
         dir.cdUp();
     }
 #elif defined(Q_OS_MAC)
