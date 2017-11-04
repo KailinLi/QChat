@@ -13,7 +13,6 @@ public:
                 quint16 destinationPort = 0);
     ~RdtReceiver();
 private:
-    int hasRcv;
     RdtReceiverSocket *sender;
     QThread thread;
 //    QUdpSocket *sender;
@@ -25,6 +24,8 @@ private:
     qint64 bytesHadWritten;
     qint64 sequenceNumber;
     qint64 totalSize;
+
+    qint8 hadReceive;
 
     QByteArray block;
     QByteArray dataGram;

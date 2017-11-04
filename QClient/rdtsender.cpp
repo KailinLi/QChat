@@ -7,7 +7,7 @@ RdtSender::RdtSender(QFile *file, QHostAddress &destination, quint16 destination
     baseSize(0),
     timer(new QTimer())
 {
-    timer->setInterval (200);
+    timer->setInterval (300);
     updateTimer.setInterval (500);
     connect (timer, &QTimer::timeout, this, &RdtSender::timeOut);
     connect (&updateTimer, &QTimer::timeout, this, &RdtSender::canUpdate);

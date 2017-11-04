@@ -187,12 +187,18 @@ void QServer::initUI()
 QHostAddress QServer::getIP()
 {
     QList<QHostAddress> list = QNetworkInterface::allAddresses();
-    foreach (QHostAddress address, list) {
-        if(address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost)) {
-            localAddress = address;
-            return address;
+    for (auto address = list.rbegin (); address != list.rend (); ++address) {
+        if(address->protocol() == QAbstractSocket::IPv4Protocol && *address != QHostAddress(QHostAddress::LocalHost)) {
+            localAddress = *address;
+            return *address;
         }
     }
+//    foreach (QHostAddress address, list) {
+//        if(address.protocol() == QAbstractSocket::IPv4Protocol && address != QHostAddress(QHostAddress::LocalHost)) {
+//            localAddress = address;
+//            return address;
+//        }
+//    }
     return QHostAddress();
 }
 

@@ -36,8 +36,15 @@ void RdtReceiver::readRdtData()
         bytesHadWritten += blockSize;
         file->write (dataGram.data () + (sizeof(qint64) + sizeof(qint32)), blockSize);
     }
-    emit sendACK (bytesHadWritten);
+    if (hadReceive > 8) {
+        hadReceive = 0;
+        emit sendACK (bytesHadWritten);
+    }
+    else {
+        ++hadReceive;
+    }
     if (bytesHadWritten == totalSize) {
+        emit sendACK (bytesHadWritten);
         qDebug() << "finish receive";
         updateTimer.stop ();
         file->close ();
@@ -58,6 +65,7 @@ void RdtReceiver::setFile(QFile *file, qint64 fileSize)
     this->totalSize = fileSize;
     this->blockSize = 0;
     this->bytesHadWritten = 0;
+    this->hadReceive = 0;
 }
 
 
