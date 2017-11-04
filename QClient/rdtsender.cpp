@@ -57,21 +57,46 @@ void RdtSender::readRdtACK()
     in.setVersion (QDataStream::Qt_5_6);
     qint64 sequence;
     in >> sequence;
-    base = sequence;
-    if (base == nextSeqnum) {
-        timer->stop ();
+
+//    quick resend
+    if (base == sequence) {
+        if (redundancyCount > 1) {
+            redundancyCount = 0;
+            float_t currentTime = redundancyTimer.elapsed ();
+            if (currentTime > redundancyTime) {
+                qDebug() << "quick resend";
+                timer->start ();
+                redundancyTime = currentTime + 15;
+                emit resendFile (&base, &nextSeqnum, &N);
+            }
+            return;
+        }
+        else {
+            ++redundancyCount;
+            timer->start ();
+            return;
+        }
     }
     else {
-        timer->start ();
+        base = sequence;
+        redundancyCount = 0;
     }
 
-    if (base >= totalSize) {
-        if (sender) {
-            emit deleteSender ();
-        }
-        emit finish ();
+    if (base != nextSeqnum) {
+        timer->start ();
     }
-    else if (base > baseSize){
+    else {
+        timer->stop ();
+        if (base >= totalSize) {
+            if (sender) {
+                emit deleteSender ();
+            }
+            emit finish ();
+            return;
+        }
+    }
+
+    if (base > baseSize){
         baseSize += N * SENDSIZE;
         if (base == nextSeqnum) timer->start ();
         emit sendFile (&base, &nextSeqnum, &N);
@@ -85,6 +110,8 @@ void RdtSender::setFile(QFile *file)
     base = 0;
     nextSeqnum = 0;
     N = 120;
+    redundancyCount = 0;
+    redundancyTime = 0;
 }
 
 
@@ -94,11 +121,15 @@ void RdtSender::bindListen(QHostAddress &address, quint16 port)
     receiver->bind (address, port);
     connect (receiver, &QUdpSocket::readyRead, this, &RdtSender::readRdtACK);
     dataGram.resize (sizeof(qint64));
+    redundancyTimer.start ();
 }
 
 void RdtSender::timeOut()
 {
     qDebug() << "time out";
+    //very important!!!
+    //but I don not kown why
+    --N;
     timer->start ();
     emit resendFile (&base, &nextSeqnum, &N);
 }

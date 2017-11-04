@@ -30,6 +30,7 @@ void RdtReceiver::readRdtData()
     in.setVersion (QDataStream::Qt_5_6);
     in >> sequenceNumber >> blockSize;
     if (bytesHadWritten != sequenceNumber) {
+        qDebug() << tr("miss %1, but %2").arg (bytesHadWritten / SENDSIZE).arg (sequenceNumber / SENDSIZE);
         dataGram.resize (0);
     }
     else {

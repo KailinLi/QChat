@@ -30,7 +30,6 @@ void RdtSenderSocket::sendFile(volatile qint64 *base, volatile qint64 *nextSeqnu
 
 void RdtSenderSocket::timeOut(volatile qint64 *base, volatile qint64 *nextSeqnum, volatile qint64 *N)
 {
-    qDebug() << "call timeout";
 
     file->seek (*base);
     *nextSeqnum = *base;

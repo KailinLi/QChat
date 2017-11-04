@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTimer>
+#include <QElapsedTimer>
 #include "rdtsendersocket.h"
 
 class RdtSender: public QObject
@@ -45,6 +46,9 @@ private:
     QTimer updateTimer;
 
     QThread thread;
+    qint8 redundancyCount;
+    float_t redundancyTime;
+    QElapsedTimer redundancyTimer;
 //    char dataGram[sizeof(qint64)];
 public:
     void setFile(QFile *file);
