@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QObject>
 #include "rdtsender.h"
-#include <QTime>
+#include <QElapsedTimer>
 
 namespace Ui {
 class SendFile;
@@ -26,7 +26,7 @@ private:
     QHostAddress address;
     quint16 port;
 
-    QTime time;
+    QElapsedTimer time;
     QString fileName;
 
 

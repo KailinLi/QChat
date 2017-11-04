@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include "receivefilethread.h"
-#include <QTime>
+#include <QElapsedTimer>
 
 namespace Ui {
 class ReceiveFile;
@@ -27,7 +27,7 @@ private:
     quint16 destinationPort;
     qint64 fileSize;
     QString fileName;
-    QTime time;
+    QElapsedTimer time;
     ReceiveFileThread *thread;
 
     float_t saveTime;
