@@ -1,5 +1,5 @@
 #include "rdtreceiver.h"
-#define SENDSIZE 1380
+#define SENDSIZE 1460
 
 RdtReceiver::RdtReceiver(QObject *parent, QHostAddress destination, quint16 destinationPort):
     QUdpSocket(parent)
@@ -28,13 +28,13 @@ void RdtReceiver::readRdtData()
     readDatagram (dataGram.data (), dataGram.size ());
     QDataStream in (dataGram);
     in.setVersion (QDataStream::Qt_5_6);
-    in >> blockSize >> sequenceNumber;
+    in >> sequenceNumber >> blockSize;
     if (bytesHadWritten != sequenceNumber) {
         dataGram.resize (0);
     }
     else {
         bytesHadWritten += blockSize;
-        file->write (dataGram.data () + (sizeof(qint64) * 2 + 4), blockSize);
+        file->write (dataGram.data () + (sizeof(qint64) + sizeof(qint32)), blockSize);
     }
     emit sendACK (bytesHadWritten);
     if (bytesHadWritten == totalSize) {

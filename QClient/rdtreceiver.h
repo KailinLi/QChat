@@ -21,7 +21,7 @@ private:
     QFile *file;
 //    QHostAddress destination;
 //    quint16 destinationPort;
-    qint64 blockSize;
+    qint32 blockSize;
     qint64 bytesHadWritten;
     qint64 sequenceNumber;
     qint64 totalSize;

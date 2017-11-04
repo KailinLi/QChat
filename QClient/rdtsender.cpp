@@ -1,5 +1,5 @@
 #include "rdtsender.h"
-#define SENDSIZE 1380
+#define SENDSIZE 1460
 //#define N 130
 
 RdtSender::RdtSender(QFile *file, QHostAddress &destination, quint16 destinationPort):
@@ -84,7 +84,7 @@ void RdtSender::setFile(QFile *file)
     totalSize = file->size ();
     base = 0;
     nextSeqnum = 0;
-    N = 130;
+    N = 120;
 }
 
 

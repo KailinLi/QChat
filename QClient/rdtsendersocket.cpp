@@ -1,6 +1,6 @@
 #include "rdtsendersocket.h"
 //#define N 130
-#define SENDSIZE 1380
+#define SENDSIZE 1460
 
 RdtSenderSocket::RdtSenderSocket(QObject *parent, QFile *file,
                                  QHostAddress destination, quint16 destinationPort, qint64 totalSize):
@@ -18,7 +18,6 @@ void RdtSenderSocket::sendFile(volatile qint64 *base, volatile qint64 *nextSeqnu
         QDataStream stream(&outBlock, QIODevice::WriteOnly);
         stream.setVersion (QDataStream::Qt_5_6);
         qint64 size = (SENDSIZE > (totalSize - *nextSeqnum)) ? (totalSize - *nextSeqnum) : SENDSIZE;//qMin(sendSize, bytesNotWrite);
-        stream << size;
         stream << *nextSeqnum;
         stream << file->read (size);
         write (outBlock.constData (), outBlock.size ());
@@ -39,7 +38,6 @@ void RdtSenderSocket::timeOut(volatile qint64 *base, volatile qint64 *nextSeqnum
         QDataStream stream(&outBlock, QIODevice::WriteOnly);
         stream.setVersion (QDataStream::Qt_5_6);
         qint64 size = (SENDSIZE > (totalSize - *nextSeqnum)) ? (totalSize - *nextSeqnum) : SENDSIZE;//qMin(sendSize, bytesNotWrite);
-        stream << size;
         stream << *nextSeqnum;
         stream << file->read (size);
         write (outBlock.constData (), outBlock.size ());
