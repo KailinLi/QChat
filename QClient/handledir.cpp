@@ -38,7 +38,7 @@ QString getPath()
         dir.cdUp();
         dir.cdUp();
     }
-    dir.cd("Tmpfile");
+//    dir.cd("Tmpfile");
 #endif
     return dir.absolutePath ();
 }

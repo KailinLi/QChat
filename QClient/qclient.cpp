@@ -261,7 +261,7 @@ void QClient::readMsgUpdateUI(const QString &name, const QString &msg)
 QHostAddress QClient::getIP()
 {
     QList<QHostAddress> list = QNetworkInterface::allAddresses();
-    for (auto address = list.rbegin (); address != list.rend (); ++address) {
+    for (auto address = list.begin (); address != list.end (); ++address) {
         if(address->protocol() == QAbstractSocket::IPv4Protocol && *address != QHostAddress(QHostAddress::LocalHost)) {
             localAddress = *address;
             return *address;
@@ -493,6 +493,11 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
         }
         else if (choose == QMessageBox::Yes) {
             QFile *file = new QFile(getPath ().append (tr("/%1").arg (msg->getArgv (0))));
+
+
+            QMessageBox::information (this, tr("文件储存路径"), tr("%1").arg (getPath ().append (tr("/%1").arg (msg->getArgv (0)))), QMessageBox::Ok);
+
+
             if (!file->open (QIODevice::WriteOnly | QIODevice::Truncate)) {
                 qDebug() << "can not open file";
                 return;

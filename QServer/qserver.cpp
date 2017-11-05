@@ -142,6 +142,7 @@ void QServer::msgOfflineMsg(ConnectThread *thread, Message *msg)
 void QServer::loadUserInfo()
 {
     QFile file (getPath ().append ("/userinfo"));
+
     if (!file.open (QIODevice::ReadOnly)) {
         qDebug() << "can not open file";
         return;
@@ -187,7 +188,7 @@ void QServer::initUI()
 QHostAddress QServer::getIP()
 {
     QList<QHostAddress> list = QNetworkInterface::allAddresses();
-    for (auto address = list.rbegin (); address != list.rend (); ++address) {
+    for (auto address = list.begin (); address != list.end (); ++address) {
         if(address->protocol() == QAbstractSocket::IPv4Protocol && *address != QHostAddress(QHostAddress::LocalHost)) {
             localAddress = *address;
             return *address;
