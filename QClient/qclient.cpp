@@ -28,7 +28,7 @@ QClient::QClient(QWidget *parent) :
     connect (ui->sendBtn, &QPushButton::clicked, this, &QClient::clickSend);
     ui->msgTextEdit->installEventFilter (this);
     if (! server->listen (getIP ())) {
-        QMessageBox::critical(this, tr("Threaded Fortune Server"),
+        QMessageBox::critical(this, tr("Fail Listening"),
                               tr("Unable to start the server: %1.")
                               .arg(server->errorString()));
         close();
@@ -64,7 +64,7 @@ QClient::~QClient()
 void QClient::start()
 {
     tcpToServer->abort ();
-    qDebug() << userID;
+//    qDebug() << userID;
     tcpToServer->setBlockSize (0);
     tcpToServer->connectToHost (serverAddress, 16666);
 }
@@ -276,6 +276,25 @@ QHostAddress QClient::getIP()
     return QHostAddress();
 }
 
+void QClient::shakeWindow()
+{
+    QPropertyAnimation *pAnimation = new QPropertyAnimation(this, "pos");
+    pAnimation->setDuration(500);
+    pAnimation->setLoopCount(2);
+    pAnimation->setKeyValueAt(0, QPoint(geometry().x() - 3, geometry().y() - 3));
+    pAnimation->setKeyValueAt(0.1, QPoint(geometry().x() + 6, geometry().y() + 6));
+    pAnimation->setKeyValueAt(0.2, QPoint(geometry().x() - 6, geometry().y() + 6));
+    pAnimation->setKeyValueAt(0.3, QPoint(geometry().x() + 6, geometry().y() - 6));
+    pAnimation->setKeyValueAt(0.4, QPoint(geometry().x() - 6, geometry().y() - 6));
+    pAnimation->setKeyValueAt(0.5, QPoint(geometry().x() + 6, geometry().y() + 6));
+    pAnimation->setKeyValueAt(0.6, QPoint(geometry().x() - 6, geometry().y() + 6));
+    pAnimation->setKeyValueAt(0.7, QPoint(geometry().x() + 6, geometry().y() - 6));
+    pAnimation->setKeyValueAt(0.8, QPoint(geometry().x() - 6, geometry().y() - 6));
+    pAnimation->setKeyValueAt(0.9, QPoint(geometry().x() + 6, geometry().y() + 6));
+    pAnimation->setKeyValueAt(1, QPoint(geometry().x() - 3, geometry().y() - 3));
+    pAnimation->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
 void QClient::clickSend()
 {
     if (ui->msgTextEdit->toPlainText ().isEmpty ()) {
@@ -446,6 +465,7 @@ void QClient::setRedDot(const QString &name)
     QTableWidgetItem *item = new QTableWidgetItem(name);
     item->setData (Qt::ForegroundRole, QColor(Qt::red));
     ui->userTableWidget->setItem (row, 0, item);
+    shakeWindow ();
 }
 
 
@@ -492,10 +512,14 @@ void QClient::haveNewMsg(ConnectThread *thread, Message *msg)
             emit msgToSend (thread, newMsg);
         }
         else if (choose == QMessageBox::Yes) {
-            QFile *file = new QFile(getPath ().append (tr("/%1").arg (msg->getArgv (0))));
+            QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+                                                            "/home",
+                                                            QFileDialog::ShowDirsOnly
+                                                            | QFileDialog::DontResolveSymlinks);
+            QFile *file = new QFile(dir.append (tr("/%1").arg (msg->getArgv (0))));
 
 
-            QMessageBox::information (this, tr("文件储存路径"), tr("%1").arg (getPath ().append (tr("/%1").arg (msg->getArgv (0)))), QMessageBox::Ok);
+            QMessageBox::information (this, tr("文件储存路径"), tr("%1").arg (dir), QMessageBox::Ok);
 
 
             if (!file->open (QIODevice::WriteOnly | QIODevice::Truncate)) {

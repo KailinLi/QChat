@@ -17,7 +17,7 @@ void ReceiveFileThread::run()
     exec();
 //    while(receiving);
     receiver->~RdtReceiver ();
-    qDebug() << "finish receiver";
+//    qDebug() << "finish receiver";
 }
 
 void ReceiveFileThread::stop()

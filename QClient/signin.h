@@ -38,6 +38,7 @@ public:
     void tryResetPassword();
     bool showFindPasswordDialog(const QString& pwQuestion, const QString& pwAnswer);
     void clickSetBtn();
+    void shakeWindow();
 signals:
     void sendMsg(Message* msg);
 private slots:

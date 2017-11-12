@@ -32,12 +32,14 @@ void SignUp::tryConnect()
             ui->pwQuestionComboBox->currentText ().isEmpty () ||
             ui->pwAnswerLineEdit->text ().isEmpty ()) {
         ui->showLabel->setText (tr("输入信息不完整"));
+        shakeWindow ();
     }
     else if (QString::compare (ui->passwordLineEdit->text (), ui->checkPasswordLineEdit->text ())) {
         ui->showLabel->setText (tr("两次输入密码不一致"));
         ui->passwordLineEdit->clear ();
         ui->checkPasswordLineEdit->clear ();
         ui->passwordLineEdit->setFocus ();
+        shakeWindow ();
     }
     else {
         tcpMsg->setBlockSize (0);
@@ -80,6 +82,7 @@ void SignUp::haveNewMsgFromServer()
             ui->checkPasswordLineEdit->clear ();
             ui->pwAnswerLineEdit->clear ();
             ui->nameLineEdit->setFocus ();
+            shakeWindow ();
         }
         break;
     default:
@@ -95,6 +98,25 @@ void SignUp::clickSetBtn()
     if (hadInput) {
         *serverAddress = QHostAddress(str);
     }
+}
+
+void SignUp::shakeWindow()
+{
+    QPropertyAnimation *pAnimation = new QPropertyAnimation(this, "pos");
+    pAnimation->setDuration(500);
+    pAnimation->setLoopCount(2);
+    pAnimation->setKeyValueAt(0, QPoint(geometry().x() - 3, geometry().y() - 3));
+    pAnimation->setKeyValueAt(0.1, QPoint(geometry().x() + 6, geometry().y() + 6));
+    pAnimation->setKeyValueAt(0.2, QPoint(geometry().x() - 6, geometry().y() + 6));
+    pAnimation->setKeyValueAt(0.3, QPoint(geometry().x() + 6, geometry().y() - 6));
+    pAnimation->setKeyValueAt(0.4, QPoint(geometry().x() - 6, geometry().y() - 6));
+    pAnimation->setKeyValueAt(0.5, QPoint(geometry().x() + 6, geometry().y() + 6));
+    pAnimation->setKeyValueAt(0.6, QPoint(geometry().x() - 6, geometry().y() + 6));
+    pAnimation->setKeyValueAt(0.7, QPoint(geometry().x() + 6, geometry().y() - 6));
+    pAnimation->setKeyValueAt(0.8, QPoint(geometry().x() - 6, geometry().y() - 6));
+    pAnimation->setKeyValueAt(0.9, QPoint(geometry().x() + 6, geometry().y() + 6));
+    pAnimation->setKeyValueAt(1, QPoint(geometry().x() - 3, geometry().y() - 3));
+    pAnimation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
 void SignUp::closeWindow()

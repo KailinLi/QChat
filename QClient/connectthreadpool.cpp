@@ -15,7 +15,7 @@ void ConnectThreadPool::removeThread(ConnectThread *thread)
 {
     thread->stop ();
     threadPool.removeOne (thread);
-    qDebug() << "delete one thread";
+//    qDebug() << "delete one thread";
 }
 
 ConnectThread *ConnectThreadPool::getThread(quint32 ID)

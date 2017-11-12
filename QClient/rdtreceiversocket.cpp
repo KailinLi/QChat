@@ -11,7 +11,7 @@ RdtReceiverSocket::~RdtReceiverSocket()
 {
     disconnectFromHost ();
     deleteLater ();
-    qDebug() << "socketDelete";
+//    qDebug() << "socketDelete";
 }
 
 void RdtReceiverSocket::sendACK(qint64 sequenceNumber)

@@ -46,14 +46,14 @@ void RdtReceiver::readRdtData()
     }
     if (bytesHadWritten == totalSize) {
         emit sendACK (bytesHadWritten);
-        qDebug() << "finish receive";
+//        qDebug() << "finish receive";
         updateTimer.stop ();
         file->close ();
         file->deleteLater ();
-        qDebug() << "delete file";
+//        qDebug() << "delete file";
         emit deleteSender ();
 
-        qDebug() << "emit finish";
+//        qDebug() << "emit finish";
         emit finish ();
     }
 }

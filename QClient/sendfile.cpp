@@ -59,12 +59,12 @@ void SendFile::updateProcess(qint64 t)
 
 void SendFile::finishSend()
 {
-    float useTime = time.elapsed ();
+//    float useTime = time.elapsed ();
 
     ui->progressBar->setValue (ui->progressBar->maximum ());
     ui->fileNameLabel->setText (tr("发送完毕"));
 //    ui->speedLabel->clear ();
-    ui->speedLabel->setText (tr("耗时%1").arg(useTime, 0, 'f', 2));
+    ui->speedLabel->setText (tr("耗时%1").arg(saveTime, 0, 'f', 0));
     ui->exitBtn->setEnabled (true);
     ui->sendBtn->setEnabled (false);
     if (sender) {

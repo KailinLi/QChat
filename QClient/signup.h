@@ -28,6 +28,7 @@ public:
     void trySignUp();
     void haveNewMsgFromServer();
     void clickSetBtn();
+    void shakeWindow();
 signals:
     void sendMsg(Message* msg);
 private slots:

@@ -65,6 +65,7 @@ public:
     void setRedDot(const QString &name);
     void readMsgUpdateUI(const QString &name, const QString &msg);
     QHostAddress getIP();
+    void shakeWindow();
 private slots:
     void haveNewConnect(qintptr socketDescriptor);
     void haveNewMsg(ConnectThread* thread, Message* msg);

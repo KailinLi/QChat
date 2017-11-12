@@ -12,7 +12,7 @@ QServer::QServer(QWidget *parent) :
     loadUserInfo ();
     localAddress = QHostAddress("127.0.0.1");
     if (! server->listen (localAddress, 16666)) {
-        QMessageBox::critical(this, tr("Threaded Fortune Server"),
+        QMessageBox::critical(this, tr("Fail Listening"),
                               tr("Unable to start the server: %1.")
                               .arg(server->errorString()));
         close();

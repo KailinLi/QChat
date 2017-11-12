@@ -79,6 +79,6 @@ void ReceiveFile::endReceive()
 //        qDebug() << "kill";
     }
     thread->deleteLater ();
-    qDebug() << "kill all";
+//    qDebug() << "kill all";
     close ();
 }
