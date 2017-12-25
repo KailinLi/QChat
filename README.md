@@ -1,6 +1,6 @@
 # QChat
 
-目前本机传输速度约为50M/s, 两台电脑局域网传输约为15M/s
+目前本机传输速度约为50M/s, 两台电脑局域网传输约为11M/s
 
 基于QTcpSocket和QUdpSocket实现的即时聊天工具
 
@@ -13,3 +13,13 @@
 * 支持多组用户同时在线交流和传输文件;
 * 文件传输具有良好的性能，能够充分利用网路带宽;
 * 人机交互友好，软件易用性强。
+
+## Demo
+
+![](http://oklhb00qa.bkt.clouddn.com/image001.png)
+
+![](http://oklhb00qa.bkt.clouddn.com/image041.png)
+
+![](http://oklhb00qa.bkt.clouddn.com/image043.png)
+
+![](http://oklhb00qa.bkt.clouddn.com/image112.png)
