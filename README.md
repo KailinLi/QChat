@@ -16,7 +16,7 @@
 
 ## Demo
 
-![](http://oklhb00qa.bkt.clouddn.com/image001.png)
+![](http://oklhb00qa.bkt.clouddn.com/QChat/image001.png)
 
 ![](http://oklhb00qa.bkt.clouddn.com/image041.png)
 
